@@ -1,0 +1,15 @@
+services:
+
+  apigateway:
+    container_name: apigateway
+    build:
+      context: ./ApiGateway
+      dockerfile: Dockerfile
+    ports:
+      - "5000:8080"
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
