@@ -3,24 +3,24 @@
 ### Option 1: Single Module Service (Recommended for Simple Microservices)
 
 ```
-order-service/ (Java)
+inventory-service/ (Java)
 ├── src/
 │   ├── main/
-│   │   ├── java/com/company/orderservice/
+│   │   ├── java/com/company/inventoryservice/
 │   │   │   ├── controller/
 │   │   │   ├── service/
 │   │   │   ├── repository/
 │   │   │   ├── entity/
 │   │   │   ├── dto/
 │   │   │   ├── config/
-│   │   │   └── OrderServiceApplication.java
+│   │   │   └── InventoryServiceApplication.java
 │   │   └── resources/
 │   │       ├── application.yml
 │   │       ├── application-dev.yml
 │   │       ├── application-prod.yml
 │   │       └── db/migration/
 └── test/
-    └── java/com/company/orderservice/
+    └── java/com/company/inventoryservice/
         ├── controller/
         ├── service/
         └── integration/

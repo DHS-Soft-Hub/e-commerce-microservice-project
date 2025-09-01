@@ -1,4 +1,3 @@
-Services Placeholder
 ## Overall Services Folder Structure
 
 ```
