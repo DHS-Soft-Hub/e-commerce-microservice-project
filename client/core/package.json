@@ -1,0 +1,45 @@
+{
+  "name": "@dhs-hub/core",
+  "version": "1.0.0",
+  "description": "Core domain abstractions and interfaces for DDD/Clean Architecture applications",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*",
+    "package.json",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "clean": "rimraf dist",
+    "prepublishOnly": "npm run clean && npm run build",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": [
+    "ddd",
+    "clean-architecture",
+    "domain-driven-design",
+    "cqrs",
+    "typescript",
+    "abstractions",
+    "interfaces"
+  ],
+  "author": "DHS-Soft-Hub",
+  "license": "MIT",
+  "devDependencies": {
+    "rimraf": "^5.0.0",
+    "typescript": "^5.8.3"
+  },
+  "peerDependencies": {
+    "typescript": ">=4.5.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DHS-Soft-Hub/base-web-app-template.git",
+    "directory": "frontend/core"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
