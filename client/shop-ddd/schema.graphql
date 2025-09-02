@@ -1,0 +1,67 @@
+scalar DateTime
+
+schema {
+  query: Query
+}
+
+type Query {
+  order(orderId: ID!): Order
+}
+
+type Order {
+  orderId: ID!
+  customer: Customer!
+  orderItems: [OrderItem!]!
+  payment: Payment!
+  shipping: Shipping!
+  status: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  totals: Totals!
+}
+
+type Customer {
+  customerId: ID!
+  name: String!
+  email: String!
+  address: Address!
+}
+
+type Address {
+  street: String!
+  city: String!
+  postalCode: String!
+  country: String!
+}
+
+type OrderItem {
+  productId: ID!
+  name: String!
+  quantity: Int!
+  price: Money!
+  total: Money!
+}
+
+type Payment {
+  method: String!
+  status: String!
+  transactionId: String!
+}
+
+type Shipping {
+  method: String!
+  status: String!
+  trackingNumber: String!
+  address: Address!
+}
+
+type Totals {
+  subtotal: Money!
+  tax: Money!
+  grandTotal: Money!
+}
+
+type Money {
+  currency: String!
+  amount: Float!
+}

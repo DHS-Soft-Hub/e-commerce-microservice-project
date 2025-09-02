@@ -1,8 +1,10 @@
 import type { CodegenConfig } from '@graphql-codegen/cli';
 
 const config: CodegenConfig = {
-    schema: process.env.API_GATEWAY_URL ?? 'http://localhost:5000/graphql',
-    documents: 'src/features/orders/infrastructure/api/queries/**/*.graphql',
+    // Use a local SDL schema file to avoid relying on server introspection
+    schema: './schema.graphql',
+    // Support queries placed under domain or infrastructure layers
+    documents: 'src/features/**/api/queries/**/*.graphql',
     generates: {
         'src/features/orders/infrastructure/api/__generated__/': {
             plugins: [
