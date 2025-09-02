@@ -1,7 +1,6 @@
 import { Order } from '../aggregates/Order';
+import { IBaseRepository } from '@core/domain/repositories';
 
-export interface IOrderRepository {
-    byId(id: string): Promise<Order | null>;
-    save(order: Order): Promise<void>;
-    delete(id: string): Promise<void>;
+export interface IOrderRepository extends IBaseRepository<Order, string> {
+    // Additional domain-specific methods can be added here
 }

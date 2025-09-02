@@ -1,6 +1,6 @@
 import { IOrderService } from "./IOrderService";
-import { IOrderRepository } from "../../domain/repositories/IOrderRepository";
 import { Order } from "../../domain/aggregates/Order";
+import { IOrderRepository } from "../../domain/repositories/IOrderRepository";
 
 export class OrderService implements IOrderService {
     constructor(private readonly orders: IOrderRepository) {}
@@ -9,6 +9,13 @@ export class OrderService implements IOrderService {
         if (!orderId || orderId.trim().length === 0) {
             throw new Error("orderId is required");
         }
-        return this.orders.byId(orderId.trim());
+        
+        const result = await this.orders.findById(orderId.trim());
+        
+        if (result.isFailure) {
+            throw new Error(result.error?.message || "Failed to find order");
+        }
+        
+        return result.value ?? null;
     }
 }
