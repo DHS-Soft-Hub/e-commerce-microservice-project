@@ -1,5 +1,5 @@
-import { IOrderRepository } from '../../domain/repositories/IOrderRepository';
-import { Order } from '../../domain/aggregates/Order';
+import { IOrderRepository } from '../../../domain/repositories/IOrderRepository';
+import { Order } from '../../../domain/aggregates/Order';
 
 export class OrderRepository implements IOrderRepository {
     private store: Map<string, Order> = new Map();
