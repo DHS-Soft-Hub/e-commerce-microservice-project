@@ -6,16 +6,12 @@ const config: CodegenConfig = {
     // Support queries placed under domain or infrastructure layers
     documents: 'src/features/**/api/queries/**/*.graphql',
     generates: {
-        'src/features/orders/infrastructure/api/__generated__/': {
+        'src/features/orders/infrastructure/api/__generated__/graphql.ts': {
             plugins: [
                 'typescript',
                 'typescript-operations',
                 'typescript-graphql-request'
             ],
-            preset: 'client',
-            presetConfig: {
-                fragmentMasking: false
-            },
             config: {
                 avoidOptionals: true
             }
