@@ -1,7 +1,7 @@
-import { Order } from '../../../domain/aggregates/Order';
-import { IOrderRepository } from '../../../domain/repositories/IOrderRepository';
+import { Order } from '../../domain/aggregates/Order';
+import { IOrderRepository } from '../../domain/repositories/IOrderRepository';
 import { IResult, IPaginatedResult, IQueryOptions } from '@core/shared/types';
-import { OrderApi } from '../../api/OrderApi';
+import { OrderApi } from '../api/OrderApi';
 
 function success<T>(value: T): IResult<T> {
     return { isSuccess: true, isFailure: false, value };
@@ -12,6 +12,16 @@ function failure<T>(error: Error): IResult<T> {
 }
 export class OrderRepository implements IOrderRepository{
     constructor(private readonly orderApi: OrderApi) {}
+
+    async findById(id: string): Promise<IResult<Order | null>> {
+        try {
+            const order = await this.orderApi.getOrderById(id);
+            return { isSuccess: true, isFailure: false, value: order };
+        } catch (error) {
+            return { isSuccess: false, isFailure: true, error: error as Error };
+        }
+    }
+
     findMany(options?: IQueryOptions): Promise<IResult<Order[], Error>> {
         throw new Error('Method not implemented.');
     }
@@ -51,15 +61,4 @@ export class OrderRepository implements IOrderRepository{
     restore?(id: string): Promise<IResult<void>> {
         throw new Error('Method not implemented.');
     }
-
-    async findById(id: string): Promise<IResult<Order | null>> {
-        try {
-            const order = await this.orderApi.getOrderById(id);
-            return { isSuccess: true, isFailure: false, value: order };
-        } catch (error) {
-            return { isSuccess: false, isFailure: true, error: error as Error };
-        }
-    }
-
-   
 }

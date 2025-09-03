@@ -1,7 +1,7 @@
 'use client';
 
 import { OrderService } from "@/features/orders/application/services/OrderService";
-import { OrderRepository } from "@/features/orders/infrastructure/repositories/inmemory/OrderRepository";
+import { OrderRepository } from "@/features/orders/infrastructure/repositories/OrderRepository";
 import { OrderDialog } from "@/features/orders/presentations/components/OrderDialog";
 import { OrderServiceProvider } from "@/features/orders/presentations/providers/OrderServiceProvider";
 import { OrderApi } from '@/features/orders/infrastructure/api/OrderApi';
