@@ -1,0 +1,62 @@
+query GetOrderById($orderId: ID!) {
+  order(orderId: $orderId) {
+    createdAt
+    orderId
+    status
+    updatedAt
+    customer {
+      customerId
+      email
+      name
+      address {
+        city
+        country
+        postalCode
+        street
+      }
+    }
+    orderItems {
+      name
+      productId
+      quantity
+      price {
+        amount
+        currency
+      }
+      total {
+        amount
+        currency
+      }
+    }
+    payment {
+      method
+      status
+      transactionId
+    }
+    shipping {
+      method
+      status
+      trackingNumber
+      address {
+        city
+        country
+        postalCode
+        street
+      }
+    }
+    totals {
+      grandTotal {
+        amount
+        currency
+      }
+      subtotal {
+        amount
+        currency
+      }
+      tax {
+        amount
+        currency
+      }
+    }
+  }
+}
