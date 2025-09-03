@@ -1,0 +1,15 @@
+services:
+
+  authservice:
+    container_name: authservice
+    build:
+      context: ./Auth
+      dockerfile: Dockerfile
+    ports:
+      - "5001:8080"
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
