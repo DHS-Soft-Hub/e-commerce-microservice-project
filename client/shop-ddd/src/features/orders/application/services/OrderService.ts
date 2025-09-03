@@ -11,6 +11,7 @@ export class OrderService implements IOrderService {
         }
         
         const result = await this.orders.findById(orderId.trim());
+        console.log("OrderService.getOrderById result:", result);
         
         if (result.isFailure) {
             throw new Error(result.error?.message || "Failed to find order");
