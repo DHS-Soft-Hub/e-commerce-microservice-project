@@ -4,7 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d35943d1-0df7-424d-9570-47cf989a6fd2" name="Changes" comment="remove GraphQLOrderRepository and update to use OrderRepository" />
+    <list default="true" id="d35943d1-0df7-424d-9570-47cf989a6fd2" name="Changes" comment="Update test setup and add Jest dependencies">
+      <change afterPath="$PROJECT_DIR$/client/shop-ddd/src/features/orders/domain/__tests__/value-objects/Address.test.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/shop-ddd/jest.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/client/shop-ddd/jest.config.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/shop-ddd/src/features/orders/domain/aggregates/Order.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/shop-ddd/src/features/orders/domain/aggregates/Order.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/shop-ddd/src/features/orders/infrastructure/api/OrderApi.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/shop-ddd/src/features/orders/infrastructure/api/OrderApi.ts" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -18,9 +24,27 @@
       </list>
     </option>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {}
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/DHS-Soft-Hub/e-commerce-microservice-project",
+    "accountId": "fac9224b-baf8-4fa0-a1fb-68785b05e214"
+  }
+}]]></component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="AISelfReview" />
+  </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Jest.Address Value Object.executor": "Run",
+    "git-widget-placeholder": "client-ddd-testing",
     "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs.jest.jest_package": "/home/stenly/Desktop/DHS-PORTAL-WEB/e-commerce-microservice-project/client/shop-ddd/node_modules/jest",
     "ts.external.directory.path": "/home/stenly/Desktop/DHS-PORTAL-WEB/e-commerce-microservice-project/client/shop-ddd/node_modules/typescript/lib"
   }
 }]]></component>
@@ -31,7 +55,48 @@
       <recent name="$PROJECT_DIR$/client/shop-ddd/src/features/orders/presentations/components" />
     </key>
   </component>
+  <component name="RunManager">
+    <configuration name="Address Value Object" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
+      <node-interpreter value="project" />
+      <jest-package value="$PROJECT_DIR$/client/shop-ddd/node_modules/jest" />
+      <working-dir value="$PROJECT_DIR$/client/shop-ddd" />
+      <envs />
+      <scope-kind value="SUITE" />
+      <test-file value="$PROJECT_DIR$/client/shop-ddd/src/features/orders/domain/__tests__/value-objects/Address.test.ts" />
+      <test-names>
+        <test-name value="Address Value Object" />
+      </test-names>
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Jest.Address Value Object" />
+      </list>
+    </recent_temporary>
+  </component>
   <component name="TaskManager">
+    <task id="LOCAL-00001" summary="Update test setup and add Jest dependencies">
+      <option name="closed" value="true" />
+      <created>1756929073170</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1756929073170</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Update test setup and add Jest dependencies">
+      <option name="closed" value="true" />
+      <created>1756929078219</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1756929078219</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="remove GraphQLOrderRepository and update to use OrderRepository" />
+    <MESSAGE value="Update test setup and add Jest dependencies" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update test setup and add Jest dependencies" />
   </component>
 </project>

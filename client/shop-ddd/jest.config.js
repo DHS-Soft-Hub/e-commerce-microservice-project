@@ -4,8 +4,12 @@ module.exports = {
     testEnvironment: 'node',
     roots: ['<rootDir>/src'],
     testMatch: [
-        '**/__tests__/**/*.{ts,tsx}',
+        '**/__tests__/**/*.{test,spec}.{ts,tsx}',
         '**/*.(test|spec).{ts,tsx}'
+    ],
+    testPathIgnorePatterns: [
+        '/node_modules/',
+        'setup.ts'
     ],
     transform: {
         '^.+\\.tsx?$': 'ts-jest',
@@ -19,6 +23,8 @@ module.exports = {
     coverageDirectory: 'coverage',
     coverageReporters: ['text', 'lcov', 'html'],
     setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
+    moduleNameMapping: {
         '^@/(.*)$': '<rootDir>/src/$1',
-        '^@core/(.*)$': '<rootDir>/../core/src/$1',
+        '^@core/(.*)$': '<rootDir>/../core/src/$1'
+    }
 };

@@ -132,8 +132,8 @@ export class Order {
 
     private recalculateTotals() {
         const subtotal = Order.calcSubtotal(this._items);
-        // NOTE: данъчната логика тук е placeholder; в реалност би била Domain Service
-        const taxRate = 0.20; // 20% ДДС за пример
+        // NOTE: the tax logic here is a placeholder; in reality it would be a Domain Service
+        const taxRate = 0.20; // 20% VAT as an example
         const tax = Money.of(Number((subtotal.amount * taxRate).toFixed(2)), subtotal.currency);
         const grandTotal = subtotal.add(tax);
         this._totals = Totals.create({ subtotal, tax, grandTotal });

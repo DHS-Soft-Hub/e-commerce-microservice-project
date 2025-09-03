@@ -10,7 +10,7 @@ export class OrderApi {
 
     constructor(client?: GraphQLClient) {
         const gqlClient = client ?? new GraphQLClient(API_URL, {
-            // headers: { Authorization: `Bearer ${token}` } // ако ти потрябва
+            // headers: { Authorization: `Bearer ${token}` } // if you need it
         });
         this.sdk = getSdk(gqlClient);
     }
