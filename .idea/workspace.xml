@@ -14,17 +14,20 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="TypeScript JSX File" />
+        <option value="TypeScript File" />
       </list>
     </option>
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;/snap/webstorm/509/plugins/javascript-plugin/jsLanguageServicesImpl/external&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "node.js.selected.package.tslint": "(autodetect)",
+    "ts.external.directory.path": "/home/stenly/Desktop/DHS-PORTAL-WEB/e-commerce-microservice-project/client/shop-ddd/node_modules/typescript/lib"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/client/shop-ddd/src/__tests__" />
+      <recent name="$PROJECT_DIR$/client/shop-ddd/src/features/orders/domain" />
       <recent name="$PROJECT_DIR$/client/shop-ddd/src/features/orders/presentations/components" />
     </key>
   </component>
