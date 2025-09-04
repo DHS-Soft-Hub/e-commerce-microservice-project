@@ -6,20 +6,21 @@ services:
       context: ./Auth.Api
       dockerfile: Dockerfile
     depends_on:
-      db:
+      authdb:
         condition: service_healthy
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__postgresdb=Host=db;Database=authdb;Username=postgres;Password=auth@123
+      - ConnectionStrings__postgresdb=Host=authdb;Database=authdb;Username=postgres;Password=auth@123
       - Jwt__Issuer=http://authservice
       - Jwt__Audience=api-clients
-      - Jwt__Key=12382198398#*@&*$*#$&#*$#$AKSJDLKSADDA
+      - Jwt__Key=12382198398#*@&*$*#$&#*$#$AKSJDLKSADDAKDOPADI&^&^%$#@!@#$
     ports:
       - "5001:8080"
     networks:
       - backend
 
-  db:
+  authdb:
+    container_name: authdb
     image: postgres:latest
     environment:
       POSTGRES_USER: postgres
