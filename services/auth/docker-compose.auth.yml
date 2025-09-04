@@ -3,8 +3,13 @@ services:
   authservice:
     container_name: authservice
     build:
-      context: ./Auth
+      context: ./Auth.Api
       dockerfile: Dockerfile
+    depends_on:
+      - db
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__postgresdb=Host=db;Database=authdb;Username=postgres;Password=auth@123
     ports:
       - "5001:8080"
     networks:
