@@ -19,3 +19,6 @@ Content-Type: application/json
   "email": "user@example.com",
   "password": "YourPassword123!"
 }
+
+### Refresh Token
+POST {{host}}/api/auth/refresh-token
