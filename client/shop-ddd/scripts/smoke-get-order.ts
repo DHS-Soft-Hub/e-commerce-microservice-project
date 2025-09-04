@@ -17,7 +17,7 @@ async function main() {
 
     const order = mapOrderFromDto(res.order);
     console.log('✅ OK. Order loaded:', {
-        orderId: order.orderId,
+        orderId: order.id,
         status: order.status,
         items: order.items.length,
         total: { amount: order.totals.grandTotal.amount, currency: order.totals.grandTotal.currency }

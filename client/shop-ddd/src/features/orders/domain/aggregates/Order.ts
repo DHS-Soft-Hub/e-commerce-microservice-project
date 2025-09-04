@@ -5,12 +5,18 @@ import { Payment } from '../value-objects/Payment';
 import { Shipping } from '../value-objects/Shipping';
 import { Totals } from '../value-objects/Totals';
 import { Money } from '../value-objects/Money';
+import { IAggregateRoot, IDomainEvent } from '@core';
 
 export type OrderStatus = 'Pending' | 'Paid' | 'Shipped' | 'Completed' | 'Canceled';
 
-export class Order {
+export class Order implements IAggregateRoot<string> {
+    private _modified = false;
+    // ---- IEntity & IAggregateRoot backing fields ----
+    domainEvents: IDomainEvent[] = [];
+    version = 0;
+
     private constructor(
-        public readonly orderId: string,
+        public readonly id: string,
         private _customer: Customer,
         private _items: OrderItem[],
         private _payment: Payment,
@@ -21,9 +27,54 @@ export class Order {
         private _totals: Totals
     ) {}
 
+    // ---- Invariants (business rules) ----
+    invariant(): boolean {
+        try {
+            if (!this.id) return false;
+            if (!this._customer) return false;
+            if (!this._items || this._items.length === 0) return false;
+            // single currency
+            const currencies = new Set(this._items.map(i => i.price.currency));
+            if (currencies.size > 1) return false;
+            // totals consistency
+            const subtotal = Order.calcSubtotal(this._items);
+            if (this._totals.subtotal.amount !== subtotal.amount || this._totals.subtotal.currency !== subtotal.currency) return false;
+            // allowed status
+            if (!['Pending','Paid','Shipped','Completed','Canceled'].includes(this._status)) return false;
+            return true;
+        } catch {
+            return false;
+        }
+    }
+    checkInvariants(): void {
+        if (!this.invariant()) {
+            throw new Error('Order invariants violated');
+        }
+    }
+    markAsModified(): void {
+        this._modified = true;
+        this.version += 1;
+    }
+    isModified(): boolean {
+        return this._modified;
+    }
+
+    addDomainEvent(event: IDomainEvent): void {
+        this.domainEvents.push(event);
+        this.markAsModified();
+    }
+    clearDomainEvents(): void {
+        this.domainEvents = [];
+    }
+    pullDomainEvents(): IDomainEvent[] {
+        const events = this.domainEvents;
+        this.clearDomainEvents();
+        return events;
+    }
+
     // ---- Factory ----
     static create(p: {
-        orderId: string;
+        id: string;
         customer: Customer;
         items: OrderItem[];
         payment: Payment;
@@ -33,7 +84,7 @@ export class Order {
         updatedAt: Date;
         totals: Totals;
     }) {
-        if (!p.orderId) throw new Error('Order.orderId required');
+        if (!p.id) throw new Error('Order.orderId required');
         if (!p.customer) throw new Error('Order.customer required');
         if (!p.items?.length) throw new Error('Order.items must be non-empty');
         Order.ensureSingleCurrency(p.items);
@@ -49,8 +100,8 @@ export class Order {
             throw new Error('Invalid status');
         }
 
-        return new Order(
-            p.orderId,
+        const order = new Order(
+            p.id,
             p.customer,
             [...p.items],
             p.payment,
@@ -60,6 +111,8 @@ export class Order {
             new Date(p.updatedAt),
             p.totals
         );
+        order.checkInvariants();
+        return order;
     }
 
     // ---- Invariants helpers ----
@@ -139,5 +192,5 @@ export class Order {
         this._totals = Totals.create({ subtotal, tax, grandTotal });
     }
 
-    private touch() { this._updatedAt = new Date(); }
+    private touch() { this._updatedAt = new Date(); this.markAsModified(); }
 }

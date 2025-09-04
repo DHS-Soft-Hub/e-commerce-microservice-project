@@ -20,8 +20,17 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
+      "@hooks": ["./src/hooks"],
+      "@store": ["./src/store"],
+      "@utils": ["./src/utils"],
+      "@components": ["./src/components"],
+      "@constants": ["./src/constants"],
+      "@features/*": ["./src/features/*"],
       "@core": ["../core/src"],
-      "@core/*": ["../core/src/*"]
+      "@core/*": ["../core/src/*"],
+      "@dhs-hub/core": ["../core/src"],
+      "@dhs-hub/core/*": ["../core/src/*"]
+
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
