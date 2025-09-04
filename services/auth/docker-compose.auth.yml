@@ -11,6 +11,9 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__postgresdb=Host=db;Database=authdb;Username=postgres;Password=auth@123
+      - Jwt__Issuer=http://authservice
+      - Jwt__Audience=api-clients
+      - Jwt__Key=12382198398#*@&*$*#$&#*$#$AKSJDLKSADDA
     ports:
       - "5001:8080"
     networks:

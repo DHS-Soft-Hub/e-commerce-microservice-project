@@ -1,0 +1,3 @@
+include:
+  - path: ./auth/docker-compose.auth.yml
+  - path: ./api-gateway/docker-compose.gateway.yml

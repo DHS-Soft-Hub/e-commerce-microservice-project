@@ -5,6 +5,11 @@ services:
     build:
       context: ./ApiGateway
       dockerfile: Dockerfile
+    environment:
+      - ReverseProxy__Clusters__authCluster__Destinations__destination1__Address=http://authservice:8080/
+      - Jwt__Issuer=http://authservice
+      - Jwt__Audience=api-clients
+      - Jwt__Key=12382198398#*@&*$*#$&#*$#$AKSJDLKSADDA
     ports:
       - "5000:8080"
     networks:
