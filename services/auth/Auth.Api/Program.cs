@@ -1,16 +1,11 @@
 using System.Text;
+using Auth.Api.Mappings;
 using Auth.Api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 {
-    // add swagger
-    builder.Services.AddSwaggerGen();
-
-    // Add services to the container.
-    builder.Services.AddScoped<IAuthService, AuthService>();
-
     // add Authentication
     builder.Services.AddAuthentication(options =>
     {
@@ -42,6 +37,14 @@ var builder = WebApplication.CreateBuilder(args);
 
     // Add Controllers
     builder.Services.AddControllers();
+
+    // Add services to the container.
+    builder.Services.AddScoped<IAuthService, AuthService>();
+    builder.Services.AddScoped<ITokenService, TokenService>();
+    builder.Services.AddMappings();
+
+    // add swagger
+    builder.Services.AddSwaggerGen();
 }
 
 
