@@ -1,4 +1,5 @@
-using Auth.Api.Models;
+using Auth.Api.Contracts.Requests;
+using Auth.Api.Contracts.Responses;
 using Auth.Api.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,41 +14,27 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] RegisterModel request)
+    public async Task<IActionResult> Register([FromBody] RegisterRequest request)
     {
         var (user, result) = await _authService.RegisterAsync(request.Email, request.Password, request.UserName);
-
         if (result.Succeeded && user != null)
-        {
-            return Ok(new
-            {
-                Success = true,
-                Data = user,
-                Message = "Registration successful"
-            });
-        }
+            return Ok(new { success = true, data = user, message = "Registration successful" });
 
-        // Return structured error response
-        return BadRequest(new
-        {
-            Success = false,
-            Errors = result.Errors.Select(e => new
-            {
-                Code = e.Code,
-                Description = e.Description
-            }).ToList(),
-            Message = "Registration failed"
+        return BadRequest(new {
+            success = false,
+            errors = result.Errors.Select(e => new { e.Code, e.Description }),
+            message = "Registration failed"
         });
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] LoginModel request)
+    public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
-        var result = await _authService.LoginAsync(request.Email, request.Password);
-        if (result.tokenResponse != null)
+        var (tokenResponse, refreshToken) = await _authService.LoginAsync(request.Email, request.Password);
+        if (tokenResponse is not null)
         {
-            SetRefreshTokenCookie(result.refreshToken ?? string.Empty);
-            return Ok(result.tokenResponse);
+            SetRefreshTokenCookie(refreshToken ?? string.Empty);
+            return Ok(tokenResponse);
         }
         return BadRequest("Invalid credentials");
     }

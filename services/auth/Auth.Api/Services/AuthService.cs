@@ -1,13 +1,11 @@
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using MapsterMapper;
 using Auth.Api.Entities;
-using Auth.Api.Services;
-using Auth.Api.DTOs;
+using Auth.Api.Contracts.Responses;
 
 namespace Auth.Api.Services;
 
@@ -36,7 +34,7 @@ public class AuthService : IAuthService
         _mapper = mapper;
     }
 
-    public async Task<(TokenResponseDto? tokenResponse, string? refreshToken)> LoginAsync(string email, string password)
+    public async Task<(TokenResponse? tokenResponse, string? refreshToken)> LoginAsync(string email, string password)
     {
         var user = await _userManager.FindByEmailAsync(email);
         if (user == null) return (null, null);
@@ -53,20 +51,20 @@ public class AuthService : IAuthService
         var token = _tokenService.GenerateAccessToken(authClaims);
         var refreshToken = _tokenService.GenerateRefreshToken(authClaims);
 
-        return (new TokenResponseDto(token, DateTime.UtcNow.AddHours(1)), refreshToken);
+        return (new TokenResponse(token, DateTime.UtcNow.AddHours(1)), refreshToken);
     }
 
-    public async Task<(AuthUserDto?, IdentityResult)> RegisterAsync(string email, string password, string username)
+    public async Task<(AuthUserResponse?, IdentityResult)> RegisterAsync(string email, string password, string username)
     {
         var user = new AuthUser { Email = email, UserName = username };
         var result = await _userManager.CreateAsync(user, password);
         if (!result.Succeeded) return (null, result);
-        
-        var userDto = _mapper.Map<AuthUserDto>(user);
+
+        var userDto = _mapper.Map<AuthUserResponse>(user);
         return (userDto, result);
     }
 
-    public async Task<TokenResponseDto?> RefreshTokenAsync(string refreshToken)
+    public async Task<TokenResponse?> RefreshTokenAsync(string refreshToken)
     {
         try
         {
@@ -88,7 +86,7 @@ public class AuthService : IAuthService
             };
 
             var token = _tokenService.GenerateAccessToken(authClaims);
-            return new TokenResponseDto(token, DateTime.UtcNow.AddHours(1));
+            return new TokenResponse(token, DateTime.UtcNow.AddHours(1));
         }
         catch
         {
