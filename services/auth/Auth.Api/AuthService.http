@@ -1,6 +1,21 @@
-@AuthService_HostAddress = http://localhost:5001
+@host = http://localhost:5001
 
-GET {{AuthService_HostAddress}}/auth/
-Accept: application/json
 
-###
+### Register
+POST {{host}}/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "yourusername",
+  "email": "user@example.com",
+  "password": "YourPassword123!"
+}
+
+### Login
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "YourPassword123!"
+}

@@ -1,69 +1,91 @@
 using System.Text;
+using Auth.Api.Data;
+using Auth.Api.Entities;
 using Auth.Api.Mappings;
 using Auth.Api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 {
-    // add Authentication
-    builder.Services.AddAuthentication(options =>
-    {
-        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    })
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
-        };
-    });
-
-    // Add CORS policy
-    builder.Services.AddCors(options =>
-    {
-        options.AddPolicy("AllowAllOrigins",
-            builder => builder.AllowAnyOrigin()
-                            .AllowAnyMethod()
-                            .AllowAnyHeader());
-    });
-
     // Add Controllers
     builder.Services.AddControllers();
 
-    // Add services to the container.
-    builder.Services.AddScoped<IAuthService, AuthService>();
-    builder.Services.AddScoped<ITokenService, TokenService>();
-    builder.Services.AddMappings();
-
-    // add swagger
+    // Swagger (add explorer for minimal hosting)
+    builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
-}
 
+    // CORS policy
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy("AllowAllOrigins", policy =>
+            policy.AllowAnyOrigin()
+                  .AllowAnyMethod()
+                  .AllowAnyHeader());
+    });
+
+    // Register DbContext
+    builder.Services.AddDbContext<AuthDbContext>(options =>
+            options.UseNpgsql(builder.Configuration.GetConnectionString("postgresdb")));
+
+    // Register Identity (IMPORTANT!)
+    builder.Services.AddIdentity<AuthUser, IdentityRole>()
+        .AddEntityFrameworkStores<AuthDbContext>()
+        .AddSignInManager()
+        .AddDefaultTokenProviders();
+
+    // Authentication / JWT
+    var jwtKey = builder.Configuration["Jwt:Key"] 
+                 ?? throw new InvalidOperationException("Jwt:Key is missing from configuration");
+    builder.Services
+        .AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme  = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme     = JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer           = true,
+                ValidateAudience         = true,
+                ValidateLifetime         = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer              = builder.Configuration["Jwt:Issuer"],
+                ValidAudience            = builder.Configuration["Jwt:Audience"],
+                IssuerSigningKey         = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+            };
+        });
+
+    // App services
+    builder.Services.AddScoped<IAuthService, AuthService>();
+    builder.Services.AddSingleton<ITokenService, TokenService>();
+    builder.Services.AddMappings();
+}
 
 var app = builder.Build();
 {
-    app.UseCors("AllowAllOrigins");
-
     if (app.Environment.IsDevelopment())
     {
         app.UseSwagger();
         app.UseSwaggerUI();
+
+        // Ensure DB is created and apply migrations
+        using var scope = app.Services.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<AuthDbContext>();
+        dbContext.Database.Migrate();
     }
 
     app.UseHttpsRedirection();
+
+    app.UseRouting();              // explicit routing stage
+    app.UseCors("AllowAllOrigins");// CORS after routing, before auth
     app.UseAuthentication();
     app.UseAuthorization();
 
     app.MapControllers();
-
 }
 
 app.Run();
