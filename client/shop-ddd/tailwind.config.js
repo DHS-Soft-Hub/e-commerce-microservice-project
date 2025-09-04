@@ -1,5 +1,7 @@
-// tailwind.config.js
-module.exports = {
+// tailwind.config.js (ESM)
+import animate from "tailwindcss-animate";
+
+export default {
     darkMode: ["class"],
     content: [
         './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
@@ -125,5 +127,5 @@ module.exports = {
             },
         }
     },
-    plugins: [require("tailwindcss-animate")],
+    plugins: [animate],
 };
