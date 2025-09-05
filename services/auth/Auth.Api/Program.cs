@@ -2,10 +2,12 @@ using System.Text;
 using Auth.Api.Data.Context;
 using Auth.Api.Entities;
 using Auth.Api.Mappings;
+using Auth.Api.Options;
 using Auth.Api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -37,32 +39,37 @@ var builder = WebApplication.CreateBuilder(args);
         .AddDefaultTokenProviders();
 
     // Authentication / JWT
-    var jwtKey = builder.Configuration["Jwt:Key"] 
+    var jwtKey = builder.Configuration["Jwt:Key"]
                  ?? throw new InvalidOperationException("Jwt:Key is missing from configuration");
     builder.Services
         .AddAuthentication(options =>
         {
-            options.DefaultAuthenticateScheme  = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme     = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
         })
         .AddJwtBearer(options =>
         {
             options.TokenValidationParameters = new TokenValidationParameters
             {
-                ValidateIssuer           = true,
-                ValidateAudience         = true,
-                ValidateLifetime         = true,
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
-                ValidIssuer              = builder.Configuration["Jwt:Issuer"],
-                ValidAudience            = builder.Configuration["Jwt:Audience"],
-                IssuerSigningKey         = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+                ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                ValidAudience = builder.Configuration["Jwt:Audience"],
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
             };
         });
 
     // App services
-    builder.Services.AddScoped<IAuthService, AuthService>();
-    builder.Services.AddSingleton<ITokenService, TokenService>();
-    builder.Services.AddMappings();
+    builder.Services
+        .AddScoped<IAuthService, AuthService>()
+        .AddSingleton<ITokenService, TokenService>()
+        .AddMappings()
+        .Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"))
+        .AddScoped<IRefreshTokenStore, RefreshTokenStore>()
+        .AddSingleton(resolver =>
+                resolver.GetRequiredService<IOptions<JwtOptions>>().Value);
 }
 
 var app = builder.Build();

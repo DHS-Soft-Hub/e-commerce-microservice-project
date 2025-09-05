@@ -9,5 +9,7 @@ namespace Auth.Api.Data.Context
         public AuthDbContext(DbContextOptions<AuthDbContext> options) : base(options)
         {
         }
+
+        public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
     }
 }
