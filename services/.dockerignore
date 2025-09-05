@@ -1,0 +1,8 @@
+**/bin/
+**/obj/
+*.user
+*.swp
+.git
+.gitignore
+Dockerfile
+docker-compose*.yml

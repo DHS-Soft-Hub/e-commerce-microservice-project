@@ -4,7 +4,7 @@ services:
     container_name: orderservice
     build:
       context: ./Orders.Api
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.local
     depends_on:
       ordersdb:
         condition: service_healthy
