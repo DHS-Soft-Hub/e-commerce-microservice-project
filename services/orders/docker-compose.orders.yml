@@ -6,11 +6,12 @@ services:
       context: ./Orders.Api
       dockerfile: Dockerfile
     depends_on:
-      orderdb:
+      ordersdb:
         condition: service_healthy
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__postgresdb=Host=orderdb;Database=orderdb;Username=postgres;Password=order@123
+      - ConnectionStrings__postgresdb=Host=ordersdb;Database=ordersdb;Username=postgres;Password=order@123
+      - ConnectionStrings__RabbitMQ=amqp://guest:guest@rabbitmq:5672/
       - Jwt__Issuer=http://orderservice
       - Jwt__Audience=api-clients
       - Jwt__Key=12382198398#*@&*$*#$&#*$#$AKSJDLKSADDAKDOPADI&^&^%$#@!@#$
@@ -19,17 +20,17 @@ services:
     networks:
       - backend
 
-  orderdb:
-    container_name: orderdb
+  ordersdb:
+    container_name: ordersdb
     image: postgres:latest
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: order@123
-      POSTGRES_DB: orderdb
+      POSTGRES_DB: ordersdb
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - orders-pgdata:/var/lib/postgresql/data
     networks:
       - backend
     healthcheck:
@@ -40,7 +41,7 @@ services:
       start_period: 30s
 
 volumes:
-  pgdata:
+  orders-pgdata:
 
 networks:
   backend:

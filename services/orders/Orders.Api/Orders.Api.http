@@ -1,10 +1,10 @@
-@Api_HostAddress = http://localhost:5000/api
+@host = http://localhost:5002
 
-GET {{Api_HostAddress}}/orders
+GET {{host}}/api/orders
 Accept: application/json
 
 ### Create Order
-POST {{Api_HostAddress}}/orders
+POST {{host}}/api/orders
 Content-Type: application/json
 
 {
