@@ -1,5 +1,5 @@
+using Auth.Api.Authorization;
 using Auth.Api.Contracts.Requests;
-using Auth.Api.Enums;
 using Auth.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
