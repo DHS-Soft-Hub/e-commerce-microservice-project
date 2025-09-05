@@ -1,0 +1,49 @@
+{
+  "cartId": "CART-1001",
+  "customerId": "CUST-101",
+  "items": [
+    {
+      "productId": "PROD-501",
+      "name": "Wireless Mouse",
+      "quantity": 2,
+      "price": {
+        "currency": "EUR",
+        "amount": 25.99
+      },
+      "total": {
+        "currency": "EUR",
+        "amount": 51.98
+      }
+    },
+    {
+      "productId": "PROD-502",
+      "name": "Mechanical Keyboard",
+      "quantity": 1,
+      "price": {
+        "currency": "EUR",
+        "amount": 79.99
+      },
+      "total": {
+        "currency": "EUR",
+        "amount": 79.99
+      }
+    }
+  ],
+  "totals": {
+    "subtotal": {
+      "currency": "EUR",
+      "amount": 131.97
+    },
+    "tax": {
+      "currency": "EUR",
+      "amount": 26.39
+    },
+    "grandTotal": {
+      "currency": "EUR",
+      "amount": 158.36
+    }
+  },
+  "status": "Active",
+  "createdAt": "2025-09-01T12:00:00Z",
+  "updatedAt": "2025-09-01T13:15:00Z"
+}

@@ -1,0 +1,13 @@
+{
+  "paymentId": "PAY-9001",
+  "orderId": "ORD-2025-0001",
+  "method": "CreditCard",
+  "status": "Paid",
+  "transactionId": "TXN-12345",
+  "amount": {
+    "currency": "EUR",
+    "amount": 158.36
+  },
+  "createdAt": "2025-09-01T12:05:00Z",
+  "updatedAt": "2025-09-01T12:06:00Z"
+}

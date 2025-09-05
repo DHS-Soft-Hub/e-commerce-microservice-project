@@ -1,0 +1,27 @@
+@host = http://localhost:5001
+
+
+### Register
+POST {{host}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "YourPassword123!",
+  "username": "yourusername"
+}
+
+### Login
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "YourPassword123!"
+}
+
+### Refresh Token
+POST {{host}}/api/auth/refresh-token
+
+### Revoke Token
+POST {{host}}/api/auth/revoke-token

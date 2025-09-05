@@ -1,0 +1,75 @@
+{
+  "orderId": "ORD-2025-0001",
+  "customer": {
+    "customerId": "CUST-101",
+    "name": "John Doe",
+    "email": "john.doe@example.com",
+    "address": {
+      "street": "123 Main St",
+      "city": "Sofia",
+      "postalCode": "1000",
+      "country": "Bulgaria"
+    }
+  },
+  "orderItems": [
+    {
+      "productId": "PROD-501",
+      "name": "Wireless Mouse",
+      "quantity": 2,
+      "price": {
+        "currency": "EUR",
+        "amount": 25.99
+      },
+      "total": {
+        "currency": "EUR",
+        "amount": 51.98
+      }
+    },
+    {
+      "productId": "PROD-502",
+      "name": "Mechanical Keyboard",
+      "quantity": 1,
+      "price": {
+        "currency": "EUR",
+        "amount": 79.99
+      },
+      "total": {
+        "currency": "EUR",
+        "amount": 79.99
+      }
+    }
+  ],
+  "payment": {
+    "method": "CreditCard",
+    "status": "Paid",
+    "transactionId": "TXN-9001"
+  },
+  "shipping": {
+    "method": "Standard",
+    "status": "Shipped",
+    "trackingNumber": "TRACK-12345",
+    "address": {
+      "street": "123 Main St",
+      "city": "Sofia",
+      "postalCode": "1000",
+      "country": "Bulgaria"
+    }
+  },
+  "status": "Completed",
+  "createdAt": "2025-09-01T10:30:00Z",
+  "updatedAt": "2025-09-01T12:00:00Z",
+  "totals": {
+    "subtotal": {
+      "currency": "EUR",
+      "amount": 131.97
+    },
+    "tax": {
+      "currency": "EUR",
+      "amount": 26.39
+    },
+    "grandTotal": {
+      "currency": "EUR",
+      "amount": 158.36
+    }
+  }
+}

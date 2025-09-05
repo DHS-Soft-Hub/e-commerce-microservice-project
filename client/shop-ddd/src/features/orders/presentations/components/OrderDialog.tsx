@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useRef } from "react";
+import type { OrderItem } from "../../domain/entities/OrderItem";
 import { useOrder } from "../hooks/useOrder";
 
 type OrderDialogProps = {
@@ -92,14 +93,13 @@ export const OrderDialog: React.FC<OrderDialogProps> = ({
     }, [open]);
 
     const headerTitle = useMemo(() => {
-        if (order?.orderId) return `${title} • #${order.orderId}`;
+        if (order?.id) return `${title} • #${order.id}`;
         return title;
-    }, [title, order?.orderId]);
+    }, [title, order?.id]);
 
     // Safely read items if present on the order shape
-    const items = useMemo(() => {
-        const maybeItems = (order as any)?.orderItems;
-        return Array.isArray(maybeItems) ? (maybeItems as any[]) : undefined;
+    const items: OrderItem[] = useMemo(() => {
+        return order ? order.items : [];
     }, [order]);
 
     if (!open) return null;
@@ -193,7 +193,7 @@ export const OrderDialog: React.FC<OrderDialogProps> = ({
                             <Section title="Overview">
                                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                                     <div>
-                                        <div><strong>ID:</strong> {order.orderId}</div>
+                                        <div><strong>ID:</strong> {order.id}</div>
                                         <div><strong>Status:</strong> {order.status}</div>
                                     </div>
                                     <div>
@@ -247,15 +247,13 @@ export const OrderDialog: React.FC<OrderDialogProps> = ({
                                                 </tr>
                                                 </thead>
                                                 <tbody>
-                                                {items.map((it: any) => (
-                                                    <tr key={`${it.productId ?? it.name ?? Math.random()}`}>
+                                                {items.map((it: OrderItem) => (
+                                                    <tr key={it.productId}>
                                                         <td style={{ padding: 8 }}>
-                                                            <div style={{ fontWeight: 600 }}>{it.name ?? "-"}</div>
-                                                            {it.productId && (
-                                                                <div style={{ opacity: 0.7, fontSize: 12 }}>SKU: {it.productId}</div>
-                                                            )}
+                                                            <div style={{ fontWeight: 600 }}>{it.name}</div>
+                                                            <div style={{ opacity: 0.7, fontSize: 12 }}>SKU: {it.productId}</div>
                                                         </td>
-                                                        <td style={{ padding: 8 }}>{it.quantity ?? "-"}</td>
+                                                        <td style={{ padding: 8 }}>{it.quantity}</td>
                                                         <td style={{ padding: 8, textAlign: "right" }}>{formatMoney(it.price)}</td>
                                                         <td style={{ padding: 8, textAlign: "right" }}>{formatMoney(it.total)}</td>
                                                     </tr>

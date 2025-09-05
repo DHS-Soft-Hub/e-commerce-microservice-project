@@ -6,10 +6,17 @@ import { Shipping } from '../value-objects/Shipping';
 import { Totals } from '../value-objects/Totals';
 import { Customer } from '../entities/Customer';
 import { OrderItem } from '../entities/OrderItem';
-import { Order } from './Order';
+import { Order, OrderStatus } from './Order';
+import { GetOrderByIdQuery } from '../../infrastructure/api/__generated__/graphql';
+import { PaymentStatus } from '../value-objects/Payment';
+import { ShippingStatus } from '../value-objects/Shipping';
 
-export function mapOrderFromDto(dto: any): Order {
-    const currency = dto.totals.subtotal.currency;
+// Define a DTO subset type we expect (the GraphQL query returns order | null)
+type OrderDto = NonNullable<GetOrderByIdQuery['order']>;
+type OrderItemDto = OrderDto['orderItems'][number];
+
+export function mapOrderFromDto(dto: OrderDto): Order {
+    const currency = dto.totals.subtotal.currency; // retained in case needed later
 
     const customer = Customer.create({
         customerId: dto.customer.customerId,
@@ -18,7 +25,7 @@ export function mapOrderFromDto(dto: any): Order {
         address: Address.create(dto.customer.address),
     });
 
-    const items = dto.orderItems.map((it: any) =>
+    const items = dto.orderItems.map((it: OrderItemDto) =>
         OrderItem.create({
             productId: it.productId,
             name: it.name,
@@ -28,15 +35,25 @@ export function mapOrderFromDto(dto: any): Order {
         })
     );
 
+    const paymentStatus = ((): PaymentStatus => {
+        const s = dto.payment.status;
+        const allowed: PaymentStatus[] = ['Pending', 'Paid', 'Failed', 'Refunded'];
+        return (allowed as string[]).includes(s) ? (s as PaymentStatus) : 'Pending';
+    })();
     const payment = Payment.create({
         method: dto.payment.method,
-        status: dto.payment.status,
+        status: paymentStatus,
         transactionId: dto.payment.transactionId,
     });
 
+    const shippingStatus = ((): ShippingStatus => {
+        const s = dto.shipping.status;
+        const allowed: ShippingStatus[] = ['Pending', 'Shipped', 'Delivered', 'Canceled'];
+        return (allowed as string[]).includes(s) ? (s as ShippingStatus) : 'Pending';
+    })();
     const shipping = Shipping.create({
         method: dto.shipping.method,
-        status: dto.shipping.status,
+        status: shippingStatus,
         address: Address.create(dto.shipping.address),
         trackingNumber: dto.shipping.trackingNumber,
     });
@@ -47,13 +64,19 @@ export function mapOrderFromDto(dto: any): Order {
         grandTotal: Money.of(dto.totals.grandTotal.amount, dto.totals.grandTotal.currency),
     });
 
+    const orderStatus = ((): OrderStatus => {
+        const s = dto.status;
+        const allowed: OrderStatus[] = ['Pending', 'Paid', 'Shipped', 'Completed', 'Canceled'];
+        return (allowed as string[]).includes(s) ? (s as OrderStatus) : 'Pending';
+    })();
+
     return Order.create({
-        orderId: dto.orderId,
+        id: dto.orderId,
         customer,
         items,
         payment,
         shipping,
-        status: dto.status,
+        status: orderStatus,
         createdAt: new Date(dto.createdAt),
         updatedAt: new Date(dto.updatedAt),
         totals,

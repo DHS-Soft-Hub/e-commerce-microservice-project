@@ -22,6 +22,10 @@ export class OrderRepository implements IOrderRepository{
         }
     }
 
+    findByCustomerId(customerId: string): Promise<Order[]> {
+        throw new Error('Method not implemented.');
+    }
+
     findMany(options?: IQueryOptions): Promise<IResult<Order[], Error>> {
         throw new Error('Method not implemented.');
     }

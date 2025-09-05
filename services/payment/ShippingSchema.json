@@ -1,0 +1,17 @@
+{
+  "shippingId": "SHIP-3001",
+  "orderId": "ORD-2025-0001",
+  "method": "Standard",
+  "status": "Shipped",
+  "trackingNumber": "TRACK-67890",
+  "carrier": "DHL",
+  "estimatedDelivery": "2025-09-05T18:00:00Z",
+  "address": {
+    "street": "123 Main St",
+    "city": "Sofia",
+    "postalCode": "1000",
+    "country": "Bulgaria"
+  },
+  "createdAt": "2025-09-01T12:10:00Z",
+  "updatedAt": "2025-09-01T14:30:00Z"
+}

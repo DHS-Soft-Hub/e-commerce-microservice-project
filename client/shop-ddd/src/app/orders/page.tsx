@@ -2,6 +2,7 @@
 
 import React, { useMemo, useState } from "react";
 import { OrdersList } from "../../features/orders/presentations/components/OrdersList";
+import { OrdersRootProvider } from "@/features/orders/presentations/providers/OrdersRootProvider";
 
 export default function OrdersPage() {
     const [input, setInput] = useState<string>("");
@@ -46,7 +47,10 @@ export default function OrdersPage() {
                 </button>
             </div>
 
-            <OrdersList orderIds={ids} />
+            
+            <OrdersRootProvider>
+                <OrdersList orderIds={ids} />
+            </OrdersRootProvider>
         </div>
     );
 }
