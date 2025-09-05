@@ -1,4 +1,4 @@
-@host = http://localhost:5000
+@host = http://localhost:5001
 
 
 ### Register
@@ -6,9 +6,9 @@ POST {{host}}/api/auth/register
 Content-Type: application/json
 
 {
-  "email": "user@example.com",
+  "email": "user2@example.com",
   "password": "YourPassword123!",
-  "username": "yourusername"
+  "username": "yourusername2"
 }
 
 ### Login

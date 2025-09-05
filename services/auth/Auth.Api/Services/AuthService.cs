@@ -13,7 +13,7 @@ public class AuthService : IAuthService
 {
     private readonly UserManager<AuthUser> _userManager;
     private readonly SignInManager<AuthUser> _signInManager;
-    // private readonly RoleManager<IdentityRole> _roleManager; // if needed
+    private readonly RoleManager<IdentityRole> _roleManager;
     private readonly IConfiguration _configuration;
 
     private readonly ITokenService _tokenService;
@@ -21,17 +21,19 @@ public class AuthService : IAuthService
     private readonly IMapper _mapper;
 
     public AuthService(
-        UserManager<AuthUser> userManager, 
-        SignInManager<AuthUser> signInManager, 
+        UserManager<AuthUser> userManager,
+        SignInManager<AuthUser> signInManager,
         ITokenService tokenService,
         IConfiguration configuration,
-        IMapper mapper)
+        IMapper mapper,
+        RoleManager<IdentityRole> roleManager)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _tokenService = tokenService;
         _configuration = configuration;
         _mapper = mapper;
+        _roleManager = roleManager;
     }
 
     public async Task<(TokenResponse? tokenResponse, string? refreshToken)> LoginAsync(string email, string password)
@@ -56,10 +58,24 @@ public class AuthService : IAuthService
 
     public async Task<(AuthUserResponse?, IdentityResult)> RegisterAsync(string email, string password, string username)
     {
+        // Check if user already exists
+        var existingUser = await _userManager.FindByEmailAsync(email);
+        if (existingUser != null) return (null, IdentityResult.Failed(new IdentityError { Description = "User already exists" }));
+
+        // Create new user
         var user = new AuthUser { Email = email, UserName = username };
         var result = await _userManager.CreateAsync(user, password);
         if (!result.Succeeded) return (null, result);
 
+        // Assign default role
+        var defaultRole = "User";
+        if (!await _roleManager.RoleExistsAsync(defaultRole))
+        {
+            await _roleManager.CreateAsync(new IdentityRole(defaultRole));
+        }
+        await _userManager.AddToRoleAsync(user, defaultRole);
+
+        // Map to response DTO
         var userDto = _mapper.Map<AuthUserResponse>(user);
         return (userDto, result);
     }
