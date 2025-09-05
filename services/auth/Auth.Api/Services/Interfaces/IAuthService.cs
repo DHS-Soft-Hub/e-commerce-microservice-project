@@ -1,7 +1,7 @@
 using Auth.Api.Contracts.Responses;
 using Microsoft.AspNetCore.Identity;
 
-namespace Auth.Api.Services;
+namespace Auth.Api.Services.Interfaces;
 
 public interface IAuthService
 {

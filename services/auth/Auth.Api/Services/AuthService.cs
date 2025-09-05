@@ -1,13 +1,11 @@
 using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.Extensions.Options;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 using MapsterMapper;
 using Auth.Api.Entities;
 using Auth.Api.Contracts.Responses;
 using Auth.Api.Options;
+using Auth.Api.Services.Interfaces;
 
 namespace Auth.Api.Services;
 

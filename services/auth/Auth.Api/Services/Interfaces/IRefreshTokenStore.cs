@@ -1,6 +1,6 @@
 using Auth.Api.Entities;
 
-namespace Auth.Api.Services;
+namespace Auth.Api.Services.Interfaces;
 
 public interface IRefreshTokenStore
 {
