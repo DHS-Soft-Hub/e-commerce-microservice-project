@@ -1,9 +1,11 @@
 using System.Text;
 using Auth.Api.Data.Context;
 using Auth.Api.Entities;
+using Auth.Api.Extensions;
 using Auth.Api.Mappings;
 using Auth.Api.Options;
 using Auth.Api.Services;
+using Auth.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -37,6 +39,9 @@ var builder = WebApplication.CreateBuilder(args);
         .AddEntityFrameworkStores<AuthDbContext>()
         .AddSignInManager()
         .AddDefaultTokenProviders();
+
+    // Authorization policies
+    builder.Services.AddPermissionPolicies();
 
     // Authentication / JWT
     var jwtKey = builder.Configuration["Jwt:Key"]
@@ -83,6 +88,9 @@ var app = builder.Build();
         using var scope = app.Services.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<AuthDbContext>();
         dbContext.Database.Migrate();
+
+        // Seed roles and permissions
+        await Auth.Api.Data.Seed.IdentityPermissionsSeeder.SeedAsync(app.Services);
     }
 
     app.UseHttpsRedirection();

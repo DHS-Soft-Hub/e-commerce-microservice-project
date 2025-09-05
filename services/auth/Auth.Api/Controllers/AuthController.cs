@@ -1,6 +1,6 @@
 using Auth.Api.Contracts.Requests;
-using Auth.Api.Contracts.Responses;
-using Auth.Api.Services;
+using Auth.Api.Enums;
+using Auth.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 [Route("api/auth")]

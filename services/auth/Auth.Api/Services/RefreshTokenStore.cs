@@ -3,6 +3,7 @@ using System.Text;
 using Auth.Api.Data.Context;
 using Auth.Api.Entities;
 using Auth.Api.Options;
+using Auth.Api.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Auth.Api.Services;
