@@ -1,0 +1,19 @@
+@Api_HostAddress = http://localhost:5000/api
+
+GET {{Api_HostAddress}}/orders
+Accept: application/json
+
+### Create Order
+POST {{Api_HostAddress}}/orders
+Content-Type: application/json
+
+{
+  "customerId": "9d3276d8-8746-4b04-8770-b12a282df9a5",
+  "items":[
+    {
+      "productId": "9d3276d8-8746-4b04-8770-b12a282df9a5",
+      "quantity": 2,
+      "unitPrice": 10.00
+    }
+  ]
+}

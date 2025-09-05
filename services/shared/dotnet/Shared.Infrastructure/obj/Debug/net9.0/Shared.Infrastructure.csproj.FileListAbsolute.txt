@@ -1,0 +1,50 @@
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Shared/Shared.Infrastructure/obj/Debug/net9.0/Shared.Infrastructure.csproj.AssemblyReference.cache
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Shared/Shared.Infrastructure/obj/Debug/net9.0/Shared.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Shared/Shared.Infrastructure/obj/Debug/net9.0/Shared.Infrastructure.AssemblyInfoInputs.cache
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Shared/Shared.Infrastructure/obj/Debug/net9.0/Shared.Infrastructure.AssemblyInfo.cs
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Shared/Shared.Infrastructure/obj/Debug/net9.0/Shared.Infrastructure.csproj.CoreCompileInputs.cache
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Shared/Shared.Infrastructure/obj/Debug/net9.0/Shared.Infrastructure.sourcelink.json
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Shared/Shared.Infrastructure/bin/Debug/net9.0/Shared.Infrastructure.deps.json
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Shared/Shared.Infrastructure/bin/Debug/net9.0/Shared.Infrastructure.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Shared/Shared.Infrastructure/bin/Debug/net9.0/Shared.Infrastructure.pdb
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Shared/Shared.Infrastructure/bin/Debug/net9.0/UserService.Domain.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Shared/Shared.Infrastructure/bin/Debug/net9.0/UserService.Domain.pdb
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Shared/Shared.Infrastructure/obj/Debug/net9.0/Shared.I.E63B7492.Up2Date
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Shared/Shared.Infrastructure/obj/Debug/net9.0/Shared.Infrastructure.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Shared/Shared.Infrastructure/obj/Debug/net9.0/refint/Shared.Infrastructure.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Shared/Shared.Infrastructure/obj/Debug/net9.0/Shared.Infrastructure.pdb
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Shared/Shared.Infrastructure/obj/Debug/net9.0/ref/Shared.Infrastructure.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Shared/Shared.Infrastructure/bin/Debug/net9.0/AuthService.Domain.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Shared/Shared.Infrastructure/bin/Debug/net9.0/AuthService.Domain.pdb
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Shared/Shared.Infrastructure/bin/Debug/net9.0/Shared.Infrastructure.runtimeconfig.json
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Shared/Shared.Infrastructure/obj/Debug/net9.0/Shared.Infrastructure.genruntimeconfig.cache
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Shared/Shared.Infrastructure/bin/Debug/net9.0/Shared.Infrastructure.deps.json
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Shared/Shared.Infrastructure/bin/Debug/net9.0/Shared.Infrastructure.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Shared/Shared.Infrastructure/bin/Debug/net9.0/Shared.Infrastructure.pdb
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Shared/Shared.Infrastructure/obj/Debug/net9.0/Shared.Infrastructure.csproj.AssemblyReference.cache
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Shared/Shared.Infrastructure/obj/Debug/net9.0/Shared.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Shared/Shared.Infrastructure/obj/Debug/net9.0/Shared.Infrastructure.AssemblyInfoInputs.cache
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Shared/Shared.Infrastructure/obj/Debug/net9.0/Shared.Infrastructure.AssemblyInfo.cs
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Shared/Shared.Infrastructure/obj/Debug/net9.0/Shared.Infrastructure.csproj.CoreCompileInputs.cache
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Shared/Shared.Infrastructure/obj/Debug/net9.0/Shared.Infrastructure.sourcelink.json
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Shared/Shared.Infrastructure/obj/Debug/net9.0/Shared.Infrastructure.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Shared/Shared.Infrastructure/obj/Debug/net9.0/refint/Shared.Infrastructure.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Shared/Shared.Infrastructure/obj/Debug/net9.0/Shared.Infrastructure.pdb
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Shared/Shared.Infrastructure/obj/Debug/net9.0/ref/Shared.Infrastructure.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Shared/Shared.Infrastructure/bin/Debug/net9.0/Shared.Infrastructure.runtimeconfig.json
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Shared/Shared.Infrastructure/obj/Debug/net9.0/Shared.Infrastructure.genruntimeconfig.cache
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/services/shared/dotnet/Shared.Infrastructure/bin/Debug/net9.0/Shared.Infrastructure.deps.json
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/services/shared/dotnet/Shared.Infrastructure/bin/Debug/net9.0/Shared.Infrastructure.runtimeconfig.json
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/services/shared/dotnet/Shared.Infrastructure/bin/Debug/net9.0/Shared.Infrastructure.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/services/shared/dotnet/Shared.Infrastructure/bin/Debug/net9.0/Shared.Infrastructure.pdb
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/services/shared/dotnet/Shared.Infrastructure/obj/Debug/net9.0/Shared.Infrastructure.csproj.AssemblyReference.cache
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/services/shared/dotnet/Shared.Infrastructure/obj/Debug/net9.0/Shared.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/services/shared/dotnet/Shared.Infrastructure/obj/Debug/net9.0/Shared.Infrastructure.AssemblyInfoInputs.cache
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/services/shared/dotnet/Shared.Infrastructure/obj/Debug/net9.0/Shared.Infrastructure.AssemblyInfo.cs
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/services/shared/dotnet/Shared.Infrastructure/obj/Debug/net9.0/Shared.Infrastructure.csproj.CoreCompileInputs.cache
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/services/shared/dotnet/Shared.Infrastructure/obj/Debug/net9.0/Shared.Infrastructure.sourcelink.json
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/services/shared/dotnet/Shared.Infrastructure/obj/Debug/net9.0/Shared.Infrastructure.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/services/shared/dotnet/Shared.Infrastructure/obj/Debug/net9.0/refint/Shared.Infrastructure.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/services/shared/dotnet/Shared.Infrastructure/obj/Debug/net9.0/Shared.Infrastructure.pdb
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/services/shared/dotnet/Shared.Infrastructure/obj/Debug/net9.0/Shared.Infrastructure.genruntimeconfig.cache
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/services/shared/dotnet/Shared.Infrastructure/obj/Debug/net9.0/ref/Shared.Infrastructure.dll

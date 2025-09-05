@@ -1,0 +1,28 @@
+using MediatR;
+using Orders.Application.Commands;
+using Orders.Application.DTOs;
+using Orders.Application.Queries;
+
+namespace Orders.Application.Services
+{
+    public class OrderService
+    {
+        private readonly IMediator _mediator;
+
+        public OrderService(IMediator mediator)
+        {
+            _mediator = mediator;
+        }
+
+        public async Task<OrderDto> CreateOrderAsync(CreateOrderCommand order)
+        {
+            return await _mediator.Send(order);
+        }
+
+        public async Task<List<OrderDto>> GetOrdersAsync()
+        {
+            var query = new GetOrdersQuery();
+            return await _mediator.Send(query);
+        }
+    }
+}
