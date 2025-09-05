@@ -22,3 +22,6 @@ Content-Type: application/json
 
 ### Refresh Token
 POST {{host}}/api/auth/refresh-token
+
+### Revoke Token
+POST {{host}}/api/auth/revoke-token

@@ -1,6 +1,6 @@
 - [x] Login
 - [x] Register
-- [x] JWT Token refresh
+- [x] JWT Token access, refresh
 - [ ] RBAC - Role base auth
 - [ ] Email Verification
 - [ ] 2FA
