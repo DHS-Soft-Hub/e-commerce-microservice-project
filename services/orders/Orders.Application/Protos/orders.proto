@@ -45,7 +45,15 @@ message GetOrdersResponse {
   repeated Order orders = 1;
 }
 
+message GetOrderRequest {
+  string orderId = 1;
+}
+message GetOrderResponse {
+  Order order = 1;
+}
+
 service Orders {
   rpc CreateOrder(CreateOrderRequest) returns (CreateOrderResponse);
+  rpc GetOrder(GetOrderRequest) returns (GetOrderResponse);
   rpc GetOrders(GetOrdersRequest) returns (GetOrdersResponse);
 }

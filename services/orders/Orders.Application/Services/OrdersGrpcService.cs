@@ -34,6 +34,12 @@ public class OrdersGrpcService : Orders.Application.Grpc.Orders.OrdersBase
         return new CreateOrderResponse { Order = Map(dto) };
     }
 
+    public override async Task<GetOrderResponse> GetOrder(GetOrderRequest request, ServerCallContext context)
+    {
+        var dto = await _app.GetOrderAsync(Guid.Parse(request.OrderId), context.CancellationToken);
+        return new GetOrderResponse { Order = Map(dto) };
+    }
+
     public override async Task<GetOrdersResponse> GetOrders(GetOrdersRequest request, ServerCallContext context)
     {
         var list = await _app.GetOrdersAsync(context.CancellationToken);

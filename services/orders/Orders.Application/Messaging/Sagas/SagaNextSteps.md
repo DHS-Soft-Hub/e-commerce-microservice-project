@@ -3,6 +3,34 @@
 2. Domain Events: Order creation properly raises domain events that trigger the saga.
 3. Configuration: The saga is properly configured in the DI container.
 4. Order Tracking UI: Shows the correct workflow steps.
+
+## Saga Flow Diagram 
+```mermaid
+stateDiagram-v2
+  [*] --> ReservingInventory: OrderCreated\n/ Send ReserveInventoryCommand
+
+  state "Reserving Inventory" as ReservingInventory
+  state "Processing Payment" as ProcessingPayment
+  state "Creating Shipment" as CreatingShipment
+  state Shipped
+  state Cancelled
+  state Completed
+
+  ReservingInventory --> ProcessingPayment: InventoryReserved\n/ Send ProcessPaymentCommand
+  ReservingInventory --> Cancelled: InventoryReservationFailed\n/ Publish OrderStatusChanged(Cancelled)\nFinalize
+
+  ProcessingPayment --> CreatingShipment: PaymentProcessed\n/ Send CreateShipmentCommand
+  ProcessingPayment --> Cancelled: PaymentFailed\n/ Send ReleaseInventoryCommand\nPublish OrderStatusChanged(Cancelled)\nFinalize
+
+  CreatingShipment --> Shipped: ShipmentCreated\n/ Publish OrderStatusChanged(Shipped)
+  CreatingShipment --> Cancelled: ShipmentFailed\n/ Send RefundPaymentCommand\nSend ReleaseInventoryCommand\nPublish OrderStatusChanged(Cancelled)\nFinalize
+
+  Shipped --> Completed: OrderDelivered\n/ Publish OrderStatusChanged(Completed)\nFinalize
+
+  Cancelled --> [*]
+  Completed --> [*]
+```
+
 ## 🔧 Required Fixes to Make Frontend Follow Saga Logic
 The changes I made to the Frontend are just the first step. To fully implement the saga pattern, you need:
 

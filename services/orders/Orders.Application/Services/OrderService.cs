@@ -21,6 +21,14 @@ namespace Orders.Application.Services
             return await _mediator.Send(order, cancellationToken);
         }
 
+        public async Task<OrderDto> GetOrderAsync(
+            Guid orderId,
+            CancellationToken cancellationToken = default)
+        {
+            var query = new GetOrderByIdQuery { OrderId = orderId };
+            return await _mediator.Send(query, cancellationToken);
+        }
+
         public async Task<List<OrderDto>> GetOrdersAsync(
             CancellationToken cancellationToken = default)
         {
