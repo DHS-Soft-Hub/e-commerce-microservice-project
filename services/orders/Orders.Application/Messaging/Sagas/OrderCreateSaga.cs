@@ -55,17 +55,16 @@ namespace Orders.Application.Sagas
                         context.Saga.InventoryStatus = "Pending";
                         context.Saga.RetryCount = 0;
                     })
-                    .PublishAsync(context => context.Init<ReserveInventoryCommand>(new
-                    {
-                        OrderId = context.Message.OrderId,
-                        CustomerId = context.Message.CustomerId,
-                        Items = context.Message.Items.Select(item => new OrderItemRequest(
+                    .Send(context => new ReserveInventoryCommand(
+                        context.Message.OrderId,
+                        context.Message.CustomerId,
+                        context.Message.Items.Select(item => new OrderItemRequest(
                             item.ProductId,
                             item.ProductName,
                             item.Quantity,
                             item.UnitPrice
                         )).ToList()
-                    }))
+                    ))
                     .TransitionTo(ReservingInventory)
             );
 
@@ -78,14 +77,13 @@ namespace Orders.Application.Sagas
                         context.Saga.InventoryReservationId = context.Message.ReservationId;
                         context.Saga.PaymentStatus = "Pending";
                     })
-                    .PublishAsync(context => context.Init<ProcessPaymentCommand>(new
-                    {
-                        OrderId = context.Saga.OrderId,
-                        CustomerId = context.Saga.CustomerId,
-                        Amount = context.Saga.TotalPrice,
-                        Currency = context.Saga.Currency,
-                        PaymentMethod = "CreditCard" // Default for now
-                    }))
+                    .Send(context => new ProcessPaymentCommand(
+                        context.Saga.OrderId,
+                        context.Saga.CustomerId,
+                        context.Saga.TotalPrice,
+                        context.Saga.Currency,
+                        "CreditCard" // Default for now
+                    ))
                     .TransitionTo(ProcessingPayment),
 
                 // Inventory Reservation Failed -> Cancel Order
@@ -115,19 +113,18 @@ namespace Orders.Application.Sagas
                         context.Saga.PaymentProcessedAt = DateTime.UtcNow;
                         context.Saga.ShippingStatus = "Pending";
                     })
-                    .PublishAsync(context => context.Init<CreateShipmentCommand>(new
-                    {
-                        OrderId = context.Saga.OrderId,
-                        CustomerId = context.Saga.CustomerId,
-                        Address = new ShippingAddress(
-                            "123 Main St", // Mock address
+                    .Send(context => new CreateShipmentCommand(
+                        context.Saga.OrderId,
+                        context.Saga.CustomerId,
+                        new ShippingAddress(
+                            "123 Main St",
                             "Anytown",
                             "CA",
                             "12345",
                             "USA"
                         ),
-                        Items = new List<OrderItemRequest>() // Would need to get from order
-                    }))
+                        new List<OrderItemRequest>()
+                    ))
                     .TransitionTo(CreatingShipment),
 
                 // Payment Failed -> Release Inventory + Cancel Order
@@ -137,11 +134,10 @@ namespace Orders.Application.Sagas
                         context.Saga.PaymentStatus = "Failed";
                         context.Saga.LastError = context.Message.Reason;
                     })
-                    .PublishAsync(context => context.Init<ReleaseInventoryCommand>(new
-                    {
-                        OrderId = context.Saga.OrderId,
-                        ReservationId = context.Saga.InventoryReservationId!
-                    }))
+                    .Send(context => new ReleaseInventoryCommand(
+                        context.Saga.OrderId,
+                        context.Saga.InventoryReservationId!
+                    ))
                     .PublishAsync(context => context.Init<OrderStatusChangedIntegrationEvent>(new
                     {
                         OrderId = context.Saga.OrderId,
@@ -176,18 +172,16 @@ namespace Orders.Application.Sagas
                         context.Saga.ShippingStatus = "Failed";
                         context.Saga.LastError = context.Message.Reason;
                     })
-                    .PublishAsync(context => context.Init<RefundPaymentCommand>(new
-                    {
-                        OrderId = context.Saga.OrderId,
-                        PaymentId = context.Saga.PaymentId!.Value,
-                        Amount = context.Saga.TotalPrice,
-                        Reason = "Shipping failed"
-                    }))
-                    .PublishAsync(context => context.Init<ReleaseInventoryCommand>(new
-                    {
-                        OrderId = context.Saga.OrderId,
-                        ReservationId = context.Saga.InventoryReservationId!
-                    }))
+                    .Send(context => new RefundPaymentCommand(
+                        context.Saga.OrderId,
+                        context.Saga.PaymentId!.Value,
+                        context.Saga.TotalPrice,
+                        "Shipping failed"
+                    ))
+                    .Send(context => new ReleaseInventoryCommand(
+                        context.Saga.OrderId,
+                        context.Saga.InventoryReservationId!
+                    ))
                     .PublishAsync(context => context.Init<OrderStatusChangedIntegrationEvent>(new
                     {
                         OrderId = context.Saga.OrderId,
