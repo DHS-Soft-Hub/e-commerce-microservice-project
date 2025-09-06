@@ -11,7 +11,7 @@ namespace Orders.Domain.Aggregates
         public CustomerId CustomerId { get; private set; } = null!;
         public List<OrderItem> Items { get; private set; } = null!;
         public decimal TotalPrice { get; private set; }
-        public string Currency { get; private set; } = "USD";
+        public string Currency { get; private set; } = "EUR";
         public OrderStatus Status { get; private set; } = OrderStatus.Pending;
         public DateTime CreatedDate { get; private set; } = DateTime.UtcNow;
 
