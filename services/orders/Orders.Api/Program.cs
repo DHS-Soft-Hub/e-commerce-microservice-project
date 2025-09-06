@@ -1,3 +1,5 @@
+using Orders.Application.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -20,7 +22,8 @@ if (app.Environment.IsDevelopment())
     await app.UseMigrationsAsync();
 }
 
-app.UseHttpsRedirection();
+app.MapGrpcService<OrdersGrpcService>();
+
 app.MapControllers();
 
 app.Run();

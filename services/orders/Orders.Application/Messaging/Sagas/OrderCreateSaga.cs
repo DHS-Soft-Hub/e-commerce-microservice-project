@@ -36,7 +36,7 @@ namespace Orders.Application.Sagas
             Event(() => OrderCreated, x => x.CorrelateById(m => m.Message.OrderId));
             Event(() => InventoryReserved, x => x.CorrelateById(m => m.Message.OrderId));
             Event(() => InventoryReservationFailed, x => x.CorrelateById(m => m.Message.OrderId));
-            // Event(() => PaymentProcessed, x => x.CorrelateById(m => m.Message.OrderId));
+            Event(() => PaymentProcessed, x => x.CorrelateById(m => m.Message.OrderId));
             Event(() => PaymentFailed, x => x.CorrelateById(m => m.Message.OrderId));
             Event(() => ShipmentCreated, x => x.CorrelateById(m => m.Message.OrderId));
             Event(() => ShipmentFailed, x => x.CorrelateById(m => m.Message.OrderId));
