@@ -1,8 +1,9 @@
 using MassTransit;
 using Microsoft.Extensions.Logging;
-using Orders.Application.Events;
+using Orders.Application.Events.Integration.Shipment;
+using Orders.Application.Messaging.Contracts;
 
-namespace Orders.Application.Consumers;
+namespace Orders.Application.Messaging.Consumers;
 
 public class CreateShipmentCommandConsumer : IConsumer<CreateShipmentCommand>
 {

@@ -1,12 +1,12 @@
 using MassTransit;
 using Microsoft.Extensions.Logging;
-using Orders.Application.Events;
+using Orders.Application.Events.Integration.Order;
 using Orders.Domain.Enums;
 using Orders.Domain.Repositories;
 using Orders.Domain.ValueObjects;
 using Shared.Domain.Interfaces;
 
-namespace Orders.Application.Consumers;
+namespace Orders.Application.Messaging.Consumers;
 
 public class OrderStatusChangedConsumer : IConsumer<OrderStatusChangedIntegrationEvent>
 {

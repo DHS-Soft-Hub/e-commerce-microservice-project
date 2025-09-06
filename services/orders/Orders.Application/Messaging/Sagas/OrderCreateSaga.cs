@@ -1,5 +1,9 @@
 using MassTransit;
-using Orders.Application.Events;
+using Orders.Application.Messaging.Contracts;
+using Orders.Application.Events.Integration.Inventory;
+using Orders.Application.Events.Integration.Order;
+using Orders.Application.Events.Integration.Payment;
+using Orders.Application.Events.Integration.Shipment;
 // using Payment.Api.Events;
 
 namespace Orders.Application.Sagas

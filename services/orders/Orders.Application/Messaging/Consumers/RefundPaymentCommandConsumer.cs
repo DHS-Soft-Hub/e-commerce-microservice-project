@@ -1,8 +1,9 @@
 using MassTransit;
 using Microsoft.Extensions.Logging;
-using Orders.Application.Events;
+using Orders.Application.Events.Integration.Payment;
+using Orders.Application.Messaging.Contracts;
 
-namespace Orders.Application.Consumers;
+namespace Orders.Application.Messaging.Consumers;
 
 public class RefundPaymentCommandConsumer : IConsumer<RefundPaymentCommand>
 {

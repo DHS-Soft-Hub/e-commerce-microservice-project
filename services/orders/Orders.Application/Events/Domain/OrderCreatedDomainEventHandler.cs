@@ -2,8 +2,10 @@ using MediatR;
 using Orders.Application.DTOs;
 using Orders.Domain.Events;
 using Shared.Infrastructure.Messaging;
+using Orders.Application.Events.Integration.Order;
 
-namespace Orders.Application.Events
+
+namespace Orders.Application.Events.Domain
 {
     public class OrderCreatedDomainEventHandler : INotificationHandler<OrderCreatedDomainEvent>
     {

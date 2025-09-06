@@ -1,7 +1,7 @@
 using Orders.Application.DTOs;
 using Shared.Domain.Events;
 
-namespace Orders.Application.Events;
+namespace Orders.Application.Events.Integration.Order;
 
 public record OrderCreatedIntegrationEvent (
     Guid OrderId,
