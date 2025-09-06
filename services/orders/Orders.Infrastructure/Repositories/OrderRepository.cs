@@ -23,7 +23,9 @@ namespace Orders.Infrastructure.Repositories
 
         public Task<Order?> GetByIdAsync(OrderId id)
         {
-            return _dbContext.Orders.FindAsync(id).AsTask();
+            return _dbContext.Orders
+            .Include(o => o.Items)
+            .FirstOrDefaultAsync(o => o.Id == id);
         }
 
         public Task<List<Order>> GetAllAsync()

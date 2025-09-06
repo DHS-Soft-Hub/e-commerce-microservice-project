@@ -15,5 +15,6 @@ Content-Type: application/json
       "quantity": 2,
       "unitPrice": 10.00
     }
-  ]
+  ],
+  "currency": "USD"
 }
