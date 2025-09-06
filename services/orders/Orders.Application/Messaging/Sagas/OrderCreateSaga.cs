@@ -4,7 +4,6 @@ using Orders.Application.Events.Integration.Inventory;
 using Orders.Application.Events.Integration.Order;
 using Orders.Application.Events.Integration.Payment;
 using Orders.Application.Events.Integration.Shipment;
-// using Payment.Api.Events;
 
 namespace Orders.Application.Sagas
 {
@@ -23,7 +22,7 @@ namespace Orders.Application.Sagas
         public Event<OrderCreatedIntegrationEvent> OrderCreated { get; private set; } = null!;
         public Event<InventoryReservedIntegrationEvent> InventoryReserved { get; private set; } = null!;
         public Event<InventoryReservationFailedIntegrationEvent> InventoryReservationFailed { get; private set; } = null!;
-        // public Event<PaymentProcessedIntegrationEvent> PaymentProcessed { get; private set; } = null!;
+        public Event<PaymentProcessedIntegrationEvent> PaymentProcessed { get; private set; } = null!;
         public Event<PaymentFailedIntegrationEvent> PaymentFailed { get; private set; } = null!;
         public Event<ShipmentCreatedIntegrationEvent> ShipmentCreated { get; private set; } = null!;
         public Event<ShipmentFailedIntegrationEvent> ShipmentFailed { get; private set; } = null!;
@@ -106,52 +105,52 @@ namespace Orders.Application.Sagas
                     .Finalize()
             );
 
-            // Payment Processed -> Create Shipment
-            // During(ProcessingPayment,
-            //     When(PaymentProcessed)
-            //         .Then(context =>
-            //         {
-            //             context.Saga.PaymentStatus = context.Message.Status;
-            //             context.Saga.PaymentId = context.Message.PaymentId;
-            //             context.Saga.PaymentProcessedAt = DateTime.UtcNow;
-            //             context.Saga.ShippingStatus = "Pending";
-            //         })
-            //         .PublishAsync(context => context.Init<CreateShipmentCommand>(new
-            //         {
-            //             OrderId = context.Saga.OrderId,
-            //             CustomerId = context.Saga.CustomerId,
-            //             Address = new ShippingAddress(
-            //                 "123 Main St", // Mock address
-            //                 "Anytown",
-            //                 "CA",
-            //                 "12345",
-            //                 "USA"
-            //             ),
-            //             Items = new List<OrderItemRequest>() // Would need to get from order
-            //         }))
-            //         .TransitionTo(CreatingShipment),
+            //Payment Processed -> Create Shipment
+            During(ProcessingPayment,
+                When(PaymentProcessed)
+                    .Then(context =>
+                    {
+                        context.Saga.PaymentStatus = context.Message.Status;
+                        context.Saga.PaymentId = context.Message.PaymentId;
+                        context.Saga.PaymentProcessedAt = DateTime.UtcNow;
+                        context.Saga.ShippingStatus = "Pending";
+                    })
+                    .PublishAsync(context => context.Init<CreateShipmentCommand>(new
+                    {
+                        OrderId = context.Saga.OrderId,
+                        CustomerId = context.Saga.CustomerId,
+                        Address = new ShippingAddress(
+                            "123 Main St", // Mock address
+                            "Anytown",
+                            "CA",
+                            "12345",
+                            "USA"
+                        ),
+                        Items = new List<OrderItemRequest>() // Would need to get from order
+                    }))
+                    .TransitionTo(CreatingShipment),
 
-            //     // Payment Failed -> Release Inventory + Cancel Order
-            //     When(PaymentFailed)
-            //         .Then(context =>
-            //         {
-            //             context.Saga.PaymentStatus = "Failed";
-            //             context.Saga.LastError = context.Message.Reason;
-            //         })
-            //         .PublishAsync(context => context.Init<ReleaseInventoryCommand>(new
-            //         {
-            //             OrderId = context.Saga.OrderId,
-            //             ReservationId = context.Saga.InventoryReservationId!
-            //         }))
-            //         .PublishAsync(context => context.Init<OrderStatusChangedIntegrationEvent>(new
-            //         {
-            //             OrderId = context.Saga.OrderId,
-            //             Status = "Cancelled",
-            //             Reason = "Payment failed"
-            //         }))
-            //         .TransitionTo(Cancelled)
-            //         .Finalize()
-            // );
+                // Payment Failed -> Release Inventory + Cancel Order
+                When(PaymentFailed)
+                    .Then(context =>
+                    {
+                        context.Saga.PaymentStatus = "Failed";
+                        context.Saga.LastError = context.Message.Reason;
+                    })
+                    .PublishAsync(context => context.Init<ReleaseInventoryCommand>(new
+                    {
+                        OrderId = context.Saga.OrderId,
+                        ReservationId = context.Saga.InventoryReservationId!
+                    }))
+                    .PublishAsync(context => context.Init<OrderStatusChangedIntegrationEvent>(new
+                    {
+                        OrderId = context.Saga.OrderId,
+                        Status = "Cancelled",
+                        Reason = "Payment failed"
+                    }))
+                    .TransitionTo(Cancelled)
+                    .Finalize()
+            );
 
             // Shipment Created -> Order Shipped
             During(CreatingShipment,
