@@ -5,7 +5,7 @@ using Orders.Application.Grpc;
 
 namespace Orders.Application.Services;
 
-public class OrdersGrpcService : Grpc.Orders.OrdersBase
+public class OrdersGrpcService : Orders.Application.Grpc.Orders.OrdersBase
 {
     private readonly OrderService _app;
 

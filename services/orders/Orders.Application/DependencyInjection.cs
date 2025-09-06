@@ -15,9 +15,6 @@ public static class DependencyInjection
         services.AddScoped<OrderService, OrderService>();
         services.AddScoped<IMessagePublisher, MessagePublisher>();
 
-        services.AddGrpc();
-        services.AddGrpcReflection();
-
         return services;
     }
 }

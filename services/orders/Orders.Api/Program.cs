@@ -9,6 +9,10 @@ builder.Services.AddOpenApi();
 builder.Services.AddApplicationServices()
                 .AddInfrastructure(builder.Configuration);
 
+// Host gRPC
+builder.Services.AddGrpc();
+builder.Services.AddGrpcReflection();
+
 builder.Services.AddControllers();
 
 var app = builder.Build();
@@ -24,6 +28,7 @@ if (app.Environment.IsDevelopment())
     app.MapGrpcReflectionService();
 }
 
+// Map gRPC service
 app.MapGrpcService<OrdersGrpcService>();
 
 app.MapControllers();
