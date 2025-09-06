@@ -10,6 +10,7 @@ using Orders.Application.Events.Integration.Inventory;
 using Orders.Application.Events.Integration.Payment;
 using Orders.Application.Events.Integration.Shipment;
 using Orders.Application.Events.Integration.Order;
+using Orders.Application.DTOs;
 using Xunit;
 
 namespace Orders.Application.Tests
@@ -33,12 +34,13 @@ namespace Orders.Application.Tests
                         {
                             e.Handler<ReserveInventoryCommand>(async ctx =>
                             {
-                                await ctx.Publish<InventoryReservedIntegrationEvent>(new
-                                {
-                                    OrderId = ctx.Message.OrderId,
-                                    ReservationId = NewId.NextGuid(),
-                                    Status = "Reserved"
-                                });
+                                var reservationId = $"RSV-{ctx.Message.OrderId:N}";
+                                await ctx.Publish(new InventoryReservedIntegrationEvent(
+                                    ctx.Message.OrderId,
+                                    reservationId,
+                                    "Reserved",
+                                    DateTime.UtcNow
+                                ));
                             });
 
                             e.Handler<ReleaseInventoryCommand>(async ctx =>
@@ -53,12 +55,15 @@ namespace Orders.Application.Tests
                         {
                             e.Handler<ProcessPaymentCommand>(async ctx =>
                             {
-                                await ctx.Publish<PaymentProcessedIntegrationEvent>(new
-                                {
-                                    OrderId = ctx.Message.OrderId,
-                                    PaymentId = NewId.NextGuid(),
-                                    Status = "Processed"
-                                });
+                                await ctx.Publish(new PaymentProcessedIntegrationEvent(
+                                    ctx.Message.OrderId,
+                                    NewId.NextGuid(),
+                                    ctx.Message.Amount,
+                                    ctx.Message.Currency,
+                                    ctx.Message.PaymentMethod,
+                                    "Processed",
+                                    DateTime.UtcNow
+                                ));
                             });
 
                             e.Handler<RefundPaymentCommand>(async ctx =>
@@ -73,12 +78,13 @@ namespace Orders.Application.Tests
                         {
                             e.Handler<CreateShipmentCommand>(async ctx =>
                             {
-                                await ctx.Publish<ShipmentCreatedIntegrationEvent>(new
-                                {
-                                    OrderId = ctx.Message.OrderId,
-                                    ShipmentId = NewId.NextGuid(),
-                                    Status = "Created"
-                                });
+                                var shipmentId = $"SHP-{ctx.Message.OrderId:N}";
+                                await ctx.Publish(new ShipmentCreatedIntegrationEvent(
+                                    ctx.Message.OrderId,
+                                    shipmentId,
+                                    "Created",
+                                    DateTime.UtcNow
+                                ));
                             });
                         });
 
@@ -104,37 +110,43 @@ namespace Orders.Application.Tests
                 var orderId = NewId.NextGuid();
                 var customerId = NewId.NextGuid();
 
-                // Kick off the saga
-                await harness.Bus.Publish<OrderCreatedIntegrationEvent>(new
+                // Kick off the saga with a concrete event instance
+                var items = new[]
                 {
-                    OrderId = orderId,
-                    CustomerId = customerId,
-                    TotalPrice = 149.99m,
-                    Currency = "USD",
-                    Items = new[]
+                    new OrderItemDto
                     {
-                        new
-                        {
-                            ProductId = NewId.NextGuid(),
-                            ProductName = "Demo Product",
-                            Quantity = 1,
-                            UnitPrice = 149.99m
-                        }
+                        ProductId = NewId.NextGuid(),
+                        ProductName = "Demo Product",
+                        Quantity = 1,
+                        UnitPrice = 149.99m,
+                        Currency = "USD"
                     }
-                });
+                }.ToList();
 
-                // Wait until the saga reaches Shipped (after stubs publish InventoryReserved, PaymentProcessed, ShipmentCreated)
-                var shippedInstanceId = await sagaHarness.Exists(orderId, x => x.Shipped, timeout: TimeSpan.FromSeconds(10));
-                Assert.NotNull(shippedInstanceId);
+                await harness.Bus.Publish(new OrderCreatedIntegrationEvent(
+                    orderId,
+                    customerId,
+                    149.99m,
+                    "USD",
+                    items
+                ));
 
-                // Finish the flow by publishing delivery event
-                await harness.Bus.Publish<OrderDeliveredIntegrationEvent>(new
-                {
-                    OrderId = orderId
-                });
+                // Wait until the saga publishes Shipped status (after stubs publish InventoryReserved, PaymentProcessed, ShipmentCreated)
+                Assert.True(await harness.Published.Any<OrderStatusChangedIntegrationEvent>(
+                    x => x.Context.Message.OrderId == orderId && x.Context.Message.Status == "Shipped"),
+                    "Expected Shipped status to be published");
 
-                var completedInstanceId = await sagaHarness.Exists(orderId, x => x.Completed, timeout: TimeSpan.FromSeconds(10));
-                Assert.NotNull(completedInstanceId);
+                // Finish the flow by publishing delivery event (shipment id matches stub)
+                var deliveredShipmentId = $"SHP-{orderId:N}";
+                await harness.Bus.Publish(new OrderDeliveredIntegrationEvent(
+                    orderId,
+                    deliveredShipmentId,
+                    DateTime.UtcNow
+                ));
+
+                Assert.True(await harness.Published.Any<OrderStatusChangedIntegrationEvent>(
+                    x => x.Context.Message.OrderId == orderId && x.Context.Message.Status == "Completed"),
+                    "Expected Completed status to be published");
             }
             finally
             {
@@ -158,12 +170,12 @@ namespace Orders.Application.Tests
                         {
                             e.Handler<ReserveInventoryCommand>(async ctx =>
                             {
-                                await ctx.Publish<InventoryReservedIntegrationEvent>(new
-                                {
-                                    OrderId = ctx.Message.OrderId,
-                                    ReservationId = NewId.NextGuid(),
-                                    Status = "Reserved"
-                                });
+                                await ctx.Publish(new InventoryReservedIntegrationEvent(
+                                    ctx.Message.OrderId,
+                                    $"RSV-{ctx.Message.OrderId:N}",
+                                    "Reserved",
+                                    DateTime.UtcNow
+                                ));
                             });
 
                             e.Handler<ReleaseInventoryCommand>(ctx => Task.CompletedTask);
@@ -174,11 +186,12 @@ namespace Orders.Application.Tests
                         {
                             e.Handler<ProcessPaymentCommand>(async ctx =>
                             {
-                                await ctx.Publish<PaymentFailedIntegrationEvent>(new
-                                {
-                                    OrderId = ctx.Message.OrderId,
-                                    Reason = "Card declined"
-                                });
+                                await ctx.Publish(new PaymentFailedIntegrationEvent(
+                                    ctx.Message.OrderId,
+                                    null,
+                                    "Card declined",
+                                    DateTime.UtcNow
+                                ));
                             });
 
                             e.Handler<RefundPaymentCommand>(ctx => Task.CompletedTask);
@@ -210,20 +223,29 @@ namespace Orders.Application.Tests
                 var orderId = NewId.NextGuid();
                 var customerId = NewId.NextGuid();
 
-                await harness.Bus.Publish<OrderCreatedIntegrationEvent>(new
+                var items2 = new[]
                 {
-                    OrderId = orderId,
-                    CustomerId = customerId,
-                    TotalPrice = 50m,
-                    Currency = "USD",
-                    Items = new[]
+                    new OrderItemDto
                     {
-                        new { ProductId = NewId.NextGuid(), ProductName = "Item", Quantity = 1, UnitPrice = 50m }
+                        ProductId = NewId.NextGuid(),
+                        ProductName = "Item",
+                        Quantity = 1,
+                        UnitPrice = 50m,
+                        Currency = "USD"
                     }
-                });
+                }.ToList();
 
-                var cancelledId = await sagaHarness.Exists(orderId, x => x.Cancelled, timeout: TimeSpan.FromSeconds(10));
-                Assert.NotNull(cancelledId);
+                await harness.Bus.Publish(new OrderCreatedIntegrationEvent(
+                    orderId,
+                    customerId,
+                    50m,
+                    "USD",
+                    items2
+                ));
+
+                Assert.True(await harness.Published.Any<OrderStatusChangedIntegrationEvent>(
+                    x => x.Context.Message.OrderId == orderId && x.Context.Message.Status == "Cancelled"),
+                    "Expected Cancelled status to be published");
             }
             finally
             {

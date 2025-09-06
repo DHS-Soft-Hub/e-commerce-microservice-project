@@ -33,7 +33,11 @@ namespace Orders.Application.Sagas
             InstanceState(x => x.CurrentState);
 
             // Configure event correlations
-            Event(() => OrderCreated, x => x.CorrelateById(m => m.Message.OrderId));
+            Event(() => OrderCreated, x =>
+            {
+                x.CorrelateById(m => m.Message.OrderId);
+                x.SelectId(m => m.Message.OrderId);
+            });
             Event(() => InventoryReserved, x => x.CorrelateById(m => m.Message.OrderId));
             Event(() => InventoryReservationFailed, x => x.CorrelateById(m => m.Message.OrderId));
             Event(() => PaymentProcessed, x => x.CorrelateById(m => m.Message.OrderId));
@@ -93,12 +97,11 @@ namespace Orders.Application.Sagas
                         context.Saga.InventoryStatus = "Failed";
                         context.Saga.LastError = context.Message.Reason;
                     })
-                    .PublishAsync(context => context.Init<OrderStatusChangedIntegrationEvent>(new
-                    {
-                        OrderId = context.Saga.OrderId,
-                        Status = "Cancelled",
-                        Reason = "Inventory not available"
-                    }))
+                    .Publish(context => new OrderStatusChangedIntegrationEvent(
+                        context.Saga.OrderId,
+                        "Cancelled",
+                        "Inventory not available"
+                    ))
                     .TransitionTo(Cancelled)
                     .Finalize()
             );
@@ -138,12 +141,11 @@ namespace Orders.Application.Sagas
                         context.Saga.OrderId,
                         context.Saga.InventoryReservationId!
                     ))
-                    .PublishAsync(context => context.Init<OrderStatusChangedIntegrationEvent>(new
-                    {
-                        OrderId = context.Saga.OrderId,
-                        Status = "Cancelled",
-                        Reason = "Payment failed"
-                    }))
+                    .Publish(context => new OrderStatusChangedIntegrationEvent(
+                        context.Saga.OrderId,
+                        "Cancelled",
+                        "Payment failed"
+                    ))
                     .TransitionTo(Cancelled)
                     .Finalize()
             );
@@ -157,12 +159,11 @@ namespace Orders.Application.Sagas
                         context.Saga.ShipmentId = context.Message.ShipmentId;
                         context.Saga.ShippedAt = DateTime.UtcNow;
                     })
-                    .PublishAsync(context => context.Init<OrderStatusChangedIntegrationEvent>(new
-                    {
-                        OrderId = context.Saga.OrderId,
-                        Status = "Shipped",
-                        Reason = "Order has been shipped"
-                    }))
+                    .Publish(context => new OrderStatusChangedIntegrationEvent(
+                        context.Saga.OrderId,
+                        "Shipped",
+                        "Order has been shipped"
+                    ))
                     .TransitionTo(Shipped),
 
                 // Shipment Failed -> Refund Payment + Release Inventory + Cancel Order
@@ -182,12 +183,11 @@ namespace Orders.Application.Sagas
                         context.Saga.OrderId,
                         context.Saga.InventoryReservationId!
                     ))
-                    .PublishAsync(context => context.Init<OrderStatusChangedIntegrationEvent>(new
-                    {
-                        OrderId = context.Saga.OrderId,
-                        Status = "Cancelled",
-                        Reason = "Shipping failed"
-                    }))
+                    .Publish(context => new OrderStatusChangedIntegrationEvent(
+                        context.Saga.OrderId,
+                        "Cancelled",
+                        "Shipping failed"
+                    ))
                     .TransitionTo(Cancelled)
                     .Finalize()
             );
@@ -199,12 +199,11 @@ namespace Orders.Application.Sagas
                     {
                         context.Saga.CompletedAt = DateTime.UtcNow;
                     })
-                    .PublishAsync(context => context.Init<OrderStatusChangedIntegrationEvent>(new
-                    {
-                        OrderId = context.Saga.OrderId,
-                        Status = "Completed",
-                        Reason = "Order delivered successfully"
-                    }))
+                    .Publish(context => new OrderStatusChangedIntegrationEvent(
+                        context.Saga.OrderId,
+                        "Completed",
+                        "Order delivered successfully"
+                    ))
                     .TransitionTo(Completed)
                     .Finalize()
             );
