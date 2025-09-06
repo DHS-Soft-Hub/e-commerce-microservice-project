@@ -52,6 +52,7 @@ public class UpdateOrderCommandHandler : IRequestHandler<UpdateOrderCommand, Ord
             CustomerId = order.CustomerId,
             Items = order.Items.Select(i => new OrderItemDto
             {
+                Id = i.Id,
                 ProductId = i.ProductId,
                 Quantity = i.Quantity,
                 UnitPrice = i.UnitPrice

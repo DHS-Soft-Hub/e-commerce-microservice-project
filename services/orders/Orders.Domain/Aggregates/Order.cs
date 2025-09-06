@@ -35,16 +35,18 @@ namespace Orders.Domain.Aggregates
             return order;
         }
 
-        public Order Update(OrderId id, CustomerId customerId, List<OrderItem> items, string currency, string? status = null)
+        public void Update(OrderId id, CustomerId customerId, List<OrderItem> items, string currency, string? status = null)
         {
-            var order = new Order(id, customerId, items, currency);
-            order.Items = items;
-            order.TotalPrice = items.Sum(i => i.UnitPrice * i.Quantity);
-            if (status != null)
+            CustomerId = customerId;
+            Items = items ?? new List<OrderItem>();
+            Currency = currency;
+            TotalPrice = Items.Sum(i => i.UnitPrice * i.Quantity);
+
+            if (!string.IsNullOrWhiteSpace(status) &&
+                Enum.TryParse<OrderStatus>(status, true, out var parsedStatus))
             {
-                order.UpdateStatus((OrderStatus)Enum.Parse(typeof(OrderStatus), status));
+                UpdateStatus(parsedStatus);
             }
-            return order;
         }
 
         public void UpdateStatus(OrderStatus newStatus)
