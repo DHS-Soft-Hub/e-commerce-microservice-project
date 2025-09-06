@@ -30,13 +30,13 @@ public class OrdersGrpcService : Orders.Application.Grpc.Orders.OrdersBase
             }).ToList()
         };
 
-        var dto = await _app.CreateOrderAsync(cmd);
+        var dto = await _app.CreateOrderAsync(cmd, context.CancellationToken);
         return new CreateOrderResponse { Order = Map(dto) };
     }
 
     public override async Task<GetOrdersResponse> GetOrders(GetOrdersRequest request, ServerCallContext context)
     {
-        var list = await _app.GetOrdersAsync();
+        var list = await _app.GetOrdersAsync(context.CancellationToken);
         var resp = new GetOrdersResponse();
         resp.Orders.AddRange(list.Select(Map));
         return resp;

@@ -14,15 +14,18 @@ namespace Orders.Application.Services
             _mediator = mediator;
         }
 
-        public async Task<OrderDto> CreateOrderAsync(CreateOrderCommand order)
+        public async Task<OrderDto> CreateOrderAsync(
+            CreateOrderCommand order,
+            CancellationToken cancellationToken = default)
         {
-            return await _mediator.Send(order);
+            return await _mediator.Send(order, cancellationToken);
         }
 
-        public async Task<List<OrderDto>> GetOrdersAsync()
+        public async Task<List<OrderDto>> GetOrdersAsync(
+            CancellationToken cancellationToken = default)
         {
             var query = new GetOrdersQuery();
-            return await _mediator.Send(query);
+            return await _mediator.Send(query, cancellationToken);
         }
     }
 }
