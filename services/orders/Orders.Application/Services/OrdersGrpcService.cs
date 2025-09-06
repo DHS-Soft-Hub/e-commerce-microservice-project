@@ -5,7 +5,7 @@ using Orders.Application.Grpc;
 
 namespace Orders.Application.Services;
 
-public class OrdersGrpcService
+public class OrdersGrpcService : Grpc.Orders.OrdersBase
 {
     private readonly OrderService _app;
 
@@ -14,7 +14,7 @@ public class OrdersGrpcService
         _app = app;
     }
 
-    public async Task<CreateOrderResponse> CreateOrder(CreateOrderRequest request, ServerCallContext context)
+    public override async Task<CreateOrderResponse> CreateOrder(CreateOrderRequest request, ServerCallContext context)
     {
         var cmd = new CreateOrderCommand
         {
@@ -34,7 +34,7 @@ public class OrdersGrpcService
         return new CreateOrderResponse { Order = Map(dto) };
     }
 
-    public async Task<GetOrdersResponse> GetOrders(GetOrdersRequest request, ServerCallContext context)
+    public override async Task<GetOrdersResponse> GetOrders(GetOrdersRequest request, ServerCallContext context)
     {
         var list = await _app.GetOrdersAsync();
         var resp = new GetOrdersResponse();

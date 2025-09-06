@@ -20,6 +20,8 @@ if (app.Environment.IsDevelopment())
 
     // Enable migrations
     await app.UseMigrationsAsync();
+
+    app.MapGrpcReflectionService();
 }
 
 app.MapGrpcService<OrdersGrpcService>();

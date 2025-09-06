@@ -16,6 +16,7 @@ public static class DependencyInjection
         services.AddScoped<IMessagePublisher, MessagePublisher>();
 
         services.AddGrpc();
+        services.AddGrpcReflection();
 
         return services;
     }
