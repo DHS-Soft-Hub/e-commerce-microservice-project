@@ -1,0 +1,47 @@
+services:
+
+  authservice:
+    container_name: authservice
+    build:
+      context: ./Auth.Api
+      dockerfile: Dockerfile
+    depends_on:
+      shoppingcartdb:
+        condition: service_healthy
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__postgresdb=Host=shoppingcartdb;Database=shoppingcartdb;Username=postgres;Password=auth@123
+      - Jwt__Issuer=http://authservice
+      - Jwt__Audience=api-clients
+      - Jwt__Key=12382198398#*@&*$*#$&#*$#$AKSJDLKSADDAKDOPADI&^&^%$#@!@#$
+    ports:
+      - "5001:8080"
+    networks:
+      - backend
+
+  shoppingcartdb:
+    container_name: shoppingcartdb
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: shoppingcart@123
+      POSTGRES_DB: shoppingcartdb
+    ports:
+      - "5434:5432"
+    volumes:
+      - shoppingcart-pgdata:/var/lib/postgresql/data
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  shoppingcart-pgdata:
+
+networks:
+  backend:
+    driver: bridge
