@@ -34,5 +34,11 @@ namespace Orders.Infrastructure.Repositories
             .Include(o => o.Items)
             .ToListAsync();
         }
+
+        public Task UpdateAsync(Order order)
+        {
+            _dbContext.Orders.Update(order);
+            return _dbContext.SaveChangesAsync();
+        }
     }
 }

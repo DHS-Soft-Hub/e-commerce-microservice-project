@@ -34,6 +34,29 @@ public class OrdersGrpcService : Orders.Application.Grpc.Orders.OrdersBase
         return new CreateOrderResponse { Order = Map(dto) };
     }
 
+    public override async Task<UpdateOrderResponse> UpdateOrder(UpdateOrderRequest request, ServerCallContext context)
+    {
+        var cmd = new UpdateOrderCommand
+        {
+            OrderId = Guid.Parse(request.Update.Id),
+            Currency = request.Update.Currency,
+            CustomerId = Guid.Parse(request.Update.CustomerId),
+            Items = request.Update.Items.Select(i => new OrderItemDto
+            {
+                Id = Guid.Parse(i.Id),
+                ProductId = Guid.Parse(i.ProductId),
+                ProductName = i.ProductName,
+                Quantity = i.Quantity,
+                UnitPrice = (decimal)i.UnitPrice,
+                Currency = i.Currency
+            }).ToList(),
+            Status = request.Update.Status
+        };
+
+        var dto = await _app.UpdateOrderAsync(cmd, context.CancellationToken);
+        return new UpdateOrderResponse { Order = UpdateMap(dto) };
+    }
+
     public override async Task<GetOrderResponse> GetOrder(GetOrderRequest request, ServerCallContext context)
     {
         var dto = await _app.GetOrderAsync(Guid.Parse(request.OrderId), context.CancellationToken);
@@ -54,10 +77,7 @@ public class OrdersGrpcService : Orders.Application.Grpc.Orders.OrdersBase
         {
             Id = dto.Id.ToString(),
             CustomerId = dto.CustomerId.ToString(),
-            TotalPrice = (double)dto.TotalPrice,
             Currency = dto.Currency,
-            Status = dto.Status,
-            CreatedAt = dto.CreatedAt.ToString("o")
         };
 
         order.Items.AddRange(dto.Items.Select(i => new OrderItem
@@ -71,6 +91,28 @@ public class OrdersGrpcService : Orders.Application.Grpc.Orders.OrdersBase
         }));
 
         return order;
+    }
+
+    private static OrderUpdate UpdateMap(OrderDto cmd)
+    {
+        var update = new OrderUpdate
+        {
+            Id = cmd.Id.ToString(),
+            CustomerId = cmd.CustomerId.ToString(),
+            Currency = cmd.Currency,
+            Status = cmd.Status
+        };
+
+        update.Items.AddRange(cmd.Items.Select(i => new OrderItem
+        {
+            ProductId = i.ProductId.ToString(),
+            ProductName = i.ProductName,
+            Quantity = i.Quantity,
+            UnitPrice = (double)i.UnitPrice,
+            Currency = i.Currency
+        }));
+
+        return update;
     }
 
     

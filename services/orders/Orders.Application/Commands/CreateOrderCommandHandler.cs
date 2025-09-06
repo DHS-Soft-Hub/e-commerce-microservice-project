@@ -2,7 +2,6 @@ using MediatR;
 using Orders.Application.DTOs;
 using Orders.Domain.Aggregates;
 using Orders.Domain.Entities;
-using Orders.Domain.Enums;
 using Orders.Domain.Repositories;
 using Orders.Domain.ValueObjects;
 using Shared.Domain.Interfaces;

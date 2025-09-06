@@ -35,5 +35,12 @@ namespace Orders.Application.Services
             var query = new GetOrdersQuery();
             return await _mediator.Send(query, cancellationToken);
         }
+
+        public async Task<OrderDto> UpdateOrderAsync(
+            UpdateOrderCommand order,
+            CancellationToken cancellationToken = default)
+        {
+            return await _mediator.Send(order, cancellationToken);
+        }
     }
 }

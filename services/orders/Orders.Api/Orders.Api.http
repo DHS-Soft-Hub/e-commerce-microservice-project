@@ -18,3 +18,20 @@ Content-Type: application/json
   ],
   "currency": "USD"
 }
+
+## Update Order
+PUT {{host}}/api/orders
+Content-Type: application/json
+{
+  "id": "9d3276d8-8746-4b04-8770-b12a282df9a5",
+  "customerId": "9d3276d8-8746-4b04-8770-b12a282df9a5",
+  "items":[
+    {
+      "productId": "9d3276d8-8746-4b04-8770-b12a282df9a5",
+      "quantity": 2,
+      "unitPrice": 10.00
+    }
+  ],
+  "currency": "USD",
+  "status": "Completed"
+}
