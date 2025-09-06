@@ -1,3 +1,3 @@
-- [ ] Order DDD
-- [ ] Order SAGA
-- [ ] Order 
+- [x] Order DDD
+- [x] Order SAGA
+- [x] Order gRPC
