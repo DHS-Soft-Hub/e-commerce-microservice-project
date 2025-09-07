@@ -1,4 +1,4 @@
-package ecommerce.userprofile.shared.domain;
+package ecommerce.userprofile.shared.base;
 
 import ecommerce.userprofile.shared.exceptions.DomainException;
 
