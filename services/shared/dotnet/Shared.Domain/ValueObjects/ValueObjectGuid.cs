@@ -1,6 +1,6 @@
 namespace Shared.Domain.ValueObjects
 {
-    public abstract class ValueObjectGuid : ValueObject<Guid>
+    public abstract class ValueObjectGuid : ValueObject
     {
         public Guid Value { get; private set; }
 

@@ -34,7 +34,8 @@ public abstract class BaseEntity<TId> : IEquatable<BaseEntity<TId>>, IHasDomainE
 
     // Domain Events
     private readonly List<IDomainEvent> _domainEvents = new();
-    public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
+
+    public IReadOnlyList<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
 
     protected void AddDomainEvent(IDomainEvent eventItem) => _domainEvents.Add(eventItem);
     protected bool RemoveDomainEvent(IDomainEvent eventItem) => _domainEvents.Remove(eventItem);
