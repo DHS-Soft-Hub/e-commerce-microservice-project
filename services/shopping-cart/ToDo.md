@@ -1,1 +1,2 @@
 - [ ] gRPC Endpoints
+- [ ] Redis cart session cashing

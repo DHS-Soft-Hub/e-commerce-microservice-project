@@ -1,58 +1,50 @@
-
+using System;
+using System.Collections.Generic;
 using Shared.Domain.Events;
 using Shared.Domain.Interfaces;
 
 namespace Shared.Domain.Entities;
 
-
 public abstract class BaseEntity<TId> : IEquatable<BaseEntity<TId>>, IHasDomainEvents
-where TId : notnull
+    where TId : notnull
 {
-    public TId Id { get; protected set; } = default!;
+    // For EF Core
+    protected BaseEntity() { }
 
-    public BaseEntity(TId id)
-    {
-        Id = id;
-    }
+    protected BaseEntity(TId id) => Id = id;
+
+    public TId Id { get; protected set; } = default!;
 
     public override bool Equals(object? obj)
     {
-        return obj is BaseEntity<TId> entity && Id.Equals(entity.Id);
+        if (obj is null) return false;
+        if (ReferenceEquals(this, obj)) return true;
+        if (obj.GetType() != GetType()) return false;
+
+        var other = (BaseEntity<TId>)obj;
+        return EqualityComparer<TId>.Default.Equals(Id, other.Id);
     }
 
-    public static bool operator ==(BaseEntity<TId>? left, BaseEntity<TId>? right)
-    {
-        return Equals(left, right);
-    }
+    public bool Equals(BaseEntity<TId>? other) => Equals((object?)other);
 
-    public static bool operator !=(BaseEntity<TId>? left, BaseEntity<TId>? right)
-    {
-        return !Equals(left, right);
-    }
+    public static bool operator ==(BaseEntity<TId>? left, BaseEntity<TId>? right) => Equals(left, right);
+    public static bool operator !=(BaseEntity<TId>? left, BaseEntity<TId>? right) => !Equals(left, right);
 
-    // IEquatable<BaseEntity<TId>>
-    public bool Equals(BaseEntity<TId>? other)
-    {
-        return Equals((object?)other);
-    }
-
-    public override int GetHashCode()
-    {
-        return Id.GetHashCode();
-    }
+    public override int GetHashCode() => HashCode.Combine(GetType(), Id);
 
     // Domain Events
     private readonly List<IDomainEvent> _domainEvents = new();
+    public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
 
-    public IReadOnlyList<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
+    protected void AddDomainEvent(IDomainEvent eventItem) => _domainEvents.Add(eventItem);
+    protected bool RemoveDomainEvent(IDomainEvent eventItem) => _domainEvents.Remove(eventItem);
 
-    protected void AddDomainEvent(IDomainEvent eventItem)
+    public IReadOnlyCollection<IDomainEvent> PullDomainEvents()
     {
-        _domainEvents.Add(eventItem);
-    }
-
-    public void ClearDomainEvents()
-    {
+        var events = _domainEvents.ToArray();
         _domainEvents.Clear();
+        return events;
     }
+
+    public void ClearDomainEvents() => _domainEvents.Clear();
 }
