@@ -41,6 +41,7 @@ builder.Services.AddMediatR(cfg =>
 // Register repositories and services
 builder.Services.AddScoped<ICartRepository, CartRepository>();
 builder.Services.AddScoped<ICartSessionService, CartSessionService>();
+builder.Services.AddScoped<IShoppingCartService, ShoppingCartService>();
 
 // Host gRPC
 builder.Services.AddGrpc();
