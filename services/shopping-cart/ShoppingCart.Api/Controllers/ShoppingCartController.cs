@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using ShoppingCart.Api.Commands.AddItemToCartCommand;
 using ShoppingCart.Api.Commands.PrepareCheckoutCommand;
 using ShoppingCart.Api.Commands.RemoveItemFromCartCommand;
-using ShoppingCart.Api.Data.Requests;
+using ShoppingCart.Api.Contracts.Requests;
 using ShoppingCart.Api.Queries;
 using ShoppingCart.Api.Services;
 

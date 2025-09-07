@@ -1,4 +1,4 @@
-namespace ShoppingCart.Api.Models.Entities;
+namespace ShoppingCart.Api.Entities;
 
 public class CheckoutData
 {

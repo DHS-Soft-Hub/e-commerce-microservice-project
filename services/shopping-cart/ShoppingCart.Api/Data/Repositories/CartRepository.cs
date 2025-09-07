@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using ShoppingCart.Api.Data.Contexts;
-using ShoppingCart.Api.Models.Entities;
+using ShoppingCart.Api.Entities;
 using System.Text.Json;
 
 namespace ShoppingCart.Api.Data.Repositories;

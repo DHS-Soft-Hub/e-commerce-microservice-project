@@ -1,4 +1,4 @@
-namespace ShoppingCart.Api.Data.Requests;
+namespace ShoppingCart.Api.Contracts.Requests;
 
 public class AddItemToCartRequest
 {

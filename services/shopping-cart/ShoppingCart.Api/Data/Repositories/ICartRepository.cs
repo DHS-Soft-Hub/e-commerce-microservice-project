@@ -1,4 +1,4 @@
-using ShoppingCart.Api.Models.Entities;
+using ShoppingCart.Api.Entities;
 
 namespace ShoppingCart.Api.Data.Repositories
 {
