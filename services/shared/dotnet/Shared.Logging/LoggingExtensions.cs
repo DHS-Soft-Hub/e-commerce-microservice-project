@@ -12,7 +12,7 @@ public static class LoggingExtensions
             .WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day)
             .CreateLogger();
 
-        //services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog());
+        services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog());
 
         return services;
     }
