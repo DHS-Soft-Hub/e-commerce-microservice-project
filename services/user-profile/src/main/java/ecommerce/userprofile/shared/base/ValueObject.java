@@ -6,10 +6,6 @@ import java.io.Serializable;
 
 /**
  * Marker interface for Value Objects following DDD principles.
- * Value Objects characteristics:
- * - Immutable
- * - Equality based on values
- * - No identity/ID
  */
 public interface ValueObject<T> extends Serializable {
 
