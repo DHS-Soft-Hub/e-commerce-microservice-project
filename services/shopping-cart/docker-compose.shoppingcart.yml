@@ -4,7 +4,7 @@ services:
     container_name: shoppingcartservice
     build:
       context: ./ShoppingCart.Api
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.local
     depends_on:
       shoppingcartdb:
         condition: service_healthy
@@ -40,8 +40,23 @@ services:
       retries: 5
       start_period: 30s
 
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:4.1.3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - backend
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+
 volumes:
   shoppingcart-pgdata:
+  rabbitmq-data:
 
 networks:
   backend:
