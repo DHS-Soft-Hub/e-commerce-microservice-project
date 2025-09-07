@@ -1,0 +1,41 @@
+@host = http://localhost:5002
+
+GET {{host}}/api/orders
+Accept: application/json
+
+### Create Order
+POST {{host}}/api/orders
+Content-Type: application/json
+
+{
+  "customerId": "9d3276d8-8746-4b04-8770-b12a282df9a5",
+  "items":[
+    {
+      "productId": "9d3276d8-8746-4b04-8770-b12a282df9a5",
+      "quantity": 2,
+      "unitPrice": 10.00
+    }
+  ],
+  "currency": "USD"
+}
+
+## Update Order
+PUT {{host}}/api/orders
+Content-Type: application/json
+
+{
+  "id": "7941d1ce-99c7-4e34-95cc-53de51a54e80",
+  "customerId": "9d3276d8-8746-4b04-8770-b12a282df9a5",
+  "items": [
+      {
+        "id": "ebfa6fdb-c79d-4a10-a656-e54463b1e4a6",
+        "productId": "9d3276d8-8746-4b04-8770-b12a282df9a1",
+        "productName": "IPhone 16",
+        "quantity": 3,
+        "unitPrice": 2999,
+        "currency": "EUR"
+      }
+    ],
+  "currency": "EUR",
+  "status": "Completed"
+}

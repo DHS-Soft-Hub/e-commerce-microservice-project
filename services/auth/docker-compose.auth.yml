@@ -29,7 +29,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - auth-pgdata:/var/lib/postgresql/data
     networks:
       - backend
     healthcheck:
@@ -40,7 +40,7 @@ services:
       start_period: 30s
 
 volumes:
-  pgdata:
+  auth-pgdata:
 
 networks:
   backend:
