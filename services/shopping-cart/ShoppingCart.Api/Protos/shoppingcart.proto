@@ -11,6 +11,7 @@ service ShoppingCart {
   rpc GetCart (GetCartRequest) returns (GetCartResponse);
   rpc AddToCart (AddToCartRequest) returns (AddToCartResponse);
   rpc RemoveFromCart (RemoveFromCartRequest) returns (RemoveFromCartResponse);
+  rpc UpdateItemQuantity (UpdateItemQuantityRequest) returns (UpdateItemQuantityResponse);
 }
 
 // The request message for the GetCart RPC.
@@ -48,11 +49,26 @@ message RemoveFromCartResponse {
   Cart cart = 1;
 }
 
+// The request message for the UpdateItemQuantity RPC.
+message UpdateItemQuantityRequest {
+  string user_id = 1;
+  string session_id = 2;
+  string item_id = 3;
+  int32 quantity = 4;
+}
+
+// The response message for the UpdateItemQuantity RPC.
+message UpdateItemQuantityResponse {
+  Cart cart = 1;
+}
+
 // The shopping cart message.
 message Cart {
   string user_id = 1;
   string session_id = 2;
   repeated CartItem items = 3;
+  float total_price = 4;
+  string currency = 5;
 }
 
 // The shopping cart item message.

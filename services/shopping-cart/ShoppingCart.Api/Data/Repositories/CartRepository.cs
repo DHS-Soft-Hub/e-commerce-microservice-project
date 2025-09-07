@@ -55,12 +55,14 @@ public class CartRepository : ICartRepository
         {
             dbCart = await _context.Carts
                 .Include(c => c.Items)
+                .OrderByDescending(c => c.UpdatedAt)
                 .FirstOrDefaultAsync(c => c.UserId == userId);
         }
         else if (!string.IsNullOrEmpty(sessionId))
         {
             dbCart = await _context.Carts
                 .Include(c => c.Items)
+                .OrderByDescending(c => c.UpdatedAt)
                 .FirstOrDefaultAsync(c => c.SessionId == sessionId);
         }
 
