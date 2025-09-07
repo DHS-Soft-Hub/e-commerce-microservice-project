@@ -42,6 +42,10 @@ builder.Services.AddMediatR(cfg =>
 builder.Services.AddScoped<ICartRepository, CartRepository>();
 builder.Services.AddScoped<ICartSessionService, CartSessionService>();
 
+// Host gRPC
+builder.Services.AddGrpc();
+builder.Services.AddGrpcReflection();
+
 // Add shared MassTransit configuration for events
 builder.Services.AddMassTransitWithRabbitMq(
     builder.Configuration,
@@ -58,7 +62,12 @@ if (app.Environment.IsDevelopment())
     using var scope = app.Services.CreateScope();
     var context = scope.ServiceProvider.GetRequiredService<ShoppingCartDbContext>();
     await context.Database.MigrateAsync();
+
+    app.MapGrpcReflectionService();
 }
+
+// Map gRPC service
+app.MapGrpcService<ShoppingCartGrpcService>();
 
 app.MapControllers();
 app.Run();

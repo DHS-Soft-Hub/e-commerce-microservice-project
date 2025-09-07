@@ -8,4 +8,5 @@ public record AddItemToCartCommand(
     Guid ProductId,
     string ProductName,
     decimal Price,
+    string Currency,
     int Quantity) : IRequest<Unit>;

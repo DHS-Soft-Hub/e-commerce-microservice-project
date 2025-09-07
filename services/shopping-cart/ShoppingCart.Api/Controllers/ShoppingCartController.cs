@@ -14,13 +14,13 @@ namespace ShoppingCart.API.Controllers;
 [Route("api/[controller]")]
 public class CartController : ControllerBase
 {
-    private readonly IMediator _mediator;
     private readonly ICartSessionService _sessionService;
+    private readonly IShoppingCartService _shoppingCartService;
 
-    public CartController(IMediator mediator, ICartSessionService sessionService)
+    public CartController(ICartSessionService sessionService, IShoppingCartService shoppingCartService)
     {
-        _mediator = mediator;
         _sessionService = sessionService;
+        _shoppingCartService = shoppingCartService;
     }
 
     [HttpPost("items")]
@@ -33,10 +33,16 @@ public class CartController : ControllerBase
         var sessionId = await _sessionService.GetOrCreateSessionId(HttpContext);
 
         var command = new AddItemToCartCommand(
-            userId, sessionId, request.ProductId, 
-            request.ProductName, request.Price, request.Quantity);
+            userId,
+            sessionId,
+            request.ProductId,
+            request.ProductName,
+            request.Price,
+            request.Currency,
+            request.Quantity
+        );
 
-        await _mediator.Send(command);
+        await _shoppingCartService.AddToCartAsync(command);
         return Ok();
     }
 
@@ -50,7 +56,7 @@ public class CartController : ControllerBase
         var sessionId = await _sessionService.GetOrCreateSessionId(HttpContext);
 
         var command = new RemoveItemFromCartCommand(userId, sessionId, productId);
-        await _mediator.Send(command);
+        await _shoppingCartService.RemoveFromCartAsync(command);
         return Ok();
     }
 
@@ -64,7 +70,7 @@ public class CartController : ControllerBase
         var sessionId = await _sessionService.GetOrCreateSessionId(HttpContext);
 
         var query = new GetCartQuery(userId, sessionId);
-        var cart = await _mediator.Send(query);
+        var cart = await _shoppingCartService.GetCartAsync(query);
         return Ok(cart);
     }
 
@@ -79,8 +85,8 @@ public class CartController : ControllerBase
         await _sessionService.MergeAnonymousCartWithUserCart(sessionId, userId);
 
         var command = new PrepareCheckoutCommand(userId);
-        var checkoutData = await _mediator.Send(command);
-        
+        var checkoutData = await _shoppingCartService.CheckoutAsync(command);
+
         return Ok(checkoutData);
     }
 }
