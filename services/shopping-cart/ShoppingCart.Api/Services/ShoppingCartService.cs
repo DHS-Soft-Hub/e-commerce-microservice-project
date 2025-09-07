@@ -1,4 +1,3 @@
-using MassTransit.Mediator;
 using MediatR;
 using ShoppingCart.Api.Commands.AddItemToCartCommand;
 using ShoppingCart.Api.Commands.PrepareCheckoutCommand;
