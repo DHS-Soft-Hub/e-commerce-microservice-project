@@ -1,21 +1,22 @@
 services:
 
-  authservice:
-    container_name: authservice
+  shoppingcartservice:
+    container_name: shoppingcartservice
     build:
-      context: ./Auth.Api
+      context: ./ShoppingCart.Api
       dockerfile: Dockerfile
     depends_on:
       shoppingcartdb:
         condition: service_healthy
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__postgresdb=Host=shoppingcartdb;Database=shoppingcartdb;Username=postgres;Password=auth@123
-      - Jwt__Issuer=http://authservice
+      - ConnectionStrings__postgresdb=Host=shoppingcartdb;Database=shoppingcartdb;Username=postgres;Password=shoppingcart@123
+      - ConnectionStrings__RabbitMQ=amqp://guest:guest@rabbitmq:5672/
+      - Jwt__Issuer=http://shoppingcartservice
       - Jwt__Audience=api-clients
       - Jwt__Key=12382198398#*@&*$*#$&#*$#$AKSJDLKSADDAKDOPADI&^&^%$#@!@#$
     ports:
-      - "5001:8080"
+      - "5003:8080"
     networks:
       - backend
 
