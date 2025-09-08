@@ -17,9 +17,6 @@ namespace Payment.Api.Data.Contexts
                 .ToTable("Payments");
 
             modelBuilder.Entity<Entities.Payment>()
-                .HasKey(p => p.Id);
-
-            modelBuilder.Entity<Entities.Payment>()
                 .Property(p => p.Status)
                 .HasConversion<string>()
                 .HasMaxLength(50);

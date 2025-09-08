@@ -30,6 +30,8 @@ namespace Payment.Api.Controllers.V1
             {
                 Id = Guid.NewGuid(),
                 OrderId = payment.OrderId,
+                TransactionId = payment.TransactionId,
+                Status = PaymentStatus.Processing,
                 Price = payment.Price,
                 Currency = payment.Currency,
                 PaymentMethod = (PaymentMethods)Enum.Parse(typeof(PaymentMethods), payment.PaymentMethod, true),
