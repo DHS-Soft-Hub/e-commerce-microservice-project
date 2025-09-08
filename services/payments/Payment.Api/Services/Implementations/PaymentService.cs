@@ -39,7 +39,7 @@ namespace Payment.Api.Data.Services.Implementations
                 OrderId: payment.OrderId,
                 PaymentId: payment.Id,
                 Price: payment.Price,
-                Currency: "USD",
+                Currency: payment.Currency,
                 Status: "Processed",
                 ProcessedAt: DateTime.UtcNow
             ));
