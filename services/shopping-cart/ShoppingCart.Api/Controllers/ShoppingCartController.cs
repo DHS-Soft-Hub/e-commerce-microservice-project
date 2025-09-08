@@ -84,7 +84,7 @@ public class CartController : ControllerBase
         // Merge session cart with user cart if needed
         await _sessionService.MergeAnonymousCartWithUserCart(sessionId, userId);
 
-        var command = new PrepareCheckoutCommand(userId);
+        var command = new PrepareCheckoutCommand(userId, sessionId);
         var checkoutData = await _shoppingCartService.CheckoutAsync(command);
 
         return Ok(checkoutData);

@@ -6,12 +6,22 @@ import "google/protobuf/timestamp.proto";
 
 package shoppingcart;
 
-// The ShoppingCart service definition.
-service ShoppingCart {
-  rpc GetCart (GetCartRequest) returns (GetCartResponse);
-  rpc AddToCart (AddToCartRequest) returns (AddToCartResponse);
-  rpc RemoveFromCart (RemoveFromCartRequest) returns (RemoveFromCartResponse);
-  rpc UpdateItemQuantity (UpdateItemQuantityRequest) returns (UpdateItemQuantityResponse);
+// The shopping cart message.
+message Cart {
+  string user_id = 1;
+  string session_id = 2;
+  repeated CartItem items = 3;
+  float total_price = 4;
+  string currency = 5;
+}
+
+// The shopping cart item message.
+message CartItem {
+  string product_id = 1;
+  string product_name = 2;
+  int32 quantity = 3;
+  float price = 4;
+  string currency = 5;
 }
 
 // The request message for the GetCart RPC.
@@ -62,20 +72,21 @@ message UpdateItemQuantityResponse {
   Cart cart = 1;
 }
 
-// The shopping cart message.
-message Cart {
+// The request message for the Checkout RPC.
+message CheckoutRequest {
   string user_id = 1;
   string session_id = 2;
-  repeated CartItem items = 3;
-  float total_price = 4;
-  string currency = 5;
 }
 
-// The shopping cart item message.
-message CartItem {
-  string product_id = 1;
-  string product_name = 2;
-  int32 quantity = 3;
-  float price = 4;
-  string currency = 5;
+message CheckoutResponse {
+  Cart cart = 1;
+}
+
+// The ShoppingCart service definition.
+service ShoppingCart {
+  rpc GetCart (GetCartRequest) returns (GetCartResponse);
+  rpc AddToCart (AddToCartRequest) returns (AddToCartResponse);
+  rpc RemoveFromCart (RemoveFromCartRequest) returns (RemoveFromCartResponse);
+  rpc UpdateItemQuantity (UpdateItemQuantityRequest) returns (UpdateItemQuantityResponse);
+  rpc Checkout (CheckoutRequest) returns (CheckoutResponse);
 }

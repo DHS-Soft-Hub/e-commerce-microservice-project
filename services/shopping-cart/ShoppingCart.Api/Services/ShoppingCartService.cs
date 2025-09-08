@@ -26,6 +26,7 @@ public class ShoppingCartService : IShoppingCartService
 
     public async Task<CartDto> GetCartAsync(GetCartQuery query, CancellationToken cancellationToken = default)
     {
+        // TODO: Implement creation of a new cart if none exists
         return await _mediator.Send(query, cancellationToken);
     }
 

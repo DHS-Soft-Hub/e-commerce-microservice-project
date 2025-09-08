@@ -1,5 +1,6 @@
 using Grpc.Core;
 using ShoppingCart.Api.Commands.AddItemToCartCommand;
+using ShoppingCart.Api.Commands.PrepareCheckoutCommand;
 using ShoppingCart.Api.Commands.RemoveItemFromCartCommand;
 using ShoppingCart.Api.Commands.UpdateItemQuantityCommand;
 using ShoppingCart.Api.Protos;
@@ -56,6 +57,15 @@ public class ShoppingCartGrpcService : Protos.ShoppingCart.ShoppingCartBase
             Quantity = request.Quantity
         }, context.CancellationToken);
         return new UpdateItemQuantityResponse { Cart = ToProtoCart(cart, request.UserId, request.SessionId) };
+    }
+
+    public override async Task<CheckoutResponse> Checkout(CheckoutRequest request, ServerCallContext context)
+    {
+        var cart = await _shoppingCartService.CheckoutAsync(new PrepareCheckoutCommand(
+            Guid.Parse(request.UserId),
+            request.SessionId
+        ), context.CancellationToken);
+        return new CheckoutResponse { Cart = ToProtoCart(cart, request.UserId, request.SessionId) };
     }
 
     private static Cart ToProtoCart(DTOs.CartDto item, string userId, string sessionId)
