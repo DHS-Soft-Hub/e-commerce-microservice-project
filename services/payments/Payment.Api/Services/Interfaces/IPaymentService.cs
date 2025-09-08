@@ -1,11 +1,14 @@
-namespace Payment.Api.Data.Services.Interfaces
+using Payment.Api.DTOs.Requests;
+using Payment.Api.DTOs.Responses;
+
+namespace Payment.Api.Services.Interfaces
 {
     public interface IPaymentService
     {
-        Task<Entities.Payment> GetPaymentByIdAsync(Guid id);
-        Task<IEnumerable<Entities.Payment>> GetAllPaymentsAsync();
-        Task AddPaymentAsync(Entities.Payment payment);
-        Task UpdatePaymentAsync(Entities.Payment payment);
+        Task<PaymentResponse> GetPaymentByIdAsync(Guid id);
+        Task<IEnumerable<PaymentResponse>> GetAllPaymentsAsync();
+        Task<PaymentResponse> AddPaymentAsync(PaymentCreateRequest payment);
+        Task UpdatePaymentAsync(PaymentUpdateRequest payment);
         Task DeletePaymentAsync(Guid id);
     }
 }

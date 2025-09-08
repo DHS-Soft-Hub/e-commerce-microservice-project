@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using Payment.Api.Data.Services.Interfaces;
+using Payment.Api.Services.Interfaces;
 
-using Payment.Api.Contracts.Requests;
-using Payment.Api.Contracts.Responses;
+using Payment.Api.DTOs.Requests;
+using Payment.Api.DTOs.Responses;
 using Payment.Api.Enums;
 
 namespace Payment.Api.Controllers.V1
@@ -19,37 +19,15 @@ namespace Payment.Api.Controllers.V1
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreatePayment([FromBody] PaymentRequest payment)
+        public async Task<IActionResult> CreatePayment([FromBody] PaymentCreateRequest payment)
         {
             if (payment == null)
             {
                 return BadRequest();
             }
 
-            var paymentEntity = new Entities.Payment
-            {
-                Id = Guid.NewGuid(),
-                OrderId = payment.OrderId,
-                TransactionId = payment.TransactionId,
-                Status = PaymentStatus.Processing,
-                Price = payment.Price,
-                Currency = payment.Currency,
-                PaymentMethod = (PaymentMethods)Enum.Parse(typeof(PaymentMethods), payment.PaymentMethod, true),
-                CreatedAt = DateTime.UtcNow
-            };
-
-            await _service.AddPaymentAsync(paymentEntity);
-
-            // Return payment response that matches Frontend expectations
-            var response = new PaymentResponse(
-                Id: paymentEntity.Id.ToString(),
-                Amount: paymentEntity.Price,
-                Currency: paymentEntity.Currency,
-                PaymentMethod: nameof(paymentEntity.PaymentMethod),
-                Status: paymentEntity.Status.ToString()
-            );
-
-            return CreatedAtAction(nameof(GetPaymentById), new { id = paymentEntity.Id }, response);
+            var response = await _service.AddPaymentAsync(payment);
+            return Ok(response);
         }
 
         [HttpGet("{id:guid}")]
@@ -71,26 +49,14 @@ namespace Payment.Api.Controllers.V1
         }
 
         [HttpPut("{id:guid}")]
-        public async Task<IActionResult> UpdatePayment(Guid id, [FromBody] PaymentRequest payment)
+        public async Task<IActionResult> UpdatePayment(Guid id, [FromBody] PaymentUpdateRequest payment)
         {
             if (payment == null || id == Guid.Empty)
             {
                 return BadRequest();
             }
 
-            var paymentEntity = new Entities.Payment
-            {
-                Id = id,
-                OrderId = payment.OrderId,
-                TransactionId = payment.TransactionId,
-                Status = PaymentStatus.Processing,
-                Price = payment.Price,
-                Currency = payment.Currency,
-                PaymentMethod = (PaymentMethods)Enum.Parse(typeof(PaymentMethods), payment.PaymentMethod, true),
-                CreatedAt = DateTime.UtcNow
-            };
-
-            await _service.UpdatePaymentAsync(paymentEntity);
+            await _service.UpdatePaymentAsync(payment);
 
             return Ok();
         }

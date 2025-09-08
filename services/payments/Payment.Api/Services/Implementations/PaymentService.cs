@@ -1,9 +1,14 @@
 using MassTransit;
 using Payment.Api.Data.Repositories;
-using Payment.Api.Data.Services.Interfaces;
+using Payment.Api.Services.Interfaces;
 using Payment.Api.Events;
+using Payment.Api.DTOs.Responses;
+using Payment.Api.DTOs.Requests;
+using Payment.Api.Enums;
+using Grpc.Core;
+using MassTransit.Initializers;
 
-namespace Payment.Api.Data.Services.Implementations
+namespace Payment.Api.Services.Implementations
 {
     public class PaymentService : IPaymentService
     {
@@ -21,33 +26,89 @@ namespace Payment.Api.Data.Services.Implementations
             _logger = logger;
         }
 
-        public Task<Entities.Payment> GetPaymentByIdAsync(Guid id)
+        public async Task<PaymentResponse> AddPaymentAsync(PaymentCreateRequest payment)
         {
-            return _repository.GetPaymentByIdAsync(id);
-        }
 
-        public Task<IEnumerable<Entities.Payment>> GetAllPaymentsAsync()
-        {
-            return _repository.GetAllPaymentsAsync();
-        }
+            var newPayment = new Entities.Payment
+            {
+                Id = Guid.NewGuid(),
+                OrderId = payment.OrderId,
+                Price = payment.Price,
+                Currency = payment.Currency,
+                PaymentMethod = Enum.Parse<PaymentMethods>(payment.PaymentMethod),
+                Status = PaymentStatus.Pending,
+                CreatedAt = DateTime.UtcNow
+            };
+            await _repository.AddPaymentAsync(newPayment);
 
-        public async Task AddPaymentAsync(Entities.Payment payment)
-        {
-            await _repository.AddPaymentAsync(payment);
             await _publishEndpoint.Publish(new PaymentProcessedIntegrationEvent
             (
-                OrderId: payment.OrderId,
-                PaymentId: payment.Id,
-                Price: payment.Price,
+                OrderId: newPayment.OrderId,
+                PaymentId: newPayment.Id,
+                Price: newPayment.Price,
+                Currency: newPayment.Currency,
+                Status: newPayment.Status.ToString(),
+                ProcessedAt: newPayment.CreatedAt
+            ));
+
+            return new PaymentResponse(
+                Id: newPayment.Id.ToString(),
+                OrderId: newPayment.OrderId.ToString(),
+                TransactionId: newPayment.TransactionId,
+                Status: newPayment.Status.ToString(),
+                Amount: newPayment.Price,
+                Currency: newPayment.Currency,
+                PaymentMethod: newPayment.PaymentMethod.ToString()
+            );
+        }
+
+        public async Task<PaymentResponse> GetPaymentByIdAsync(Guid id)
+        {
+            var payment = await _repository.GetPaymentByIdAsync(id);
+
+            return new PaymentResponse(
+                Id: payment.Id.ToString(),
+                OrderId: payment.OrderId.ToString(),
+                TransactionId: payment.TransactionId.ToString(),
+                Status: payment.Status.ToString(),
+                Amount: payment.Price,
                 Currency: payment.Currency,
-                Status: "Processed",
-                ProcessedAt: DateTime.UtcNow
+                PaymentMethod: payment.PaymentMethod.ToString()
+            );
+        }
+
+        public async Task<IEnumerable<PaymentResponse>> GetAllPaymentsAsync()
+        {
+            var payments = await _repository.GetAllPaymentsAsync();
+
+            return payments.Select(payment => new PaymentResponse(
+                Id: payment.Id.ToString(),
+                OrderId: payment.OrderId.ToString(),
+                TransactionId: payment.TransactionId.ToString(),
+                Status: payment.Status.ToString(),
+                Amount: payment.Price,
+                Currency: payment.Currency,
+                PaymentMethod: payment.PaymentMethod.ToString()
             ));
         }
 
-        public Task UpdatePaymentAsync(Entities.Payment payment)
+        public async Task UpdatePaymentAsync(PaymentUpdateRequest payment)
         {
-            return _repository.UpdatePaymentAsync(payment);
+            var existingPayment = await _repository.GetPaymentByIdAsync(payment.Id);
+            if (existingPayment == null)
+            {
+                _logger.LogWarning("Payment with ID {PaymentId} not found.", payment.Id);
+                throw new KeyNotFoundException($"Payment with ID {payment.Id} not found.");
+            }
+
+            existingPayment.OrderId = payment.OrderId;
+            existingPayment.Price = payment.Price;
+            existingPayment.Currency = payment.Currency;
+            existingPayment.PaymentMethod = Enum.Parse<PaymentMethods>(payment.PaymentMethod);
+            existingPayment.Status = Enum.Parse<PaymentStatus>(payment.Status);
+            existingPayment.UpdatedAt = DateTime.UtcNow;
+
+            await _repository.UpdatePaymentAsync(existingPayment);
         }
 
         public Task DeletePaymentAsync(Guid id)

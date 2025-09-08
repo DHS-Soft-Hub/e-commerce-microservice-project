@@ -1,5 +1,5 @@
-namespace Payment.Api.Contracts.Requests;
-public record PaymentRequest(
+namespace Payment.Api.DTOs.Requests;
+public record PaymentCreateRequest(
     Guid OrderId,
     string TransactionId,
     decimal Price,

@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+option csharp_namespace = "Payment.Api.Protos";
+
+package payment;
+
+// The payment request message
+message PaymentRequest {
+    string order_id = 1;
+    string transaction_id = 2;
+    string payment_method = 3;
+    double amount = 4;
+    string currency = 5;
+}
+
+// The payment response message
+message PaymentResponse {
+    string id = 1;
+    string order_id = 2;
+    string transaction_id = 3;
+    string payment_method = 4;
+    double amount = 5;
+    string currency = 6;
+    string status = 7;
+}
+
+// The payment service definition
+service PaymentService {
+    rpc CreatePayment (PaymentRequest) returns (PaymentResponse);
+    rpc GetPayment (PaymentRequest) returns (PaymentResponse);
+    rpc UpdatePayment (PaymentRequest) returns (PaymentResponse);
+    rpc DeletePayment (PaymentRequest) returns (PaymentResponse);
+    rpc ListPayments (PaymentRequest) returns (stream PaymentResponse);
+}
