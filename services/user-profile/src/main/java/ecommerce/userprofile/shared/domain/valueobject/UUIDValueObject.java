@@ -1,4 +1,4 @@
-package ecommerce.userprofile.shared.base;
+package ecommerce.userprofile.shared.domain.valueobject;
 
 import ecommerce.userprofile.shared.exceptions.DomainException;
 import org.jetbrains.annotations.Contract;

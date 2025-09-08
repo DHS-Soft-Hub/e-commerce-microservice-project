@@ -1,6 +1,6 @@
 package ecommerce.userprofile.profile.domain.valueobjects;
 
-import ecommerce.userprofile.shared.base.ValueObject;
+import ecommerce.userprofile.shared.domain.valueobject.ValueObject;
 import ecommerce.userprofile.shared.exceptions.DomainException;
 import ecommerce.userprofile.shared.services.FileValidationService;
 import ecommerce.userprofile.shared.types.AllowedFileType;

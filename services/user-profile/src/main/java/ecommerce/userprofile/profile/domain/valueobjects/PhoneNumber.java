@@ -1,7 +1,7 @@
 package ecommerce.userprofile.profile.domain.valueobjects;
 
 import ecommerce.userprofile.profile.domain.specifications.PhoneNumberSpecification;
-import ecommerce.userprofile.shared.base.ValueObject;
+import ecommerce.userprofile.shared.domain.valueobject.ValueObject;
 import ecommerce.userprofile.shared.exceptions.DomainException;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;

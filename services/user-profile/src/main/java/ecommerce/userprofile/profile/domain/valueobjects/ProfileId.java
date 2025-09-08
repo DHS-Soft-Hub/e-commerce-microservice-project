@@ -1,6 +1,6 @@
 package ecommerce.userprofile.profile.domain.valueobjects;
 
-import ecommerce.userprofile.shared.base.UUIDValueObject;
+import ecommerce.userprofile.shared.domain.valueobject.UUIDValueObject;
 import ecommerce.userprofile.shared.exceptions.DomainException;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -28,7 +28,7 @@ public record ProfileId(UUID value) implements UUIDValueObject {
      * @return new ProfileId with generated UUID
      */
     @Contract(" -> new")
-    static @NotNull ProfileId generateId() {
+    public static @NotNull ProfileId generateId() {
         return new ProfileId(UUIDValueObject.generate());
     }
 
@@ -40,7 +40,7 @@ public record ProfileId(UUID value) implements UUIDValueObject {
      * @throws DomainException if string is not a valid UUID
      */
     @Contract("_ -> new")
-    static @NotNull ProfileId fromString(@NotNull String uuid) {
+    public static @NotNull ProfileId fromString(@NotNull String uuid) {
         return new ProfileId(UUIDValueObject.fromString(uuid));
     }
 }
