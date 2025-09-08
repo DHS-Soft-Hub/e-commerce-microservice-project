@@ -46,7 +46,7 @@ namespace Orders.Domain.Aggregates
             {
                 throw new ArgumentNullException(nameof(customerId), "Customer ID cannot be null.");
             }
-            
+
             CustomerId = customerId;
             Items = items ?? new List<OrderItem>();
             Currency = currency;
@@ -87,6 +87,21 @@ namespace Orders.Domain.Aggregates
 
             Items.Add(item);
             TotalPrice += item.UnitPrice * item.Quantity;
+        }
+
+        public void RemoveItem(OrderItem item)
+        {
+            if (item == null)
+            {
+                throw new ArgumentNullException(nameof(item), "Order item cannot be null.");
+            }
+
+            if (!Items.Remove(item))
+            {
+                throw new ArgumentException("Item not found in order.", nameof(item));
+            }
+
+            TotalPrice -= item.UnitPrice * item.Quantity;
         }
 
         // parameterless constructor for EF Core
