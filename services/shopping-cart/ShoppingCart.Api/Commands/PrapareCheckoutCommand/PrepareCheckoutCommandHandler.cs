@@ -1,10 +1,10 @@
 using MediatR;
 using ShoppingCart.Api.Data.Repositories;
-using ShoppingCart.Api.Entities;
+using ShoppingCart.Api.Contracts.Responses;
 
 namespace ShoppingCart.Api.Commands.PrepareCheckoutCommand;
 
-public class PrepareCheckoutCommandHandler : IRequestHandler<PrepareCheckoutCommand, CheckoutData>
+public class PrepareCheckoutCommandHandler : IRequestHandler<PrepareCheckoutCommand, CheckoutDataResponse>
 {
     private readonly ICartRepository _cartRepository;
 
@@ -13,7 +13,7 @@ public class PrepareCheckoutCommandHandler : IRequestHandler<PrepareCheckoutComm
         _cartRepository = cartRepository;
     }
 
-    public async Task<CheckoutData> Handle(PrepareCheckoutCommand request, CancellationToken cancellationToken)
+    public async Task<CheckoutDataResponse> Handle(PrepareCheckoutCommand request, CancellationToken cancellationToken)
     {
         var cart = await _cartRepository.GetByUserAsync(request.UserId);
         if (cart == null)
@@ -27,7 +27,7 @@ public class PrepareCheckoutCommandHandler : IRequestHandler<PrepareCheckoutComm
         }
 
         // Prepare checkout data
-        var checkoutData = new CheckoutData
+        var checkoutData = new CheckoutDataResponse
         {
             Items = cart.Items.ToList(),
             Total = cart.GetTotal()

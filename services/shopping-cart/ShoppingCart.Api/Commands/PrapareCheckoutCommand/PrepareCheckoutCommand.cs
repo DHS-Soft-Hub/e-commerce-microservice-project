@@ -1,6 +1,6 @@
 using MediatR;
-using ShoppingCart.Api.Entities;
+using ShoppingCart.Api.Contracts.Responses;
 
 namespace ShoppingCart.Api.Commands.PrepareCheckoutCommand;
 
-public record PrepareCheckoutCommand(Guid UserId, string SessionId) : IRequest<CheckoutData>;
+public record PrepareCheckoutCommand(Guid UserId, string SessionId) : IRequest<CheckoutDataResponse>;
