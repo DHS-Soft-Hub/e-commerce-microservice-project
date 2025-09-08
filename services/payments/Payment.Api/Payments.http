@@ -1,4 +1,4 @@
-@Api_HostAddress = http://localhost:5000
+@Api_HostAddress = http://localhost:5004
 
 ### Get Payment by ID
 GET {{Api_HostAddress}}/api/v1/payment/9d3276d8-8746-4b04-8770-b12a282df9a5

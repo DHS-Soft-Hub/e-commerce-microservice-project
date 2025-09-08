@@ -3,6 +3,7 @@ using Payment.Api.Data.Services.Interfaces;
 
 using Payment.Api.Contracts.Requests;
 using Payment.Api.Contracts.Responses;
+using Payment.Api.Enums;
 
 namespace Payment.Api.Controllers.V1
 {
@@ -29,10 +30,9 @@ namespace Payment.Api.Controllers.V1
             {
                 Id = Guid.NewGuid(),
                 OrderId = payment.OrderId,
-                CustomerId = payment.CustomerId,
                 Price = payment.Price,
                 Currency = payment.Currency,
-                PaymentMethod = payment.PaymentMethod,
+                PaymentMethod = (PaymentMethods)Enum.Parse(typeof(PaymentMethods), payment.PaymentMethod, true),
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -43,7 +43,8 @@ namespace Payment.Api.Controllers.V1
                 Id: paymentEntity.Id.ToString(),
                 Amount: paymentEntity.Price,
                 Currency: paymentEntity.Currency,
-                PaymentMethod: paymentEntity.PaymentMethod
+                PaymentMethod: paymentEntity.PaymentMethod.ToString(),
+                Status: paymentEntity.Status.ToString()
             );
 
             return CreatedAtAction(nameof(GetPaymentById), new { id = paymentEntity.Id }, response);

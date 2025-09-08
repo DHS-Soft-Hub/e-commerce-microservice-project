@@ -9,11 +9,11 @@ using Payment.Api.Data.Contexts;
 
 #nullable disable
 
-namespace Payment.Api.Migrations
+namespace Payment.Api.Data.Migrations
 {
     [DbContext(typeof(PaymentDbContext))]
-    [Migration("20250831142135_PaymentInitial")]
-    partial class PaymentInitial
+    [Migration("20250908095324_PaymentInitialMigration")]
+    partial class PaymentInitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,7 @@ namespace Payment.Api.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Payment.Api.Models.Entities.Payment", b =>
+            modelBuilder.Entity("Payment.Api.Entities.Payment", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -38,18 +38,28 @@ namespace Payment.Api.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("CustomerId")
-                        .HasColumnType("uuid");
-
                     b.Property<Guid>("OrderId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("PaymentMethod")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("numeric");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("TransactionId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 

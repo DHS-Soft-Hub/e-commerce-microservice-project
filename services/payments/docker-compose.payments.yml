@@ -16,7 +16,7 @@ services:
       - Jwt__Audience=api-clients
       - Jwt__Key=12382198398#*@&*$*#$&#*$#$AKSJDLKSADDAKDOPADI&^&^%$#@!@#$
     ports:
-      - "5003:8080"
+      - "5004:8080"
     networks:
       - backend
 
@@ -28,7 +28,7 @@ services:
       POSTGRES_PASSWORD: payment@123
       POSTGRES_DB: paymentdb
     ports:
-      - "5434:5432"
+      - "5435:5432"
     volumes:
       - payment-pgdata:/var/lib/postgresql/data
     networks:

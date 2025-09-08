@@ -1,7 +1,7 @@
 namespace Payment.Api.Contracts.Requests;
 public record PaymentRequest(
     Guid OrderId,
-    Guid CustomerId,
+    string TransactionId,
     decimal Price,
     string Currency,
     string PaymentMethod);

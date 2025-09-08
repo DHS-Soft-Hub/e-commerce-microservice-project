@@ -4,4 +4,5 @@ public record PaymentResponse(
     string Id,
     decimal Amount,
     string Currency,
-    string PaymentMethod);
+    string PaymentMethod,
+    string Status);
