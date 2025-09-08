@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Payment.Api.Data.Services.Interfaces;
 
 using Payment.Api.Contracts.Requests;
+using Payment.Api.Contracts.Responses;
 
 namespace Payment.Api.Controllers.V1
 {
@@ -38,17 +39,12 @@ namespace Payment.Api.Controllers.V1
             await _service.AddPaymentAsync(paymentEntity);
 
             // Return payment response that matches Frontend expectations
-            var response = new
-            {
-                Id = paymentEntity.Id,
-                OrderId = paymentEntity.OrderId,
-                CustomerId = paymentEntity.CustomerId,
-                Price = paymentEntity.Price,
-                Currency = paymentEntity.Currency,
-                PaymentMethod = paymentEntity.PaymentMethod,
-                Status = "Processed",
-                CreatedAt = paymentEntity.CreatedAt
-            };
+            var response = new PaymentResponse(
+                Id: paymentEntity.Id.ToString(),
+                Amount: paymentEntity.Price,
+                Currency: paymentEntity.Currency,
+                PaymentMethod: paymentEntity.PaymentMethod
+            );
 
             return CreatedAtAction(nameof(GetPaymentById), new { id = paymentEntity.Id }, response);
         }
