@@ -45,7 +45,7 @@ namespace Payment.Api.Controllers.V1
                 Id: paymentEntity.Id.ToString(),
                 Amount: paymentEntity.Price,
                 Currency: paymentEntity.Currency,
-                PaymentMethod: paymentEntity.PaymentMethod.ToString(),
+                PaymentMethod: nameof(paymentEntity.PaymentMethod),
                 Status: paymentEntity.Status.ToString()
             );
 
