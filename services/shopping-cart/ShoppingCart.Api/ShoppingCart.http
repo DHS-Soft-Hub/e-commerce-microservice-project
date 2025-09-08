@@ -1,0 +1,15 @@
+@Api_HostAddress = http://localhost:5005
+@itemId = 00000000-0000-0000-0000-000000000000
+### Get Cart
+GET {{Api_HostAddress}}/api/cart
+
+### Add Cart Item
+POST {{Api_HostAddress}}/api/cart/items
+Content-Type: application/json
+
+{
+  "productId": "00000000-0000-0000-0000-000000000001",
+  "productName": "Apple Iphone 14",
+  "price": 999,
+  "quantity": 20
+}

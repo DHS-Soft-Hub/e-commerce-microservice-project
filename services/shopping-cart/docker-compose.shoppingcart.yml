@@ -1,38 +1,36 @@
 services:
 
-  orderservice:
-    container_name: orderservice
+  shoppingcartservice:
+    container_name: shoppingcartservice
     build:
-      context: ./Orders.Api
+      context: ./ShoppingCart.Api
       dockerfile: Dockerfile
     depends_on:
-      ordersdb:
+      shoppingcartdb:
         condition: service_healthy
-      rabbitmq:
-        condition: service_started
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__postgresdb=Host=ordersdb;Database=ordersdb;Username=postgres;Password=order@123
+      - ConnectionStrings__postgresdb=Host=shoppingcartdb;Database=shoppingcartdb;Username=postgres;Password=shoppingcart@123
       - ConnectionStrings__RabbitMQ=amqp://guest:guest@rabbitmq:5672/
-      - Jwt__Issuer=http://orderservice
+      - Jwt__Issuer=http://shoppingcartservice
       - Jwt__Audience=api-clients
       - Jwt__Key=12382198398#*@&*$*#$&#*$#$AKSJDLKSADDAKDOPADI&^&^%$#@!@#$
     ports:
-      - "5002:8080"
+      - "5003:8080"
     networks:
       - backend
 
-  ordersdb:
-    container_name: ordersdb
+  shoppingcartdb:
+    container_name: shoppingcartdb
     image: postgres:latest
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: order@123
-      POSTGRES_DB: ordersdb
+      POSTGRES_PASSWORD: shoppingcart@123
+      POSTGRES_DB: shoppingcartdb
     ports:
-      - "5433:5432"
+      - "5434:5432"
     volumes:
-      - orders-pgdata:/var/lib/postgresql/data
+      - shoppingcart-pgdata:/var/lib/postgresql/data
     networks:
       - backend
     healthcheck:
@@ -56,9 +54,8 @@ services:
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq
 
-
 volumes:
-  orders-pgdata:
+  shoppingcart-pgdata:
   rabbitmq-data:
 
 networks:

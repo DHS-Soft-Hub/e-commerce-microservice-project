@@ -2,8 +2,8 @@ services:
   orderservice:
     container_name: orderservice
     build:
-      context: .  # IMPORTANT: points to /services so shared folders are visible
-      dockerfile: orders/Orders.Api/Dockerfile
+      context: ../  # IMPORTANT: points to /services so shared folders are visible
+      dockerfile: docker/Dockerfile.orders
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__postgresdb=Host=ordersdb;Database=ordersdb;Username=postgres;Password=order@123

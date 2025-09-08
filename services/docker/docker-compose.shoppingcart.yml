@@ -1,0 +1,48 @@
+services:
+
+  shoppingcartservice:
+    container_name: shoppingcartservice
+    build:
+      context: ../  # IMPORTANT: points to /services so shared folders are visible
+      dockerfile: docker/Dockerfile.shoppingcart
+    depends_on:
+      shoppingcartdb:
+        condition: service_healthy
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__postgresdb=Host=shoppingcartdb;Database=shoppingcartdb;Username=postgres;Password=shoppingcart@123
+      - ConnectionStrings__RabbitMQ=amqp://guest:guest@rabbitmq:5672/
+      - Jwt__Issuer=http://shoppingcartservice
+      - Jwt__Audience=api-clients
+      - Jwt__Key=12382198398#*@&*$*#$&#*$#$AKSJDLKSADDAKDOPADI&^&^%$#@!@#$
+    ports:
+      - "5003:8080"
+    networks:
+      - backend
+
+  shoppingcartdb:
+    container_name: shoppingcartdb
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: shoppingcart@123
+      POSTGRES_DB: shoppingcartdb
+    ports:
+      - "5434:5432"
+    volumes:
+      - shoppingcart-pgdata:/var/lib/postgresql/data
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  shoppingcart-pgdata:
+
+networks:
+  backend:
+    driver: bridge

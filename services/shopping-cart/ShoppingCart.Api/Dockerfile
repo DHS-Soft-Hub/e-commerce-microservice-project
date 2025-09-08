@@ -7,4 +7,4 @@ COPY . ./
 EXPOSE 5003
 
 # Run the application
-ENTRYPOINT ["dotnet", "bin/Debug/net9.0/Orders.Api.dll"]
+ENTRYPOINT ["dotnet", "bin/Debug/net9.0/ShoppingCart.Api.dll"]
