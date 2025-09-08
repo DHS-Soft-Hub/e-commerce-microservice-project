@@ -37,6 +37,16 @@ namespace Orders.Domain.Aggregates
 
         public void Update(OrderId id, CustomerId customerId, List<OrderItem> items, string currency, string? status = null)
         {
+            if (id != Id)
+            {
+                throw new ArgumentException("Order ID cannot be changed.", nameof(id));
+            }
+
+            if (customerId == null)
+            {
+                throw new ArgumentNullException(nameof(customerId), "Customer ID cannot be null.");
+            }
+            
             CustomerId = customerId;
             Items = items ?? new List<OrderItem>();
             Currency = currency;
@@ -51,11 +61,32 @@ namespace Orders.Domain.Aggregates
 
         public void UpdateStatus(OrderStatus newStatus)
         {
+            if (!Enum.IsDefined(typeof(OrderStatus), newStatus))
+            {
+                throw new ArgumentException("Invalid order status.", nameof(newStatus));
+            }
+
             if (Status != newStatus)
             {
                 Status = newStatus;
                 // Could add domain events here for status changes if needed
             }
+        }
+
+        public void AddItem(OrderItem item)
+        {
+            if (item == null)
+            {
+                throw new ArgumentNullException(nameof(item), "Order item cannot be null.");
+            }
+
+            if (item.Quantity <= 0)
+            {
+                throw new ArgumentException("Quantity must be greater than zero.", nameof(item.Quantity));
+            }
+
+            Items.Add(item);
+            TotalPrice += item.UnitPrice * item.Quantity;
         }
 
         // parameterless constructor for EF Core
