@@ -15,7 +15,7 @@ public class PrepareCheckoutCommandHandler : IRequestHandler<PrepareCheckoutComm
 
     public async Task<CheckoutDataResponse> Handle(PrepareCheckoutCommand request, CancellationToken cancellationToken)
     {
-        var cart = await _cartRepository.GetByUserAsync(request.UserId);
+        var cart = await _cartRepository.GetByUserOrSessionAsync(request.UserId, request.SessionId);
         if (cart == null)
         {
             throw new InvalidOperationException($"Cart not found for user {request.UserId}");
