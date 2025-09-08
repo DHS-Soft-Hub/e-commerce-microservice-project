@@ -21,17 +21,17 @@ namespace Payment.Api.Data.Services.Implementations
             _logger = logger;
         }
 
-        public Task<Models.Entities.Payment> GetPaymentByIdAsync(Guid id)
+        public Task<Entities.Payment> GetPaymentByIdAsync(Guid id)
         {
             return _repository.GetPaymentByIdAsync(id);
         }
 
-        public Task<IEnumerable<Models.Entities.Payment>> GetAllPaymentsAsync()
+        public Task<IEnumerable<Entities.Payment>> GetAllPaymentsAsync()
         {
             return _repository.GetAllPaymentsAsync();
         }
 
-        public async Task AddPaymentAsync(Models.Entities.Payment payment)
+        public async Task AddPaymentAsync(Entities.Payment payment)
         {
             await _repository.AddPaymentAsync(payment);
             await _publishEndpoint.Publish(new PaymentProcessedIntegrationEvent
@@ -45,7 +45,7 @@ namespace Payment.Api.Data.Services.Implementations
             ));
         }
 
-        public Task UpdatePaymentAsync(Models.Entities.Payment payment)
+        public Task UpdatePaymentAsync(Entities.Payment payment)
         {
             return _repository.UpdatePaymentAsync(payment);
         }

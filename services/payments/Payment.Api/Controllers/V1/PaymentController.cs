@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Payment.Api.Data.Services.Interfaces;
 
+using Payment.Api.Contracts.Requests;
+
 namespace Payment.Api.Controllers.V1
 {
     [ApiController]
@@ -15,14 +17,14 @@ namespace Payment.Api.Controllers.V1
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreatePayment([FromBody] Models.Requests.PaymentRequest payment)
+        public async Task<IActionResult> CreatePayment([FromBody] PaymentRequest payment)
         {
             if (payment == null)
             {
                 return BadRequest();
             }
 
-            var paymentEntity = new Models.Entities.Payment
+            var paymentEntity = new Entities.Payment
             {
                 Id = Guid.NewGuid(),
                 OrderId = payment.OrderId,
@@ -34,7 +36,7 @@ namespace Payment.Api.Controllers.V1
             };
 
             await _service.AddPaymentAsync(paymentEntity);
-            
+
             // Return payment response that matches Frontend expectations
             var response = new
             {
@@ -47,7 +49,7 @@ namespace Payment.Api.Controllers.V1
                 Status = "Processed",
                 CreatedAt = paymentEntity.CreatedAt
             };
-            
+
             return CreatedAtAction(nameof(GetPaymentById), new { id = paymentEntity.Id }, response);
         }
 

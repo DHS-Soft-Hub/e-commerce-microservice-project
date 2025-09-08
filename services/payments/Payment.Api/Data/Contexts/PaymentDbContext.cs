@@ -9,11 +9,11 @@ namespace Payment.Api.Data.Contexts
         {
         }
 
-        public DbSet<Models.Entities.Payment> Payments { get; set; }
+        public DbSet<Entities.Payment> Payments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Models.Entities.Payment>()
+            modelBuilder.Entity<Entities.Payment>()
                 .ToTable("Payments");
         }
     }

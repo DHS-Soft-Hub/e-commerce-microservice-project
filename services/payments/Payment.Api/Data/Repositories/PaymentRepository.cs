@@ -13,7 +13,7 @@ namespace Payment.Api.Data.Repositories
             _context = context;
         }
 
-        public Task AddPaymentAsync(Models.Entities.Payment payment)
+        public Task AddPaymentAsync(Entities.Payment payment)
         {
             _context.Payments.Add(payment);
             return _context.SaveChangesAsync();
@@ -30,17 +30,17 @@ namespace Payment.Api.Data.Repositories
             return Task.CompletedTask;
         }
 
-        public Task<IEnumerable<Models.Entities.Payment>> GetAllPaymentsAsync()
+        public async Task<IEnumerable<Entities.Payment>> GetAllPaymentsAsync()
         {
-            throw new NotImplementedException();
+            return await _context.Payments.ToListAsync();
         }
 
-        public Task<Models.Entities.Payment> GetPaymentByIdAsync(Guid id)
+        public async Task<Entities.Payment> GetPaymentByIdAsync(Guid id)
         {
-            throw new NotImplementedException();
+            return await _context.Payments.FindAsync(id).AsTask();
         }
 
-        public Task UpdatePaymentAsync(Models.Entities.Payment payment)
+        public Task UpdatePaymentAsync(Entities.Payment payment)
         {
             _context.Payments.Update(payment);
             return _context.SaveChangesAsync();
