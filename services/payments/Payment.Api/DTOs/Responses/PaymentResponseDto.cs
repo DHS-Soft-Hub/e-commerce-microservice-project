@@ -1,6 +1,6 @@
 namespace Payment.Api.DTOs.Responses;
 
-public record PaymentResponse(
+public record PaymentResponseDto(
     string Id,
     string OrderId,
     string TransactionId,

@@ -19,7 +19,7 @@ namespace Payment.Api.Controllers.V1
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreatePayment([FromBody] PaymentCreateRequest payment)
+        public async Task<IActionResult> CreatePayment([FromBody] PaymentCreateRequestDto payment)
         {
             if (payment == null)
             {
@@ -49,7 +49,7 @@ namespace Payment.Api.Controllers.V1
         }
 
         [HttpPut("{id:guid}")]
-        public async Task<IActionResult> UpdatePayment(Guid id, [FromBody] PaymentUpdateRequest payment)
+        public async Task<IActionResult> UpdatePayment(Guid id, [FromBody] PaymentUpdateRequestDto payment)
         {
             if (payment == null || id == Guid.Empty)
             {

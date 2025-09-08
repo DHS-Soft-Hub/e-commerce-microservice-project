@@ -15,25 +15,32 @@ public class PaymentGrpcService : Protos.PaymentService.PaymentServiceBase
         _paymentService = paymentService;
     }
 
-    public override async Task<PaymentResponse> CreatePayment(PaymentRequest request, ServerCallContext context)
+    public override async Task<PaymentCreateResponse> CreatePayment(PaymentCreateRequest request, ServerCallContext context)
     {
-        await _paymentService.AddPaymentAsync(
-            new PaymentCreateRequest
+        var response = await _paymentService.AddPaymentAsync(
+            new PaymentCreateRequestDto
             (
-                OrderId: Guid.Parse(request.OrderId),
-                TransactionId: request.TransactionId,
-                Price: (decimal)request.Amount,
-                Currency: request.Currency,
-                PaymentMethod: request.PaymentMethod
+                OrderId: Guid.Parse(request.Payment.OrderId),
+                TransactionId: request.Payment.TransactionId,
+                Price: (decimal)request.Payment.Amount,
+                Currency: request.Payment.Currency,
+                PaymentMethod: request.Payment.PaymentMethod
             ));
 
-        return new PaymentResponse
+        return new PaymentCreateResponse
         {
-            OrderId = request.OrderId,
-            Status = PaymentStatus.Pending.ToString(),
-            TransactionId = request.TransactionId,
-            Amount = request.Amount,
-            Currency = request.Currency,
+            Payment = MapToPaymentDto(response)
         };
     }
+
+    private Protos.Payment MapToPaymentDto(DTOs.Responses.PaymentResponseDto payment) => new()
+    {
+        Id = payment.Id,
+        OrderId = payment.OrderId,
+        TransactionId = payment.TransactionId,
+        Amount = (double)payment.Amount,
+        Currency = payment.Currency,
+        PaymentMethod = payment.PaymentMethod,
+        Status = payment.Status
+    };
 }

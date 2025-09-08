@@ -4,8 +4,8 @@ option csharp_namespace = "Payment.Api.Protos";
 
 package payment;
 
-// The payment request message
-message PaymentRequest {
+// The payment message
+message PaymentCreate {
     string order_id = 1;
     string transaction_id = 2;
     string payment_method = 3;
@@ -13,8 +13,7 @@ message PaymentRequest {
     string currency = 5;
 }
 
-// The payment response message
-message PaymentResponse {
+message PaymentUpdate {
     string id = 1;
     string order_id = 2;
     string transaction_id = 3;
@@ -24,11 +23,65 @@ message PaymentResponse {
     string status = 7;
 }
 
+message Payment {
+    string id = 1;
+    string order_id = 2;
+    string transaction_id = 3;
+    string payment_method = 4;
+    double amount = 5;
+    string currency = 6;
+    string status = 7;
+    string created_at = 8;
+    string updated_at = 9;
+}
+
+// The request message containing the payment details
+message PaymentCreateRequest {
+    PaymentCreate payment = 1;
+}
+
+message PaymentCreateResponse {
+    Payment payment = 1;
+}
+
+message PaymentUpdateRequest {
+    PaymentUpdate payment = 1;
+}
+
+message PaymentUpdateResponse {
+    Payment payment = 1;
+}
+
+message PaymentGetRequest {
+    string id = 1;
+}
+
+message PaymentGetResponse {
+    Payment payment = 1;
+}
+
+message PaymentDeleteRequest {
+    string id = 1;
+}
+
+message PaymentDeleteResponse {
+    string id = 1;
+}
+
+message PaymentListRequest {
+    int32 page_number = 1;
+    int32 page_size = 2;
+}
+
+message PaymentListResponse {
+    repeated Payment payments = 1;
+}
+
 // The payment service definition
 service PaymentService {
-    rpc CreatePayment (PaymentRequest) returns (PaymentResponse);
-    rpc GetPayment (PaymentRequest) returns (PaymentResponse);
-    rpc UpdatePayment (PaymentRequest) returns (PaymentResponse);
-    rpc DeletePayment (PaymentRequest) returns (PaymentResponse);
-    rpc ListPayments (PaymentRequest) returns (stream PaymentResponse);
+    rpc CreatePayment (PaymentCreateRequest) returns (PaymentCreateResponse);
+    rpc GetPayment (PaymentGetRequest) returns (PaymentGetResponse);
+    rpc UpdatePayment (PaymentUpdateRequest) returns (PaymentUpdateResponse);
+    rpc DeletePayment (PaymentDeleteRequest) returns (PaymentDeleteResponse);
+    rpc ListPayments (PaymentListRequest) returns (stream PaymentListResponse);
 }

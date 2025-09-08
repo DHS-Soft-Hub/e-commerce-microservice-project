@@ -26,13 +26,14 @@ namespace Payment.Api.Services.Implementations
             _logger = logger;
         }
 
-        public async Task<PaymentResponse> AddPaymentAsync(PaymentCreateRequest payment)
+        public async Task<PaymentResponseDto> AddPaymentAsync(PaymentCreateRequestDto payment)
         {
 
             var newPayment = new Entities.Payment
             {
                 Id = Guid.NewGuid(),
                 OrderId = payment.OrderId,
+                TransactionId = payment.TransactionId,
                 Price = payment.Price,
                 Currency = payment.Currency,
                 PaymentMethod = Enum.Parse<PaymentMethods>(payment.PaymentMethod),
@@ -44,6 +45,7 @@ namespace Payment.Api.Services.Implementations
             await _publishEndpoint.Publish(new PaymentProcessedIntegrationEvent
             (
                 OrderId: newPayment.OrderId,
+                TransactionId: Guid.Parse(newPayment.TransactionId),
                 PaymentId: newPayment.Id,
                 Price: newPayment.Price,
                 Currency: newPayment.Currency,
@@ -51,7 +53,7 @@ namespace Payment.Api.Services.Implementations
                 ProcessedAt: newPayment.CreatedAt
             ));
 
-            return new PaymentResponse(
+            return new PaymentResponseDto(
                 Id: newPayment.Id.ToString(),
                 OrderId: newPayment.OrderId.ToString(),
                 TransactionId: newPayment.TransactionId,
@@ -62,11 +64,11 @@ namespace Payment.Api.Services.Implementations
             );
         }
 
-        public async Task<PaymentResponse> GetPaymentByIdAsync(Guid id)
+        public async Task<PaymentResponseDto> GetPaymentByIdAsync(Guid id)
         {
             var payment = await _repository.GetPaymentByIdAsync(id);
 
-            return new PaymentResponse(
+            return new PaymentResponseDto(
                 Id: payment.Id.ToString(),
                 OrderId: payment.OrderId.ToString(),
                 TransactionId: payment.TransactionId.ToString(),
@@ -77,11 +79,11 @@ namespace Payment.Api.Services.Implementations
             );
         }
 
-        public async Task<IEnumerable<PaymentResponse>> GetAllPaymentsAsync()
+        public async Task<IEnumerable<PaymentResponseDto>> GetAllPaymentsAsync()
         {
             var payments = await _repository.GetAllPaymentsAsync();
 
-            return payments.Select(payment => new PaymentResponse(
+            return payments.Select(payment => new PaymentResponseDto(
                 Id: payment.Id.ToString(),
                 OrderId: payment.OrderId.ToString(),
                 TransactionId: payment.TransactionId.ToString(),
@@ -92,7 +94,7 @@ namespace Payment.Api.Services.Implementations
             ));
         }
 
-        public async Task UpdatePaymentAsync(PaymentUpdateRequest payment)
+        public async Task UpdatePaymentAsync(PaymentUpdateRequestDto payment)
         {
             var existingPayment = await _repository.GetPaymentByIdAsync(payment.Id);
             if (existingPayment == null)
