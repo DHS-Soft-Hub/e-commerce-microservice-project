@@ -62,5 +62,37 @@ namespace Payment.Api.Controllers.V1
             }
             return Ok(payment);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllPayments()
+        {
+            var payments = await _service.GetAllPaymentsAsync();
+            return Ok(payments);
+        }
+
+        [HttpPut("{id:guid}")]
+        public async Task<IActionResult> UpdatePayment(Guid id, [FromBody] PaymentRequest payment)
+        {
+            if (payment == null || id == Guid.Empty)
+            {
+                return BadRequest();
+            }
+
+            var paymentEntity = new Entities.Payment
+            {
+                Id = id,
+                OrderId = payment.OrderId,
+                TransactionId = payment.TransactionId,
+                Status = PaymentStatus.Processing,
+                Price = payment.Price,
+                Currency = payment.Currency,
+                PaymentMethod = (PaymentMethods)Enum.Parse(typeof(PaymentMethods), payment.PaymentMethod, true),
+                CreatedAt = DateTime.UtcNow
+            };
+
+            await _service.UpdatePaymentAsync(paymentEntity);
+
+            return Ok();
+        }
     }
 }
