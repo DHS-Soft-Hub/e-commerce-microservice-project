@@ -9,15 +9,37 @@ using Shared.Contracts.Inventory.Events;
 using Shared.Contracts.Payments.Events;
 using Shared.Contracts.Shipment.Events;
 using Shared.Contracts.Orders.Events;
+using Shared.Logging;
+using Microsoft.Extensions.Logging;
 
 public class OrderCreateSaga_E2ETests
 {
+    private readonly ILogger<OrderCreateSaga_E2ETests> _logger;
+
+    // xUnit doesn't provide Microsoft.Extensions.Logging via constructor injection.
+    // Create a logger locally so the test can run under `dotnet test`.
+    public OrderCreateSaga_E2ETests()
+    {
+        var loggerFactory = LoggerFactory.Create(builder =>
+        {
+            builder.SetMinimumLevel(LogLevel.Information);
+            builder.AddSimpleConsole(options =>
+            {
+                options.SingleLine = true;
+                options.TimestampFormat = "HH:mm:ss.fff ";
+            });
+        });
+        _logger = loggerFactory.CreateLogger<OrderCreateSaga_E2ETests>();
+    }
+
     [Fact]
     public async Task OrderSaga_Completes_EndToEnd_With_RabbitMq()
     {
         // Assumes RabbitMQ + Orders.Api are running (docker-compose)
-    var completedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var completedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
         var services = new ServiceCollection();
+        services.AddLoggingConfiguration();
+        
         services.AddMassTransit(x =>
         {
             x.UsingRabbitMq((ctx, cfg) =>
@@ -83,8 +105,11 @@ public class OrderCreateSaga_E2ETests
                 // Explicit listener for OrderStatusChangedIntegrationEvent
                 cfg.ReceiveEndpoint("orders-e2e-listener", e =>
                 {
+                    _logger.LogInformation("Listening for OrderStatusChangedIntegrationEvent");
                     e.Handler<OrderStatusChangedIntegrationEvent>(ctx =>
                     {
+                        _logger.LogInformation("Order {OrderId} changed status to {Status}",
+                            ctx.Message.OrderId, ctx.Message.Status);
                         if (ctx.Message.Status == "Completed")
                             completedTcs.TrySetResult(true);
                         return Task.CompletedTask;

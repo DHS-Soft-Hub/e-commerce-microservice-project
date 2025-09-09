@@ -10,7 +10,8 @@
     <ProjectReference Include="..\Orders.Domain\Orders.Domain.csproj" />
     <ProjectReference Include="..\..\shared\dotnet\Shared.Domain\Shared.Domain.csproj" />
     <ProjectReference Include="..\..\shared\dotnet\Shared.Infrastructure\Shared.Infrastructure.csproj" />
-  <ProjectReference Include="..\..\shared\dotnet\Shared.Contracts\Shared.Contracts.csproj" />
+    <ProjectReference Include="..\..\shared\dotnet\Shared.Logging\Shared.Logging.csproj" />
+    <ProjectReference Include="..\..\shared\dotnet\Shared.Contracts\Shared.Contracts.csproj" />
   </ItemGroup>
 
   <ItemGroup>

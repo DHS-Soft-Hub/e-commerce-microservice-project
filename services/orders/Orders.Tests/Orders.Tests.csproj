@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="6.0.2" />
+    <PackageReference Include="MartinCostello.Logging.XUnit" Version="0.6.0" />
     <PackageReference Include="MassTransit" Version="8.5.2" />
     <PackageReference Include="MassTransit.RabbitMQ" Version="8.5.2" />
     <PackageReference Include="MassTransit.TestFramework" Version="8.5.2" />
@@ -23,7 +24,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Orders.Application\Orders.Application.csproj" />
-  <ProjectReference Include="..\..\shared\dotnet\Shared.Contracts\Shared.Contracts.csproj" />
+    <ProjectReference Include="..\..\shared\dotnet\Shared.Contracts\Shared.Contracts.csproj" />
+    <ProjectReference Include="..\..\shared\dotnet\Shared.Logging\Shared.Logging.csproj" />
   </ItemGroup>
 
 </Project>
