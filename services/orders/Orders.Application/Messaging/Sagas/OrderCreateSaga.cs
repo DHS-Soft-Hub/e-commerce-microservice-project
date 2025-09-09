@@ -91,7 +91,7 @@ namespace Orders.Application.Sagas
                     {
                         context.Saga.InventoryStatus = context.Message.Status;
                         context.Saga.InventoryReservationId = context.Message.ReservationId;
-                        context.Saga.PaymentStatus = "Pending";
+                        context.Saga.PaymentStatus = "InventoryReserved";
                     })
                     .Send(context => new ProcessPaymentCommand(
                         context.Saga.OrderId,
@@ -126,7 +126,7 @@ namespace Orders.Application.Sagas
                         context.Saga.PaymentStatus = context.Message.Status;
                         context.Saga.PaymentId = context.Message.PaymentId;
                         context.Saga.PaymentProcessedAt = DateTime.UtcNow;
-                        context.Saga.ShippingStatus = "Pending";
+                        context.Saga.ShippingStatus = "Paid";
                     })
                     .Send(context => new CreateShipmentCommand(
                         context.Saga.OrderId,
@@ -164,15 +164,6 @@ namespace Orders.Application.Sagas
 
             // Shipment Created -> Order Shipped
             During(CreatingShipment,
-                When(OrderShipped)
-                .Then(context =>
-                {
-                    context.Saga.ShipmentId = context.Message.ShipmentId.ToString();
-                    context.Saga.ShippingStatus = "Shipped";
-                    context.Saga.ShippedAt = InVar.Timestamp;
-                })
-                .TransitionTo(WaitingForDelivery),
-
                 When(ShipmentCreated)
                     .Then(context =>
                     {
@@ -182,8 +173,8 @@ namespace Orders.Application.Sagas
                     })
                     .Publish(context => new OrderStatusChangedIntegrationEvent(
                         context.Saga.OrderId,
-                        "Shipped",
-                        "Order has been shipped"
+                        "CreatingShipment",
+                        "Order shipment created"
                     ))
                     .TransitionTo(Shipped),
 
@@ -231,6 +222,14 @@ namespace Orders.Application.Sagas
 
             // Order Delivered after shipped
             During(Shipped,
+                When(OrderShipped)
+                    .Then(context =>
+                    {
+                        context.Saga.ShipmentId = context.Message.ShipmentId.ToString();
+                        context.Saga.ShippingStatus = "Shipped";
+                        context.Saga.ShippedAt = InVar.Timestamp;
+                    })
+                    .TransitionTo(WaitingForDelivery),
                 When(OrderDelivered)
                     .Then(context =>
                     {
@@ -246,7 +245,7 @@ namespace Orders.Application.Sagas
                     .Finalize()
             );
 
-            // Order Delivered -> Complete Order
+            // Order Delivered -> After shipped
             During(WaitingForDelivery,
                 When(OrderDelivered)
                     .Then(context =>

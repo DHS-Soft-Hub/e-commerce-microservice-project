@@ -38,7 +38,7 @@ namespace Orders.Application.Tests
                                 await ctx.Publish(new InventoryReservedIntegrationEvent(
                                     ctx.Message.OrderId,
                                     reservationId,
-                                    "Reserved",
+                                    "InventoryReserved",
                                     DateTime.UtcNow
                                 ));
                             });
@@ -131,10 +131,10 @@ namespace Orders.Application.Tests
                     items
                 ));
 
-                // Wait until the saga publishes Shipped status (after stubs publish InventoryReserved, PaymentProcessed, ShipmentCreated)
+                // Wait until the saga publishes CreatingShipment status (after stubs publish InventoryReserved, PaymentProcessed, ShipmentCreated)
                 Assert.True(await harness.Published.Any<OrderStatusChangedIntegrationEvent>(
-                    x => x.Context.Message.OrderId == orderId && x.Context.Message.Status == "Shipped"),
-                    "Expected Shipped status to be published");
+                    x => x.Context.Message.OrderId == orderId && x.Context.Message.Status == "CreatingShipment"),
+                    "Expected CreatingShipment status to be published");
 
                 // Finish the flow by publishing delivery event (shipment id matches stub)
                 var deliveredShipmentId = $"SHP-{orderId:N}";
