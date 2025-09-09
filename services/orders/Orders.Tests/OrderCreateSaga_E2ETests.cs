@@ -15,113 +15,87 @@ public class OrderCreateSaga_E2ETests
     [Fact]
     public async Task OrderSaga_Completes_EndToEnd_With_RabbitMq()
     {
-        var completedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-        var rabbitHost = Environment.GetEnvironmentVariable("RABBITMQ_HOST") ?? "localhost";
-        var shipmentIds = new System.Collections.Concurrent.ConcurrentDictionary<Guid, string>();
-
-        var bus = MassTransit.Bus.Factory.CreateUsingRabbitMq(cfg =>
+        // Assumes RabbitMQ + Orders.Api are running (docker-compose)
+    var completedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var services = new ServiceCollection();
+        services.AddMassTransit(x =>
         {
-            cfg.Host(rabbitHost, "/", h =>
+            x.UsingRabbitMq((ctx, cfg) =>
             {
-                h.Username("guest");
-                h.Password("guest");
-            });
-
-            // Use default URN-based entity names to match Orders.Api
-
-            // Stub external services as consumers in test process
-            cfg.ReceiveEndpoint("inventory-e2e-stub", e =>
-            {
-                e.Handler<ReserveInventoryCommand>(async ctx =>
+                cfg.Host(Environment.GetEnvironmentVariable("RABBITMQ_HOST") ?? "localhost", "/", h =>
                 {
-                    await ctx.Publish(new InventoryReservedIntegrationEvent(
-                        ctx.Message.OrderId,
-                        $"RSV-{ctx.Message.OrderId:N}",
-                        "Reserved",
-                        DateTime.UtcNow
-                    ));
+                    h.Username("guest");
+                    h.Password("guest");
                 });
-                e.Handler<ReleaseInventoryCommand>(ctx => Task.CompletedTask);
-            });
 
-            cfg.ReceiveEndpoint("payment-e2e-stub", e =>
-            {
-                e.Handler<ProcessPaymentCommand>(async ctx =>
+                // Stub external services as consumers in test process
+                cfg.ReceiveEndpoint("inventory-e2e-stub", e =>
                 {
-                    await ctx.Publish(new PaymentProcessedIntegrationEvent(
-                        ctx.Message.OrderId,
-                        NewId.NextGuid(),
-                        ctx.Message.Amount,
-                        ctx.Message.Currency,
-                        ctx.Message.PaymentMethod,
-                        "Processed",
-                        DateTime.UtcNow
-                    ));
-                });
-                e.Handler<RefundPaymentCommand>(ctx => Task.CompletedTask);
-            });
-
-            cfg.ReceiveEndpoint("shipping-e2e-stub", e =>
-            {
-                e.Handler<CreateShipmentCommand>(async ctx =>
-                {
-                    var shipmentId = $"SHP-{ctx.Message.OrderId:N}";
-                    shipmentIds[ctx.Message.OrderId] = shipmentId;
-                    Console.WriteLine($"[E2E] shipping-e2e-stub received CreateShipmentCommand for {ctx.Message.OrderId}, publishing ShipmentCreated with {shipmentId}");
-
-                    await ctx.Publish(new ShipmentCreatedIntegrationEvent(
-                        ctx.Message.OrderId,
-                        shipmentId,
-                        "Created",
-                        DateTime.UtcNow
-                    ));
-
-                    // Ensure the saga has transitioned to Shipped before delivering
-                    await Task.Delay(2000);
-                    Console.WriteLine($"[E2E] shipping-e2e-stub publishing OrderDelivered for {ctx.Message.OrderId}");
-                    await ctx.Publish(new OrderDeliveredIntegrationEvent(
-                        ctx.Message.OrderId,
-                        shipmentId,
-                        DateTime.UtcNow
-                    ));
-
-                    // Also send to kebab-case exchange if API uses kebab entity formatter
-                    try
+                    e.Handler<ReserveInventoryCommand>(async ctx =>
                     {
-                        var delivered = new OrderDeliveredIntegrationEvent(
+                        await ctx.Publish(new InventoryReservedIntegrationEvent(
                             ctx.Message.OrderId,
-                            shipmentId,
+                            $"RSV-{ctx.Message.OrderId:N}",
+                            "Reserved",
                             DateTime.UtcNow
-                        );
-                        var kebabExchange = "orders-application-events-integration-order-order-delivered-integration-event";
-                        var ep = await ctx.GetSendEndpoint(new Uri($"exchange:{kebabExchange}"));
-                        await ep.Send(delivered);
-                    }
-                    catch { /* ignore */ }
+                        ));
+                    });
+                    e.Handler<ReleaseInventoryCommand>(ctx => Task.CompletedTask);
                 });
-            });
 
-            // Listener for OrderStatusChangedIntegrationEvent (bind to URN + kebab exchanges)
-            cfg.ReceiveEndpoint("orders-e2e-listener", e =>
-            {
-                e.ConfigureConsumeTopology = false;
-                e.Bind("urn:message:Orders.Application.Events.Integration.Order:OrderStatusChangedIntegrationEvent");
-                e.Bind("orders-application-events-integration-order-order-status-changed-integration-event");
-
-                e.Handler<OrderStatusChangedIntegrationEvent>(ctx =>
+                cfg.ReceiveEndpoint("payment-e2e-stub", e =>
                 {
-                    Console.WriteLine($"[E2E] orders-e2e-listener received OrderStatusChanged: {ctx.Message.Status} for {ctx.Message.OrderId}");
-                    if (ctx.Message.Status == "Completed")
+                    e.Handler<ProcessPaymentCommand>(async ctx =>
                     {
-                        completedTcs.TrySetResult(true);
-                    }
-                    return Task.CompletedTask;
+                        await ctx.Publish(new PaymentProcessedIntegrationEvent(
+                            ctx.Message.OrderId,
+                            NewId.NextGuid(),
+                            ctx.Message.Amount,
+                            ctx.Message.Currency,
+                            ctx.Message.PaymentMethod,
+                            "Processed",
+                            DateTime.UtcNow
+                        ));
+                    });
+                    e.Handler<RefundPaymentCommand>(ctx => Task.CompletedTask);
+                });
+
+                cfg.ReceiveEndpoint("shipping-e2e-stub", e =>
+                {
+                    e.Handler<CreateShipmentCommand>(async ctx =>
+                    {
+                        await ctx.Publish(new ShipmentCreatedIntegrationEvent(
+                            ctx.Message.OrderId,
+                            $"SHP-{ctx.Message.OrderId:N}",
+                            "Created",
+                            DateTime.UtcNow
+                        ));
+
+                        // Simulate delivery after shipment creation
+                        await ctx.Publish(new OrderDeliveredIntegrationEvent(
+                            ctx.Message.OrderId,
+                            $"SHP-{ctx.Message.OrderId:N}",
+                            DateTime.UtcNow
+                        ));
+                    });
+                });
+
+                // Explicit listener for OrderStatusChangedIntegrationEvent
+                cfg.ReceiveEndpoint("orders-e2e-listener", e =>
+                {
+                    e.Handler<OrderStatusChangedIntegrationEvent>(ctx =>
+                    {
+                        if (ctx.Message.Status == "Completed")
+                            completedTcs.TrySetResult(true);
+                        return Task.CompletedTask;
+                    });
                 });
             });
         });
 
+        var provider = services.BuildServiceProvider(true);
+        var bus = provider.GetRequiredService<IBusControl>();
         await bus.StartAsync();
-        Console.WriteLine($"E2E Test Bus Address: {bus.Address}");
         try
         {
             var orderId = NewId.NextGuid();
@@ -136,13 +110,14 @@ public class OrderCreateSaga_E2ETests
                 new()
             ));
 
-            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
             Assert.True(await Task.WhenAny(completedTcs.Task, Task.Delay(-1, cts.Token)) == completedTcs.Task,
                 "Order did not reach Completed status in time");
         }
         finally
         {
             await bus.StopAsync();
+            await provider.DisposeAsync();
         }
     }
 }
