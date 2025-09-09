@@ -37,8 +37,9 @@ namespace Orders.Application.Sagas
             // Configure event correlations
             Event(() => OrderCreated, x =>
             {
+                // Correlate all saga messages by OrderId and create the saga instance using OrderId as CorrelationId
                 x.CorrelateById(m => m.Message.OrderId);
-                x.OnMissingInstance(m => m.Discard());
+                x.SelectId(m => m.Message.OrderId);
             });
 
             Event(() => InventoryReserved, x => x.CorrelateById(m => m.Message.OrderId));
@@ -250,6 +251,7 @@ namespace Orders.Application.Sagas
                 When(OrderDelivered)
                     .Then(context =>
                     {
+                        context.Saga.ShippingStatus = "Delivered";
                         context.Saga.CompletedAt = DateTime.UtcNow;
                     })
                     .Publish(context => new OrderStatusChangedIntegrationEvent(
