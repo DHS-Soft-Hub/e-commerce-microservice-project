@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Builder;
 using Orders.Infrastructure.Persistence.Interceptors;
 using Orders.Application.Sagas;
 using MassTransit;
+using Orders.Application.Messaging.Contracts;
 
 public static class DependencyInjection
 {
@@ -36,6 +37,20 @@ public static class DependencyInjection
                         r.ExistingDbContext<OrdersDbContext>();
                     });
             });
+
+        // Option B: Isolated E2E wiring
+        // When USE_E2E_STUBS=true, route command messages to the E2E stub queues
+        // that are hosted by the test process (inventory/payment/shipping -e2e-stub).
+        // This ensures the running Orders.Api uses the test stubs during E2E.
+        var useE2EStubs = configuration.GetValue<bool>("USE_E2E_STUBS");
+        if (useE2EStubs)
+        {
+            EndpointConvention.Map<ReserveInventoryCommand>(new Uri("queue:inventory-e2e-stub"));
+            EndpointConvention.Map<ReleaseInventoryCommand>(new Uri("queue:inventory-e2e-stub"));
+            EndpointConvention.Map<ProcessPaymentCommand>(new Uri("queue:payment-e2e-stub"));
+            EndpointConvention.Map<RefundPaymentCommand>(new Uri("queue:payment-e2e-stub"));
+            EndpointConvention.Map<CreateShipmentCommand>(new Uri("queue:shipping-e2e-stub"));
+        }
 
         // Add repositories
         services.AddScoped<PublishDomainEventsInterceptor>();
