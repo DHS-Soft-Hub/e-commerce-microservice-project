@@ -102,7 +102,7 @@ public class OrderCreateSaga_E2ETests
             var customerId = NewId.NextGuid();
 
             // Kick off saga by publishing the OrderCreated event
-            await bus.Publish(new Shared.Contracts.Orders.Events.OrderCreatedIntegrationEvent(
+            await bus.Publish(new OrderCreatedIntegrationEvent(
                 orderId,
                 customerId,
                 149.99m,
