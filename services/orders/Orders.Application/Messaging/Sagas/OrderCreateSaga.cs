@@ -225,7 +225,7 @@ namespace Orders.Application.Sagas
                 When(OrderShipped)
                     .Then(context =>
                     {
-                        context.Saga.ShipmentId = context.Message.ShipmentId.ToString();
+                        context.Saga.ShipmentId = context.Message.ShipmentId;
                         context.Saga.ShippingStatus = "Shipped";
                         context.Saga.ShippedAt = InVar.Timestamp;
                     })

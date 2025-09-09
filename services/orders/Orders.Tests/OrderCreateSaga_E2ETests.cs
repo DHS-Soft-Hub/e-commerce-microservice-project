@@ -38,6 +38,8 @@ public class OrderCreateSaga_E2ETests
         // Assumes RabbitMQ + Orders.Api are running (docker-compose)
         var completedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
         var services = new ServiceCollection();
+
+        // Add logging from shared library
         services.AddLoggingConfiguration();
         
         services.AddMassTransit(x =>
@@ -58,7 +60,7 @@ public class OrderCreateSaga_E2ETests
                         await ctx.Publish(new InventoryReservedIntegrationEvent(
                             ctx.Message.OrderId,
                             $"RSV-{ctx.Message.OrderId:N}",
-                            "Reserved",
+                            "InventoryReserved",
                             DateTime.UtcNow
                         ));
                     });
@@ -75,7 +77,7 @@ public class OrderCreateSaga_E2ETests
                             ctx.Message.Amount,
                             ctx.Message.Currency,
                             ctx.Message.PaymentMethod,
-                            "Processed",
+                            "Paid",
                             DateTime.UtcNow
                         ));
                     });
@@ -89,7 +91,7 @@ public class OrderCreateSaga_E2ETests
                         await ctx.Publish(new ShipmentCreatedIntegrationEvent(
                             ctx.Message.OrderId,
                             $"SHP-{ctx.Message.OrderId:N}",
-                            "Created",
+                            "ShipmentCreated",
                             DateTime.UtcNow
                         ));
 
@@ -105,7 +107,6 @@ public class OrderCreateSaga_E2ETests
                 // Explicit listener for OrderStatusChangedIntegrationEvent
                 cfg.ReceiveEndpoint("orders-e2e-listener", e =>
                 {
-                    _logger.LogInformation("Listening for OrderStatusChangedIntegrationEvent");
                     e.Handler<OrderStatusChangedIntegrationEvent>(ctx =>
                     {
                         _logger.LogInformation("Order {OrderId} changed status to {Status}",
