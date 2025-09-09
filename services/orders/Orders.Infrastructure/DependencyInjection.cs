@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Builder;
 using Orders.Infrastructure.Persistence.Interceptors;
 using Orders.Application.Sagas;
 using MassTransit;
-using Orders.Application.Messaging.Contracts;
+using Shared.Contracts.Orders.Commands;
 
 public static class DependencyInjection
 {
