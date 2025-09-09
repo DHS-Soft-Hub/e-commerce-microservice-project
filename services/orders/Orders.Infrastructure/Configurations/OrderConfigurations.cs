@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Orders.Domain.Aggregates;
+using Orders.Domain.Enums;
 using Orders.Domain.ValueObjects;
 
 namespace Orders.Infrastructure.Configurations
@@ -34,6 +35,10 @@ namespace Orders.Infrastructure.Configurations
                 .IsRequired();
 
             builder.Property(o => o.Status)
+                .HasConversion(
+                    status => status.ToString(),
+                    value => Enum.Parse<OrderStatus>(value))
+                .HasMaxLength(20)
                 .IsRequired();
 
             builder.Property(o => o.CreatedDate)
