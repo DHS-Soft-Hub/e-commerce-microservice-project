@@ -1,0 +1,24 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug Orders.Tests (filter: OrderCreateSaga_E2ETests)",
+      "type": "coreclr",
+      "request": "launch",
+      "program": "dotnet",
+      "args": [
+        "test",
+        "${workspaceFolder}/Orders.Tests/Orders.Tests.csproj",
+        "--no-build",
+        "--filter",
+        "FullyQualifiedName~OrderCreateSaga_E2ETests"
+      ],
+      "cwd": "${workspaceFolder}/Orders.Tests/",
+      "env": {
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "console": "integratedTerminal",
+      "justMyCode": false
+    }
+  ]
+}
