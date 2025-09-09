@@ -3,21 +3,21 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
 # 1. Copy solution + project files (only metadata for restore layer)
-COPY shopping-cart/*.sln ./
-COPY shopping-cart/ShoppingCart.Api/ShoppingCart.Api.csproj shopping-cart/ShoppingCart.Api/
+COPY payment/*.sln ./
+COPY payment/ShoppingCart.Api/ShoppingCart.Api.csproj payment/ShoppingCart.Api/
 
 # Shopping Cart API project
-COPY shopping-cart/ShoppingCart.Api/ShoppingCart.Api.csproj shopping-cart/ShoppingCart.Api/
+COPY payment/ShoppingCart.Api/ShoppingCart.Api.csproj payment/ShoppingCart.Api/
 COPY shared/ shared/
 
 # Restore dependencies
-RUN dotnet restore shopping-cart/ShoppingCart.Api/ShoppingCart.Api.csproj
+RUN dotnet restore payment/ShoppingCart.Api/ShoppingCart.Api.csproj
 
 # 2. Copy the remaining source
 COPY . .
 
 # 3. Publish (explicitly target the ShoppingCart.Api project)
-RUN dotnet publish shopping-cart/ShoppingCart.Api/ShoppingCart.Api.csproj -c Release -o /out /p:UseAppHost=false
+RUN dotnet publish payment/ShoppingCart.Api/ShoppingCart.Api.csproj -c Release -o /out /p:UseAppHost=false
 
 # Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
