@@ -3,6 +3,7 @@ namespace Shared.Domain.Common;
 public class Result
 {
     public bool IsSuccess { get; private set; }
+    public bool IsFailure => !IsSuccess;
     public IReadOnlyList<string> Errors { get; private set; }
 
     private Result(bool isSuccess, IReadOnlyList<string>? errors)
@@ -21,11 +22,13 @@ public class Result
         var errors = results.Where(r => !r.IsSuccess).SelectMany(r => r.Errors);
         return errors.Any() ? Failure(errors) : Success();
     }
+
 }
 
 public class Result<T>
 {
     public bool IsSuccess { get; private set; }
+    public bool IsFailure => !IsSuccess;
     public IReadOnlyList<string> Errors { get; private set; }
     public T? Value { get; private set; }
 

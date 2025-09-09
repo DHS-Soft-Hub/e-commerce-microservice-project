@@ -1,5 +1,6 @@
 using Orders.Domain.ValueObjects;
 using Shared.Domain.Entities;
+using Shared.Domain.Common;
 
 namespace Orders.Domain.Entities
 {
@@ -27,6 +28,44 @@ namespace Orders.Domain.Entities
             Quantity = quantity;
             UnitPrice = unitPrice;
             Currency = currency;
+        }
+
+        /// <summary>
+        /// Calculates the total price for this order item.
+        /// Validates that quantity is greater than zero and unit price is non-negative.
+        /// </summary>
+        /// <returns></returns>
+        public Result<decimal> GetTotal()
+        {
+            if (Quantity <= 0)
+            {
+                return Result<decimal>.Failure("Quantity must be greater than zero.");
+            }
+
+            if (UnitPrice < 0)
+            {
+                return Result<decimal>.Failure("Unit price cannot be negative.");
+            }
+
+            decimal total = Quantity * UnitPrice;
+            return Result<decimal>.Success(total);
+        }
+
+        /// <summary>
+        /// Updates the quantity of the order item.
+        /// Validates that the new quantity is greater than zero.
+        /// </summary>
+        /// <param name="quantity">The new quantity.</param>
+        /// <returns>A Result indicating success or failure.</returns>
+        public Result UpdateQuantity(int quantity)
+        {
+            if (quantity <= 0)
+            {
+                return Result.Failure("Quantity must be greater than zero.");
+            }
+
+            Quantity = quantity;
+            return Result.Success();
         }
     }
 }

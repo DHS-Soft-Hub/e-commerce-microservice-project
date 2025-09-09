@@ -45,16 +45,28 @@ namespace Orders.Application.Commands
                     request.Currency
                 );
 
-                await _orderRepository.AddAsync(order);
+                if (order.IsFailure)
+                {
+                    await _unitOfWork.RollbackTransactionAsync(cancellationToken);
+                    throw new Exception(order.Errors.First());
+                }
+
+                if (order.Value == null || !order.Value.Items.Any())
+                {
+                    await _unitOfWork.RollbackTransactionAsync(cancellationToken);
+                    throw new Exception("Order must contain at least one item.");
+                }
+
+                await _orderRepository.AddAsync(order.Value);
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
                 await _unitOfWork.CommitTransactionAsync(cancellationToken);
 
                 // Return OrderDto matching Frontend expectations
                 return new OrderDto
                 {
-                    Id = order.Id.Value,
-                    CustomerId = order.CustomerId.Value,
-                    Items = order.Items.Select(item => new OrderItemDto
+                    Id = order.Value.Id.Value,
+                    CustomerId = order.Value.CustomerId.Value,
+                    Items = order.Value.Items.Select(item => new OrderItemDto
                     {
                         Id = item.Id.Value,
                         ProductId = item.ProductId.Value,
@@ -63,10 +75,10 @@ namespace Orders.Application.Commands
                         UnitPrice = item.UnitPrice,
                         Currency = item.Currency
                     }).ToList(),
-                    TotalPrice = order.TotalPrice,
-                    Currency = order.Currency,
-                    Status = order.Status.ToString(),
-                    CreatedAt = order.CreatedDate
+                    TotalPrice = order.Value.TotalPrice,
+                    Currency = order.Value.Currency,
+                    Status = order.Value.Status.ToString(),
+                    CreatedAt = order.Value.CreatedDate
                 };
             }
             catch

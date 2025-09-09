@@ -5,6 +5,7 @@ using Orders.Domain.Repositories;
 using Orders.Domain.Aggregates;
 using Orders.Domain.Entities;
 using Orders.Domain.ValueObjects;
+using Shared.Domain.Common;
 
 
 namespace Orders.Application.Commands;
@@ -20,15 +21,10 @@ public class UpdateOrderCommandHandler : IRequestHandler<UpdateOrderCommand, Ord
 
     public async Task<OrderDto> Handle(UpdateOrderCommand request, CancellationToken cancellationToken)
     {
-        Order? order = await _orderRepository.GetByIdAsync(request.OrderId);
-
-        if (order == null)
-        {
-            throw new KeyNotFoundException($"Order not found.");
-        }
+        Order order = await _orderRepository.GetByIdAsync(request.OrderId);
 
         // Update order properties
-        order.Update(
+        var result = order.Update(
             request.OrderId,
             request.CustomerId,
             request.Items.Select(item => new OrderItem(
@@ -44,12 +40,17 @@ public class UpdateOrderCommandHandler : IRequestHandler<UpdateOrderCommand, Ord
             request.Status
         );
 
-        await _orderRepository.UpdateAsync(order);
+        if (result.IsFailure)
+        {
+            throw new Exception("Failed to update order.");
+        }
+
+        await _orderRepository.UpdateAsync(result.Value);
 
         return new OrderDto
         {
             Id = order.Id.Value,
-            CustomerId = order.CustomerId,
+            CustomerId = order.CustomerId.Value,
             Items = order.Items.Select(i => new OrderItemDto
             {
                 Id = i.Id,
