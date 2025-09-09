@@ -4,11 +4,11 @@ using System.Threading.Tasks;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
-using Orders.Application.Messaging.Contracts;
-using Orders.Application.Events.Integration.Inventory;
-using Orders.Application.Events.Integration.Payment;
-using Orders.Application.Events.Integration.Shipment;
-using Orders.Application.Events.Integration.Order;
+using Shared.Contracts.Orders.Commands;
+using Shared.Contracts.Inventory.Events;
+using Shared.Contracts.Payments.Events;
+using Shared.Contracts.Shipment.Events;
+using Shared.Contracts.Orders.Events;
 
 public class OrderCreateSaga_E2ETests
 {
@@ -102,7 +102,7 @@ public class OrderCreateSaga_E2ETests
             var customerId = NewId.NextGuid();
 
             // Kick off saga by publishing the OrderCreated event
-            await bus.Publish(new Orders.Application.Events.Integration.Order.OrderCreatedIntegrationEvent(
+            await bus.Publish(new Shared.Contracts.Orders.Events.OrderCreatedIntegrationEvent(
                 orderId,
                 customerId,
                 149.99m,

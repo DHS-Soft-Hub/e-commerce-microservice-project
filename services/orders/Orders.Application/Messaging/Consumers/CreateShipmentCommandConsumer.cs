@@ -1,7 +1,8 @@
 using MassTransit;
 using Microsoft.Extensions.Logging;
-using Orders.Application.Events.Integration.Shipment;
-using Orders.Application.Messaging.Contracts;
+using Shared.Contracts.Shipment.Events;
+using Shared.Contracts.Orders.Commands;
+using Shared.Contracts.Orders.Events;
 
 namespace Orders.Application.Messaging.Consumers;
 
@@ -49,10 +50,9 @@ public class CreateShipmentCommandConsumer : IConsumer<CreateShipmentCommand>
                     _logger.LogInformation("Shipment {ShipmentId} for order {OrderId} has been delivered", 
                         shipmentId, command.OrderId);
 
-                    await context.Publish(new ShipmentDeliveredIntegrationEvent(
+                    await context.Publish(new OrderDeliveredIntegrationEvent(
                         command.OrderId,
                         shipmentId,
-                        "Delivered",
                         DateTime.UtcNow
                     ));
                 });

@@ -5,12 +5,12 @@ using MassTransit;
 using MassTransit.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Orders.Application.Sagas;
-using Orders.Application.Messaging.Contracts;
-using Orders.Application.Events.Integration.Inventory;
-using Orders.Application.Events.Integration.Payment;
-using Orders.Application.Events.Integration.Shipment;
-using Orders.Application.Events.Integration.Order;
-using Orders.Application.DTOs;
+using Shared.Contracts.Orders.Commands;
+using Shared.Contracts.Inventory.Events;
+using Shared.Contracts.Payments.Events;
+using Shared.Contracts.Shipment.Events;
+using Shared.Contracts.Orders.Events;
+using Shared.Contracts.Orders.Models;
 using Xunit;
 
 namespace Orders.Application.Tests

@@ -1,6 +1,6 @@
 using Shared.Domain.Events;
 
-namespace Orders.Application.Events.Integration.Order;
+namespace Shared.Contracts.Orders.Events;
 
 public record OrderStatusChangedIntegrationEvent(
     Guid OrderId,

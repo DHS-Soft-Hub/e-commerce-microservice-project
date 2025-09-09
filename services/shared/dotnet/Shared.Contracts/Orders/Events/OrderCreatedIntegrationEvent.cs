@@ -1,7 +1,7 @@
-using Orders.Application.DTOs;
+using Shared.Contracts.Orders.Models;
 using Shared.Domain.Events;
 
-namespace Orders.Application.Events.Integration.Order;
+namespace Shared.Contracts.Orders.Events;
 
 public record OrderCreatedIntegrationEvent (
     Guid OrderId,

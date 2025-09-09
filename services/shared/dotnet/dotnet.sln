@@ -1,4 +1,4 @@
-Microsoft Visual Studio Solution File, Format Version 12.00
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.2.0
 MinimumVisualStudioVersion = 10.0.40219.1
@@ -11,6 +11,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared.ServiceDefaults", "Shared.ServiceDefault\Shared.ServiceDefaults.csproj", "{1782ADD2-4600-D2BE-F558-AAF10988B26F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared.Logging", "Shared.Logging\Shared.Logging.csproj", "{95219393-3276-9EF9-B2A2-14D0D1377D54}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared.Contracts", "Shared.Contracts\Shared.Contracts.csproj", "{E69AA93E-B470-48B7-B76F-DEE9FA1850E1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,6 +40,10 @@ Global
 		{95219393-3276-9EF9-B2A2-14D0D1377D54}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{95219393-3276-9EF9-B2A2-14D0D1377D54}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{95219393-3276-9EF9-B2A2-14D0D1377D54}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E69AA93E-B470-48B7-B76F-DEE9FA1850E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E69AA93E-B470-48B7-B76F-DEE9FA1850E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E69AA93E-B470-48B7-B76F-DEE9FA1850E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E69AA93E-B470-48B7-B76F-DEE9FA1850E1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

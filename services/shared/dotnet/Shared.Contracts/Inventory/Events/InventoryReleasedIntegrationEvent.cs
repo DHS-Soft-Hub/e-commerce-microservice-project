@@ -1,6 +1,6 @@
 using Shared.Domain.Events;
 
-namespace Orders.Application.Events.Integration.Inventory;
+namespace Shared.Contracts.Inventory.Events;
 
 public record InventoryReleasedIntegrationEvent(
     Guid OrderId,

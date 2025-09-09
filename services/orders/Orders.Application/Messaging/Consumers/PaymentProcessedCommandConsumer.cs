@@ -1,8 +1,7 @@
 using MassTransit;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using Orders.Application.Messaging.Contracts;
-// using Payment.Api.Events; // Cross-service event
+using Shared.Contracts.Orders.Commands;
 
 namespace Orders.Infrastructure.Messaging.Consumers
 {

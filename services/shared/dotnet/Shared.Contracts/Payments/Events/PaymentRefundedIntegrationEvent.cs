@@ -1,6 +1,6 @@
 using Shared.Domain.Events;
 
-namespace Orders.Application.Events.Integration.Payment;
+namespace Shared.Contracts.Payments.Events;
 
 public record PaymentRefundedIntegrationEvent(
     Guid OrderId,

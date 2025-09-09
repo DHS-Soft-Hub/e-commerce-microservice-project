@@ -1,7 +1,7 @@
 using MassTransit;
 using Payment.Api.Data.Repositories;
 using Payment.Api.Services.Interfaces;
-using Payment.Api.Events;
+using Shared.Contracts.Payments.Events;
 using Payment.Api.DTOs.Responses;
 using Payment.Api.DTOs.Requests;
 using Payment.Api.Enums;
@@ -42,13 +42,12 @@ namespace Payment.Api.Services.Implementations
             };
             await _repository.AddPaymentAsync(newPayment);
 
-            await _publishEndpoint.Publish(new PaymentProcessedIntegrationEvent
-            (
+            await _publishEndpoint.Publish(new PaymentProcessedIntegrationEvent(
                 OrderId: newPayment.OrderId,
-                TransactionId: Guid.Parse(newPayment.TransactionId),
                 PaymentId: newPayment.Id,
-                Price: newPayment.Price,
+                Amount: newPayment.Price,
                 Currency: newPayment.Currency,
+                PaymentMethod: newPayment.PaymentMethod.ToString(),
                 Status: newPayment.Status.ToString(),
                 ProcessedAt: newPayment.CreatedAt
             ));

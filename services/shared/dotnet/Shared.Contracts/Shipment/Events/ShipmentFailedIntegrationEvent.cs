@@ -1,6 +1,6 @@
 using Shared.Domain.Events;
 
-namespace Orders.Application.Events.Integration.Shipment;
+namespace Shared.Contracts.Shipment.Events;
 
 public record ShipmentFailedIntegrationEvent(
     Guid OrderId,

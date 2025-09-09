@@ -1,6 +1,6 @@
 using Shared.Domain.Events;
 
-namespace Orders.Application.Messaging.Contracts;
+namespace Shared.Contracts.Orders.Commands;
 
 public record ReleaseInventoryCommand(
     Guid OrderId,

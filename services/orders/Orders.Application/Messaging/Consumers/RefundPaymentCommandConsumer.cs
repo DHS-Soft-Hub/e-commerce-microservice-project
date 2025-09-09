@@ -1,7 +1,7 @@
 using MassTransit;
 using Microsoft.Extensions.Logging;
-using Orders.Application.Events.Integration.Payment;
-using Orders.Application.Messaging.Contracts;
+using Shared.Contracts.Payments.Events;
+using Shared.Contracts.Orders.Commands;
 
 namespace Orders.Application.Messaging.Consumers;
 
