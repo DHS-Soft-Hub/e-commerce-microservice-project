@@ -1,0 +1,15 @@
+@Api_HostAddress = http://localhost:5004
+
+### Get Payment by ID
+GET {{Api_HostAddress}}/api/v1/payment/760a0fcf-e776-4def-b62d-5af3d66ca270
+### Add Payment
+POST {{Api_HostAddress}}/api/v1/payment
+Content-Type: application/json
+
+{
+  "orderId": "c65675cf-d841-4e72-ad4d-624aece75591",
+  "transactionId": "9d3276d8-8746-4b04-8770-b12a282df9a5",
+  "price": 20.00,
+  "currency": "USD",
+  "paymentMethod": "CashOnDelivery"
+}

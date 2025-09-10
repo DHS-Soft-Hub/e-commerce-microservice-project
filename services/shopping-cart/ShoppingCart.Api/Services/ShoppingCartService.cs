@@ -45,6 +45,6 @@ public class ShoppingCartService : IShoppingCartService
     public async Task<CartDto> CheckoutAsync(PrepareCheckoutCommand command, CancellationToken cancellationToken = default)
     {
         await _mediator.Send(command, cancellationToken);
-        return await GetCartAsync(new GetCartQuery(command.UserId, null), cancellationToken);
+        return await GetCartAsync(new GetCartQuery(command.UserId, command.SessionId), cancellationToken);
     }
 }

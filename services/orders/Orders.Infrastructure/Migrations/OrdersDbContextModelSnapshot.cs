@@ -102,8 +102,10 @@ namespace Orders.Infrastructure.Migrations
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("uuid");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
 
                     b.Property<decimal>("TotalPrice")
                         .HasColumnType("decimal(18,2)");

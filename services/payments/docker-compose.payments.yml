@@ -1,0 +1,63 @@
+services:
+
+  paymentservice:
+    container_name: paymentservice
+    build:
+      context: ./Payment.Api
+      dockerfile: Dockerfile
+    depends_on:
+      paymentdb:
+        condition: service_healthy
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__postgresdb=Host=paymentdb;Database=paymentdb;Username=postgres;Password=payment@123
+      - ConnectionStrings__RabbitMQ=amqp://guest:guest@rabbitmq:5672/
+      - Jwt__Issuer=http://paymentservice
+      - Jwt__Audience=api-clients
+      - Jwt__Key=12382198398#*@&*$*#$&#*$#$AKSJDLKSADDAKDOPADI&^&^%$#@!@#$
+    ports:
+      - "5004:8080"
+    networks:
+      - backend
+
+  paymentdb:
+    container_name: paymentdb
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: payment@123
+      POSTGRES_DB: paymentdb
+    ports:
+      - "5435:5432"
+    volumes:
+      - payment-pgdata:/var/lib/postgresql/data
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:4.1.3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - backend
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+
+volumes:
+  payment-pgdata:
+  rabbitmq-data:
+
+networks:
+  backend:
+    driver: bridge

@@ -1,6 +1,6 @@
 using MassTransit;
 using Microsoft.Extensions.Logging;
-using Orders.Application.Events.Integration.Order;
+using Shared.Contracts.Orders.Events;
 using Orders.Domain.Enums;
 using Orders.Domain.Repositories;
 using Orders.Domain.ValueObjects;

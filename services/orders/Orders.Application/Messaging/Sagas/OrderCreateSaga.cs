@@ -1,9 +1,9 @@
 using MassTransit;
-using Orders.Application.Messaging.Contracts;
-using Orders.Application.Events.Integration.Inventory;
-using Orders.Application.Events.Integration.Order;
-using Orders.Application.Events.Integration.Payment;
-using Orders.Application.Events.Integration.Shipment;
+using Shared.Contracts.Orders.Commands;
+using Shared.Contracts.Inventory.Events;
+using Shared.Contracts.Orders.Events;
+using Shared.Contracts.Payments.Events;
+using Shared.Contracts.Shipment.Events;
 
 namespace Orders.Application.Sagas
 {
@@ -13,6 +13,7 @@ namespace Orders.Application.Sagas
         public State ReservingInventory { get; private set; } = null!;
         public State ProcessingPayment { get; private set; } = null!;
         public State CreatingShipment { get; private set; } = null!;
+        public State WaitingForDelivery { get; private set; } = null!;
         public State Shipped { get; private set; } = null!;
         public State Completed { get; private set; } = null!;
         public State Cancelled { get; private set; } = null!;
@@ -26,6 +27,7 @@ namespace Orders.Application.Sagas
         public Event<PaymentFailedIntegrationEvent> PaymentFailed { get; private set; } = null!;
         public Event<ShipmentCreatedIntegrationEvent> ShipmentCreated { get; private set; } = null!;
         public Event<ShipmentFailedIntegrationEvent> ShipmentFailed { get; private set; } = null!;
+        public Event<OrderShippedIntegrationEvent> OrderShipped { get; private set; } = null!;
         public Event<OrderDeliveredIntegrationEvent> OrderDelivered { get; private set; } = null!;
 
         public OrderCreateSaga()
@@ -35,16 +37,27 @@ namespace Orders.Application.Sagas
             // Configure event correlations
             Event(() => OrderCreated, x =>
             {
+                // Correlate all saga messages by OrderId and create the saga instance using OrderId as CorrelationId
                 x.CorrelateById(m => m.Message.OrderId);
                 x.SelectId(m => m.Message.OrderId);
             });
+
             Event(() => InventoryReserved, x => x.CorrelateById(m => m.Message.OrderId));
             Event(() => InventoryReservationFailed, x => x.CorrelateById(m => m.Message.OrderId));
             Event(() => PaymentProcessed, x => x.CorrelateById(m => m.Message.OrderId));
             Event(() => PaymentFailed, x => x.CorrelateById(m => m.Message.OrderId));
             Event(() => ShipmentCreated, x => x.CorrelateById(m => m.Message.OrderId));
             Event(() => ShipmentFailed, x => x.CorrelateById(m => m.Message.OrderId));
-            Event(() => OrderDelivered, x => x.CorrelateById(m => m.Message.OrderId));
+            Event(() => OrderShipped, x =>
+            {
+                x.CorrelateById(m => m.Message.OrderId);
+                x.OnMissingInstance(m => m.Discard());
+            });
+            Event(() => OrderDelivered, x =>
+            {
+                x.CorrelateById(m => m.Message.OrderId);
+                x.OnMissingInstance(m => m.Discard());
+            });
 
             // Initial state: Order Created -> Reserve Inventory
             Initially(
@@ -79,7 +92,7 @@ namespace Orders.Application.Sagas
                     {
                         context.Saga.InventoryStatus = context.Message.Status;
                         context.Saga.InventoryReservationId = context.Message.ReservationId;
-                        context.Saga.PaymentStatus = "Pending";
+                        context.Saga.PaymentStatus = "InventoryReserved";
                     })
                     .Send(context => new ProcessPaymentCommand(
                         context.Saga.OrderId,
@@ -114,7 +127,7 @@ namespace Orders.Application.Sagas
                         context.Saga.PaymentStatus = context.Message.Status;
                         context.Saga.PaymentId = context.Message.PaymentId;
                         context.Saga.PaymentProcessedAt = DateTime.UtcNow;
-                        context.Saga.ShippingStatus = "Pending";
+                        context.Saga.ShippingStatus = "Paid";
                     })
                     .Send(context => new CreateShipmentCommand(
                         context.Saga.OrderId,
@@ -161,8 +174,8 @@ namespace Orders.Application.Sagas
                     })
                     .Publish(context => new OrderStatusChangedIntegrationEvent(
                         context.Saga.OrderId,
-                        "Shipped",
-                        "Order has been shipped"
+                        "CreatingShipment",
+                        "Order shipment created"
                     ))
                     .TransitionTo(Shipped),
 
@@ -189,14 +202,56 @@ namespace Orders.Application.Sagas
                         "Shipping failed"
                     ))
                     .TransitionTo(Cancelled)
-                    .Finalize()
-            );
+                    .Finalize(),
 
-            // Order Delivered -> Complete Order
-            During(Shipped,
+                // Accept Delivered even if it arrives early (out-of-order)
                 When(OrderDelivered)
                     .Then(context =>
                     {
+                        context.Saga.ShipmentId = context.Message.ShipmentId;
+                        context.Saga.ShippingStatus = "Delivered";
+                        context.Saga.CompletedAt = DateTime.UtcNow;
+                    })
+                    .Publish(context => new OrderStatusChangedIntegrationEvent(
+                        context.Saga.OrderId,
+                        "Completed",
+                        "Order delivered successfully"
+                    ))
+                    .TransitionTo(Completed)
+                    .Finalize()
+            );
+
+            // Order Delivered after shipped
+            During(Shipped,
+                When(OrderShipped)
+                    .Then(context =>
+                    {
+                        context.Saga.ShipmentId = context.Message.ShipmentId;
+                        context.Saga.ShippingStatus = "Shipped";
+                        context.Saga.ShippedAt = InVar.Timestamp;
+                    })
+                    .TransitionTo(WaitingForDelivery),
+                When(OrderDelivered)
+                    .Then(context =>
+                    {
+                        context.Saga.ShippingStatus = "Delivered";
+                        context.Saga.CompletedAt = DateTime.UtcNow;
+                    })
+                    .Publish(context => new OrderStatusChangedIntegrationEvent(
+                        context.Saga.OrderId,
+                        "Completed",
+                        "Order delivered successfully"
+                    ))
+                    .TransitionTo(Completed)
+                    .Finalize()
+            );
+
+            // Order Delivered -> After shipped
+            During(WaitingForDelivery,
+                When(OrderDelivered)
+                    .Then(context =>
+                    {
+                        context.Saga.ShippingStatus = "Delivered";
                         context.Saga.CompletedAt = DateTime.UtcNow;
                     })
                     .Publish(context => new OrderStatusChangedIntegrationEvent(

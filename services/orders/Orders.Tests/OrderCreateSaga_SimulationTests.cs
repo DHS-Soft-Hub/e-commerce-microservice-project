@@ -5,12 +5,12 @@ using MassTransit;
 using MassTransit.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Orders.Application.Sagas;
-using Orders.Application.Messaging.Contracts;
-using Orders.Application.Events.Integration.Inventory;
-using Orders.Application.Events.Integration.Payment;
-using Orders.Application.Events.Integration.Shipment;
-using Orders.Application.Events.Integration.Order;
-using Orders.Application.DTOs;
+using Shared.Contracts.Orders.Commands;
+using Shared.Contracts.Inventory.Events;
+using Shared.Contracts.Payments.Events;
+using Shared.Contracts.Shipment.Events;
+using Shared.Contracts.Orders.Events;
+using Shared.Contracts.Orders.Models;
 using Xunit;
 
 namespace Orders.Application.Tests
@@ -38,7 +38,7 @@ namespace Orders.Application.Tests
                                 await ctx.Publish(new InventoryReservedIntegrationEvent(
                                     ctx.Message.OrderId,
                                     reservationId,
-                                    "Reserved",
+                                    "InventoryReserved",
                                     DateTime.UtcNow
                                 ));
                             });
@@ -131,10 +131,10 @@ namespace Orders.Application.Tests
                     items
                 ));
 
-                // Wait until the saga publishes Shipped status (after stubs publish InventoryReserved, PaymentProcessed, ShipmentCreated)
+                // Wait until the saga publishes CreatingShipment status (after stubs publish InventoryReserved, PaymentProcessed, ShipmentCreated)
                 Assert.True(await harness.Published.Any<OrderStatusChangedIntegrationEvent>(
-                    x => x.Context.Message.OrderId == orderId && x.Context.Message.Status == "Shipped"),
-                    "Expected Shipped status to be published");
+                    x => x.Context.Message.OrderId == orderId && x.Context.Message.Status == "CreatingShipment"),
+                    "Expected CreatingShipment status to be published");
 
                 // Finish the flow by publishing delivery event (shipment id matches stub)
                 var deliveredShipmentId = $"SHP-{orderId:N}";

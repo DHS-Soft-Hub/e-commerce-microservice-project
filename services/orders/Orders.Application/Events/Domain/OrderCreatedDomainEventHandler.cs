@@ -1,8 +1,8 @@
 using MediatR;
-using Orders.Application.DTOs;
+using Shared.Contracts.Orders.Models;
 using Orders.Domain.Events;
 using Shared.Infrastructure.Messaging;
-using Orders.Application.Events.Integration.Order;
+using Shared.Contracts.Orders.Events;
 
 
 namespace Orders.Application.Events.Domain

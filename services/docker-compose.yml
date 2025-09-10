@@ -2,6 +2,8 @@ include:
   - path: ./auth/docker-compose.auth.yml
   - path: ./api-gateway/docker-compose.gateway.yml
   - path: ./docker/docker-compose.orders.yml
+  - path: ./docker/docker-compose.payments.yml
+  - path: ./products/docker-compose.shoppingcart.yml
 
 services:
 

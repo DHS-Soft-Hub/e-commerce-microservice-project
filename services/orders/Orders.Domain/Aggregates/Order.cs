@@ -3,6 +3,7 @@ using Orders.Domain.Enums;
 using Orders.Domain.Events;
 using Orders.Domain.ValueObjects;
 using Shared.Domain.Aggregates;
+using Shared.Domain.Common;
 
 namespace Orders.Domain.Aggregates
 {
@@ -25,18 +26,35 @@ namespace Orders.Domain.Aggregates
             TotalPrice = Items.Sum(i => i.UnitPrice * i.Quantity);
         }
 
-        public static Order Create(OrderId id, CustomerId customerId, List<OrderItem> items, string currency)
+        // parameterless constructor for EF Core
+        protected Order() : base(new OrderId())
+        {
+            Items = new List<OrderItem>();
+        }
+
+        public static Result<Order> Create(OrderId id, CustomerId customerId, List<OrderItem> items, string currency)
         {
             var order = new Order(id, customerId, items, currency);
 
             // Raise domain event
             OrderCreatedDomainEvent orderCreatedEvent = new OrderCreatedDomainEvent(id, customerId, order.Status, order.TotalPrice, order.Items);
             order.AddDomainEvent(orderCreatedEvent);
-            return order;
+
+            return Result<Order>.Success(order);
         }
 
-        public void Update(OrderId id, CustomerId customerId, List<OrderItem> items, string currency, string? status = null)
+        public Result<Order> Update(OrderId id, CustomerId customerId, List<OrderItem> items, string currency, string? status = null)
         {
+            if (id != Id)
+            {
+                return Result<Order>.Failure("Order ID cannot be changed.");
+            }
+
+            if (customerId == null)
+            {
+                return Result<Order>.Failure("Customer ID cannot be null.");
+            }
+
             CustomerId = customerId;
             Items = items ?? new List<OrderItem>();
             Currency = currency;
@@ -45,23 +63,61 @@ namespace Orders.Domain.Aggregates
             if (!string.IsNullOrWhiteSpace(status) &&
                 Enum.TryParse<OrderStatus>(status, true, out var parsedStatus))
             {
-                UpdateStatus(parsedStatus);
+                if (UpdateStatus(parsedStatus).IsFailure)
+                {
+                    return Result<Order>.Failure("Failed to update order status.");
+                }
             }
+
+            return Result<Order>.Success(this);
         }
 
-        public void UpdateStatus(OrderStatus newStatus)
+        public Result UpdateStatus(OrderStatus newStatus)
         {
-            if (Status != newStatus)
+            if (!Enum.IsDefined(typeof(OrderStatus), newStatus))
             {
-                Status = newStatus;
-                // Could add domain events here for status changes if needed
+                return Result.Failure("Invalid order status.");
             }
+
+            Status = newStatus;
+            return Result.Success();
+        }
+    
+        public Result AddItem(OrderItem item)
+        {
+            if (item == null)
+            {
+                return Result.Failure("Order item cannot be null.");
+            }
+            if (item.UnitPrice < 0)
+            {
+                return Result.Failure("Unit price cannot be negative.");
+            }
+
+            if (item.Quantity <= 0)
+            {
+                return Result.Failure("Quantity must be greater than zero.");
+            }
+
+            Items.Add(item);
+            TotalPrice += item.UnitPrice * item.Quantity;
+            return Result.Success();
         }
 
-        // parameterless constructor for EF Core
-        protected Order() : base(new OrderId())
+        public Result RemoveItem(OrderItem item)
         {
-            Items = new List<OrderItem>();
+            if (item == null)
+            {
+                return Result.Failure("Order item cannot be null.");
+            }
+
+            if (!Items.Remove(item))
+            {
+                return Result.Failure("Item not found in order.");
+            }
+
+            TotalPrice -= item.UnitPrice * item.Quantity;
+            return Result.Success();
         }
     }
 }
