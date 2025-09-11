@@ -1,11 +1,19 @@
 using MediatR;
+using MassTransit;
 using Shared.Contracts.ShoppingCart.Events;
+using Shared.Infrastructure.Messaging;
 
 namespace ShoppingCart.Api.Events;
 
 public class CartCheckedOutDomainEventHandler : INotificationHandler<CartCheckedOutDomainEvent>
 {
-    public Task Handle(CartCheckedOutDomainEvent domainEvent, CancellationToken cancellationToken)
+    private readonly IMessagePublisher _messagePublisher;
+    public CartCheckedOutDomainEventHandler(IMessagePublisher messagePublisher)
+    {
+        _messagePublisher = messagePublisher;
+    }
+
+    public async Task Handle(CartCheckedOutDomainEvent domainEvent, CancellationToken cancellationToken)
     {
         // Handle the event (e.g., update projections, send notifications, etc.)
 
@@ -26,7 +34,8 @@ public class CartCheckedOutDomainEventHandler : INotificationHandler<CartChecked
             domainEvent.TotalAmount,
             domainEvent.Currency,
             domainEvent.CheckedOutAt);
-        
-        return Task.CompletedTask;
+
+        // Publish the event to the message bus (implementation depends on your messaging infrastructure)
+        await _messagePublisher.PublishAsync(checkoutCompletedEvent);
     }
 }
