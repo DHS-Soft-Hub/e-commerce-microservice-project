@@ -3,6 +3,7 @@ using ShoppingCart.Api.Data.Contexts;
 using ShoppingCart.Api.Data.Repositories;
 using ShoppingCart.Api.Services;
 using Shared.Infrastructure.Messaging;
+using Shared.Infrastructure.Persistence.Interceptors;
 using Microsoft.Extensions.Caching.Distributed;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -52,6 +53,9 @@ builder.Services.AddMassTransitWithRabbitMq(
     builder.Configuration,
     System.Reflection.Assembly.GetExecutingAssembly()
 );
+
+// Add Services
+builder.Services.AddScoped<PublishDomainEventsInterceptor>();
 
 var app = builder.Build();
 

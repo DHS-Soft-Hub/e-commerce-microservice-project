@@ -1,7 +1,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
-namespace Orders.Infrastructure.Persistence.Interceptors
+namespace Shared.Infrastructure.Persistence.Interceptors
 {
     public class PublishDomainEventsInterceptor : SaveChangesInterceptor
     {

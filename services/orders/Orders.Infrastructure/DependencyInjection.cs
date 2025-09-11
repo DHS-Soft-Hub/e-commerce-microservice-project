@@ -8,7 +8,7 @@ using Shared.Domain.Interfaces;
 using Shared.Infrastructure.Messaging;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
-using Orders.Infrastructure.Persistence.Interceptors;
+using Shared.Infrastructure.Persistence.Interceptors;
 using Orders.Application.Sagas;
 using MassTransit;
 using Shared.Contracts.Orders.Commands;

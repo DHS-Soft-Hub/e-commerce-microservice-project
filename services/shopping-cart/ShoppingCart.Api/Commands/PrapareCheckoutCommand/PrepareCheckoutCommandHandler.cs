@@ -27,11 +27,24 @@ public class PrepareCheckoutCommandHandler : IRequestHandler<PrepareCheckoutComm
         }
 
         // Prepare checkout data
+        var cartData = cart.CheckoutCart();
+        var totalAmount = cartData.GetTotal();
+
         var checkoutData = new CheckoutDataResponse
         {
-            Items = cart.Items.ToList(),
-            Total = cart.GetTotal()
+            Items = cart.Items.Select(i => new CheckoutItemResponse
+            {
+                ProductId = i.ProductId,
+                ProductName = i.ProductName,
+                Price = i.Price,
+                Currency = i.Currency,
+                Quantity = i.Quantity
+            }).ToList(),
+            TotalAmount = totalAmount,
+            Currency = cart.Items.First().Currency // Assuming all items have the same currency
         };
+
+        // TODO: Here you could add more logic, like applying discounts, calculating taxes, etc.
 
         return checkoutData;
     }
