@@ -1,3 +1,6 @@
+using Orders.Domain.ValueObjects;
+using Shared.Domain.ValueObjects;
+
 namespace Orders.Application.DTOs
 {
     public class OrderItemDto
@@ -7,7 +10,7 @@ namespace Orders.Application.DTOs
         public Guid ProductId { get; set; }
         public string ProductName { get; set; } = string.Empty;
         public int Quantity { get; set; }
-        public decimal UnitPrice { get; set; }
-        public string Currency { get; set; } = "EUR";
+        public Money UnitPrice { get; set; } = Money.Zero("EUR");
+        public Money TotalPrice => UnitPrice.Multiply(Quantity);
     }
 }

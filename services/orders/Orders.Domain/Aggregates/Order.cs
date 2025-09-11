@@ -4,6 +4,7 @@ using Orders.Domain.Events;
 using Orders.Domain.ValueObjects;
 using Shared.Domain.Aggregates;
 using Shared.Domain.Common;
+using Shared.Domain.ValueObjects;
 
 namespace Orders.Domain.Aggregates
 {
@@ -11,25 +12,28 @@ namespace Orders.Domain.Aggregates
     {
         public CustomerId CustomerId { get; private set; } = null!;
         public List<OrderItem> Items { get; private set; } = null!;
-        public decimal TotalPrice { get; private set; }
-        public string Currency { get; private set; } = "EUR";
+        public Money TotalPrice { get; private set; } = null!;
         public OrderStatus Status { get; private set; } = OrderStatus.Pending;
+        public PaymentId? PaymentId { get; private set; }
+        public ShipmentId? ShipmentId { get; private set; }
         public DateTime CreatedDate { get; private set; } = DateTime.UtcNow;
+        public DateTime UpdatedDate { get; private set; } = DateTime.UtcNow;
 
-        protected Order(OrderId id, CustomerId customerId, List<OrderItem> items, string currency)
+
+        private Order(OrderId id, CustomerId customerId, List<OrderItem> items, string currency)
             : base(id)
         {
             CustomerId = customerId;
             Items = items ?? new List<OrderItem>();
             CreatedDate = DateTime.UtcNow;
-            Currency = currency;
-            TotalPrice = Items.Sum(i => i.UnitPrice * i.Quantity);
+            TotalPrice = CalculateTotal(Items, currency);
         }
 
         // parameterless constructor for EF Core
-        protected Order() : base(new OrderId())
+        private Order() : base(new OrderId())
         {
             Items = new List<OrderItem>();
+            TotalPrice = Money.Zero("EUR");
         }
 
         /// <summary>
@@ -50,8 +54,8 @@ namespace Orders.Domain.Aggregates
                 id,
                 customerId,
                 order.Status,
-                order.TotalPrice,
-                order.Currency,
+                order.TotalPrice.Amount,
+                order.TotalPrice.Currency,
                 order.Items
             );
             order.AddDomainEvent(orderCreatedEvent);
@@ -83,8 +87,7 @@ namespace Orders.Domain.Aggregates
 
             CustomerId = customerId;
             Items = items ?? new List<OrderItem>();
-            Currency = currency;
-            TotalPrice = Items.Sum(i => i.UnitPrice * i.Quantity);
+            TotalPrice = CalculateTotal(Items, currency);
 
             if (!string.IsNullOrWhiteSpace(status) &&
                 Enum.TryParse<OrderStatus>(status, true, out var parsedStatus))
@@ -127,7 +130,7 @@ namespace Orders.Domain.Aggregates
             {
                 return Result.Failure("Order item cannot be null.");
             }
-            if (item.UnitPrice < 0)
+            if (item.UnitPrice.Amount < 0)
             {
                 return Result.Failure("Unit price cannot be negative.");
             }
@@ -138,7 +141,7 @@ namespace Orders.Domain.Aggregates
             }
 
             Items.Add(item);
-            TotalPrice += item.UnitPrice * item.Quantity;
+            TotalPrice = TotalPrice.Add(item.UnitPrice.Multiply(item.Quantity));
             return Result.Success();
         }
 
@@ -160,8 +163,51 @@ namespace Orders.Domain.Aggregates
                 return Result.Failure("Item not found in order.");
             }
 
-            TotalPrice -= item.UnitPrice * item.Quantity;
+            TotalPrice = TotalPrice.Subtract(item.UnitPrice.Multiply(item.Quantity));
             return Result.Success();
+        }
+
+        /// <summary>
+        /// Associates a payment with this order
+        /// </summary>
+        /// <param name="paymentId"></param>
+        /// <returns></returns>
+        public Result AssignPayment(PaymentId paymentId)
+        {
+            if (paymentId == null)
+                return Result.Failure("Payment ID cannot be null.");
+
+            PaymentId = paymentId;
+            return Result.Success();
+        }
+
+        /// <summary>
+        /// Associates a shipment with this order
+        /// </summary>
+        /// <param name="shipmentId"></param>
+        /// <returns></returns>
+        public Result AssignShipment(ShipmentId shipmentId)
+        {
+            if (shipmentId == null)
+                return Result.Failure("Shipment ID cannot be null.");
+
+            ShipmentId = shipmentId;
+            return Result.Success();
+        }
+
+        /// <summary>
+        /// Calculates the total price for the given items in the specified currency
+        /// </summary>
+        /// <param name="items"></param>
+        /// <param name="currency"></param>
+        /// <returns></returns>
+        private static Money CalculateTotal(List<OrderItem> items, string currency)
+        {
+            if (items == null || !items.Any())
+                return Money.Zero(currency);
+
+            var total = items.Sum(i => i.UnitPrice.Amount * i.Quantity);
+            return new Money(total, currency);
         }
     }
 }

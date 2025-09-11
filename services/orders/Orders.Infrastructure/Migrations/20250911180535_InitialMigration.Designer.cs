@@ -12,8 +12,8 @@ using Orders.Infrastructure.Persistence;
 namespace Orders.Infrastructure.Migrations
 {
     [DbContext(typeof(OrdersDbContext))]
-    [Migration("20250903134903_OrderSagaDataChangeMigration")]
-    partial class OrderSagaDataChangeMigration
+    [Migration("20250911180535_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -97,19 +97,22 @@ namespace Orders.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Currency")
-                        .IsRequired()
-                        .HasMaxLength(3)
-                        .HasColumnType("character varying(3)");
-
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("uuid");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
+                    b.Property<Guid?>("PaymentId")
+                        .HasColumnType("uuid");
 
-                    b.Property<decimal>("TotalPrice")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<Guid?>("ShipmentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<DateTime>("UpdatedDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -121,11 +124,6 @@ namespace Orders.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
-
-                    b.Property<string>("Currency")
-                        .IsRequired()
-                        .HasMaxLength(3)
-                        .HasColumnType("character varying(3)");
 
                     b.Property<Guid>("OrderId")
                         .HasColumnType("uuid");
@@ -141,14 +139,40 @@ namespace Orders.Infrastructure.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("integer");
 
-                    b.Property<decimal>("UnitPrice")
-                        .HasColumnType("decimal(18,2)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("OrderId");
 
                     b.ToTable("OrderItems", (string)null);
+                });
+
+            modelBuilder.Entity("Orders.Domain.Aggregates.Order", b =>
+                {
+                    b.OwnsOne("Shared.Domain.ValueObjects.Money", "TotalPrice", b1 =>
+                        {
+                            b1.Property<Guid>("OrderId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<decimal>("Amount")
+                                .HasColumnType("decimal(18,2)")
+                                .HasColumnName("TotalPrice");
+
+                            b1.Property<string>("Currency")
+                                .IsRequired()
+                                .HasMaxLength(3)
+                                .HasColumnType("character varying(3)")
+                                .HasColumnName("Currency");
+
+                            b1.HasKey("OrderId");
+
+                            b1.ToTable("Orders");
+
+                            b1.WithOwner()
+                                .HasForeignKey("OrderId");
+                        });
+
+                    b.Navigation("TotalPrice")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Orders.Domain.Entities.OrderItem", b =>
@@ -157,6 +181,32 @@ namespace Orders.Infrastructure.Migrations
                         .WithMany("Items")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.OwnsOne("Shared.Domain.ValueObjects.Money", "UnitPrice", b1 =>
+                        {
+                            b1.Property<Guid>("OrderItemId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<decimal>("Amount")
+                                .HasColumnType("decimal(18,2)")
+                                .HasColumnName("UnitPrice");
+
+                            b1.Property<string>("Currency")
+                                .IsRequired()
+                                .HasMaxLength(3)
+                                .HasColumnType("character varying(3)")
+                                .HasColumnName("UnitPriceCurrency");
+
+                            b1.HasKey("OrderItemId");
+
+                            b1.ToTable("OrderItems");
+
+                            b1.WithOwner()
+                                .HasForeignKey("OrderItemId");
+                        });
+
+                    b.Navigation("UnitPrice")
                         .IsRequired();
                 });
 

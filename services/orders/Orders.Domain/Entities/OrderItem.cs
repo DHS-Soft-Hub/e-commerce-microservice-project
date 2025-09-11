@@ -1,6 +1,7 @@
 using Orders.Domain.ValueObjects;
 using Shared.Domain.Entities;
 using Shared.Domain.Common;
+using Shared.Domain.ValueObjects;
 
 namespace Orders.Domain.Entities
 {
@@ -10,8 +11,7 @@ namespace Orders.Domain.Entities
         public ProductId ProductId { get; private set; }
         public string ProductName { get; private set; } = string.Empty;
         public int Quantity { get; private set; }
-        public decimal UnitPrice { get; private set; }
-        public string Currency { get; private set; } = string.Empty;
+        public Money UnitPrice { get; private set; } = null!;
 
         public OrderItem(
             OrderItemId id,
@@ -19,15 +19,23 @@ namespace Orders.Domain.Entities
             ProductId productId,
             string productName,
             int quantity,
-            decimal unitPrice,
-            string currency) : base(id)
+            Money unitPrice) : base(id)
         {
             OrderId = orderId;
             ProductId = productId;
             ProductName = productName;
             Quantity = quantity;
             UnitPrice = unitPrice;
-            Currency = currency;
+        }
+
+        // parameterless constructor for EF Core
+        private OrderItem() : base(new OrderItemId())
+        {
+            OrderId = new OrderId();
+            ProductId = new ProductId();
+            ProductName = string.Empty;
+            Quantity = 0;
+            UnitPrice = Money.Zero("EUR");
         }
 
         /// <summary>
@@ -35,20 +43,20 @@ namespace Orders.Domain.Entities
         /// Validates that quantity is greater than zero and unit price is non-negative.
         /// </summary>
         /// <returns></returns>
-        public Result<decimal> GetTotal()
+        public Result<Money> GetTotal()
         {
             if (Quantity <= 0)
             {
-                return Result<decimal>.Failure("Quantity must be greater than zero.");
+                return Result<Money>.Failure("Quantity must be greater than zero.");
             }
 
-            if (UnitPrice < 0)
+            if (UnitPrice.Amount < 0)
             {
-                return Result<decimal>.Failure("Unit price cannot be negative.");
+                return Result<Money>.Failure("Unit price cannot be negative.");
             }
 
-            decimal total = Quantity * UnitPrice;
-            return Result<decimal>.Success(total);
+            Money total = UnitPrice.Multiply(Quantity);
+            return Result<Money>.Success(total);
         }
 
         /// <summary>

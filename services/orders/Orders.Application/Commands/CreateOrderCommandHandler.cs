@@ -5,6 +5,7 @@ using Orders.Domain.Entities;
 using Orders.Domain.Repositories;
 using Orders.Domain.ValueObjects;
 using Shared.Domain.Interfaces;
+using Shared.Domain.ValueObjects;
 
 namespace Orders.Application.Commands
 {
@@ -42,8 +43,7 @@ namespace Orders.Application.Commands
                         new ProductId(item.ProductId),
                         item.ProductName,
                         item.Quantity,
-                        item.Price,
-                        item.Currency
+                        new Money(item.Price, item.Currency)
                     )).ToList(),
                     request.Currency
                 );
@@ -75,11 +75,9 @@ namespace Orders.Application.Commands
                         ProductId = item.ProductId.Value,
                         ProductName = request.Items.First(i => i.ProductId == item.ProductId.Value).ProductName,
                         Quantity = item.Quantity,
-                        UnitPrice = item.UnitPrice,
-                        Currency = item.Currency
+                        UnitPrice = item.UnitPrice
                     }).ToList(),
                     TotalPrice = order.Value.TotalPrice,
-                    Currency = order.Value.Currency,
                     Status = order.Value.Status.ToString(),
                     CreatedAt = order.Value.CreatedDate
                 };

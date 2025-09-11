@@ -28,7 +28,6 @@ public class GetOrderByIdQueryHandler : IRequestHandler<GetOrderByIdQuery, Order
             Id = order.Id,
             CustomerId = order.CustomerId,
             TotalPrice = order.TotalPrice,
-            Currency = order.Currency,
             Status = order.Status.ToString(),
             CreatedAt = order.CreatedDate,
             Items = order.Items.Select(i => new OrderItemDto
@@ -38,7 +37,6 @@ public class GetOrderByIdQueryHandler : IRequestHandler<GetOrderByIdQuery, Order
                 ProductName = i.ProductName,
                 Quantity = i.Quantity,
                 UnitPrice = i.UnitPrice,
-                Currency = i.Currency
             }).ToList()
         };
     }

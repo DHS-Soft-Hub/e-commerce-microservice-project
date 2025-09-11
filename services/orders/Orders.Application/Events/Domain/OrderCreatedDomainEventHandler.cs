@@ -32,8 +32,8 @@ namespace Orders.Application.Events.Domain
                     ProductId = item.ProductId.Value,
                     ProductName = item.ProductName,
                     Quantity = item.Quantity,
-                    UnitPrice = item.UnitPrice,
-                    Currency = item.Currency
+                    UnitPrice = item.UnitPrice.Amount,
+                    Currency = item.UnitPrice.Currency
                 }).ToList()
             );
 

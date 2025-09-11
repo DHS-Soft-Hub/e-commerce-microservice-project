@@ -27,10 +27,8 @@ namespace Orders.Application.Queries
                     ProductName = p.ProductName,
                     UnitPrice = p.UnitPrice,
                     Quantity = p.Quantity,
-                    Currency = p.Currency
                 }).ToList(),
                 TotalPrice = o.TotalPrice,
-                Currency = o.Currency,
                 Status = o.Status.ToString(),
                 CreatedAt = o.CreatedDate
             }).ToList();

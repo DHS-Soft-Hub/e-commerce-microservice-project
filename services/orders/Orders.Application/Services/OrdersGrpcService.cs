@@ -2,6 +2,7 @@ using Grpc.Core;
 using Orders.Application.Commands;
 using Orders.Application.DTOs;
 using Orders.Application.Grpc;
+using Shared.Domain.ValueObjects;
 
 namespace Orders.Application.Services;
 
@@ -47,8 +48,7 @@ public class OrdersGrpcService : Orders.Application.Grpc.Orders.OrdersBase
                 ProductId = Guid.Parse(i.ProductId),
                 ProductName = i.ProductName,
                 Quantity = i.Quantity,
-                UnitPrice = (decimal)i.UnitPrice,
-                Currency = i.Currency
+                UnitPrice = new Money((decimal)i.UnitPrice, i.Currency)
             }).ToList(),
             Status = request.Update.Status
         };
@@ -77,7 +77,7 @@ public class OrdersGrpcService : Orders.Application.Grpc.Orders.OrdersBase
         {
             Id = dto.Id.ToString(),
             CustomerId = dto.CustomerId.ToString(),
-            Currency = dto.Currency,
+            Currency = dto.TotalPrice.Currency,
         };
 
         order.Items.AddRange(dto.Items.Select(i => new OrderItem
@@ -86,8 +86,8 @@ public class OrdersGrpcService : Orders.Application.Grpc.Orders.OrdersBase
             ProductId = i.ProductId.ToString(),
             ProductName = i.ProductName,
             Quantity = i.Quantity,
-            UnitPrice = (double)i.UnitPrice,
-            Currency = i.Currency
+            UnitPrice = (double)i.UnitPrice.Amount,
+            Currency = i.UnitPrice.Currency
         }));
 
         return order;
@@ -99,7 +99,7 @@ public class OrdersGrpcService : Orders.Application.Grpc.Orders.OrdersBase
         {
             Id = cmd.Id.ToString(),
             CustomerId = cmd.CustomerId.ToString(),
-            Currency = cmd.Currency,
+            Currency = cmd.TotalPrice.Currency,
             Status = cmd.Status
         };
 
@@ -108,8 +108,8 @@ public class OrdersGrpcService : Orders.Application.Grpc.Orders.OrdersBase
             ProductId = i.ProductId.ToString(),
             ProductName = i.ProductName,
             Quantity = i.Quantity,
-            UnitPrice = (double)i.UnitPrice,
-            Currency = i.Currency
+            UnitPrice = (double)i.UnitPrice.Amount,
+            Currency = i.UnitPrice.Currency
         }));
 
         return update;

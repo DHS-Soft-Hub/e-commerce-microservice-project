@@ -1,3 +1,6 @@
+using Orders.Domain.ValueObjects;
+using Shared.Domain.ValueObjects;
+
 namespace Orders.Application.DTOs
 {
     public class OrderDto
@@ -5,8 +8,7 @@ namespace Orders.Application.DTOs
         public Guid Id { get; set; }
         public Guid CustomerId { get; set; }
         public List<OrderItemDto> Items { get; set; } = new();
-        public decimal TotalPrice { get; set; }
-        public string Currency { get; set; } = "EUR";
+        public Money TotalPrice { get; set; } = Money.Zero("EUR");
         public string Status { get; set; } = "Pending";
         public DateTime CreatedAt { get; set; }
     }

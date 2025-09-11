@@ -1,11 +1,8 @@
 using MediatR;
-using Orders.Application.Commands;
 using Orders.Application.DTOs;
 using Orders.Domain.Repositories;
 using Orders.Domain.Aggregates;
 using Orders.Domain.Entities;
-using Orders.Domain.ValueObjects;
-using Shared.Domain.Common;
 
 
 namespace Orders.Application.Commands;
@@ -33,8 +30,7 @@ public class UpdateOrderCommandHandler : IRequestHandler<UpdateOrderCommand, Ord
                 item.ProductId,
                 item.ProductName,
                 item.Quantity,
-                item.UnitPrice,
-                item.Currency
+                item.UnitPrice
             )).ToList(),
             request.Currency,
             request.Status
@@ -59,7 +55,6 @@ public class UpdateOrderCommandHandler : IRequestHandler<UpdateOrderCommand, Ord
                 UnitPrice = i.UnitPrice
             }).ToList(),
             TotalPrice = order.TotalPrice,
-            Currency = order.Currency,
             Status = order.Status.ToString(),
             CreatedAt = order.CreatedDate
         };
