@@ -1,0 +1,167 @@
+@page "/cart"
+@using Web.DTOs
+@using Web.Services
+@inject CartService CartService
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+@rendermode InteractiveServer
+@attribute [AllowAnonymous]
+
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <NavMenu />
+    </aside>
+    <main class="main-content">
+        <header class="topbar">
+            <div class="brand">
+                <span class="dot"></span>
+                <span>Shopping Cart</span>
+            </div>
+            <div class="topbar-actions">
+                <input class="search" placeholder="Search…" />
+                <div class="avatar" title="Account"></div>
+            </div>
+        </header>
+        <div class="content-wrapper">
+            <section class="greeting">
+                <h1>Your Shopping Cart</h1>
+                <p>Review your items before checkout</p>
+            </section>
+            
+            @if (isLoading)
+            {
+                <div class="loading">
+                    <p>Loading cart...</p>
+                </div>
+            }
+            else if (cart.Items.Count == 0)
+            {
+                <div class="empty-cart">
+                    <h3>Your cart is empty</h3>
+                    <p>Start shopping to add items to your cart</p>
+                    <button class="btn btn-primary" @onclick="GoToProducts">
+                        Browse Products
+                    </button>
+                </div>
+            }
+            else
+            {
+                <div class="cart-container">
+                    <div class="cart-items">
+                        @foreach (var item in cart.Items)
+                        {
+                            <div class="cart-item">
+                                <div class="item-info">
+                                    <h4 class="item-name">@item.ProductName</h4>
+                                    <div class="item-price">@item.Price.ToString("C") @item.Currency</div>
+                                </div>
+                                <div class="item-quantity">
+                                    <span>Qty: @item.Quantity</span>
+                                </div>
+                                <div class="item-total">
+                                    @((item.Price * item.Quantity).ToString("C"))
+                                </div>
+                                <button class="btn btn-danger remove-btn" 
+                                        @onclick="() => RemoveItem(item.ProductId)"
+                                        disabled="@isRemoving">
+                                    Remove
+                                </button>
+                            </div>
+                        }
+                    </div>
+                    
+                    <div class="cart-summary">
+                        <div class="summary-card">
+                            <h3>Order Summary</h3>
+                            <div class="summary-row">
+                                <span>Items (@cart.Items.Count)</span>
+                                <span>@cart.TotalPrice.ToString("C") @cart.Currency</span>
+                            </div>
+                            <div class="summary-row total">
+                                <span>Total</span>
+                                <span>@cart.TotalPrice.ToString("C") @cart.Currency</span>
+                            </div>
+                            <button class="btn btn-success checkout-btn" 
+                                    @onclick="ProceedToCheckout"
+                                    disabled="@isProcessing">
+                                @if (isProcessing)
+                                {
+                                    <span>Processing...</span>
+                                }
+                                else
+                                {
+                                    <span>Proceed to Checkout</span>
+                                }
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </main>
+</div>
+
+@code {
+    private CartDto cart = new(new List<CartItemDto>(), 0, "USD");
+    private bool isLoading = true;
+    private bool isRemoving = false;
+    private bool isProcessing = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCart();
+    }
+
+    private async Task LoadCart()
+    {
+        isLoading = true;
+        try
+        {
+            cart = await CartService.GetCartAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading cart: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task RemoveItem(Guid productId)
+    {
+        isRemoving = true;
+        try
+        {
+            await CartService.RemoveFromCartAsync(productId);
+            await LoadCart(); // Reload cart after removal
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", $"Error removing item: {ex.Message}");
+        }
+        finally
+        {
+            isRemoving = false;
+        }
+    }
+
+    private void GoToProducts()
+    {
+        Navigation.NavigateTo("/products");
+    }
+
+    private void ProceedToCheckout()
+    {
+        isProcessing = true;
+        try
+        {
+            Navigation.NavigateTo("/payment");
+        }
+        finally
+        {
+            isProcessing = false;
+        }
+    }
+}

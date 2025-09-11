@@ -1,0 +1,358 @@
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/Web.csproj.AssemblyReference.cache
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/Web.GeneratedMSBuildEditorConfig.editorconfig
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/Web.AssemblyInfoInputs.cache
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/Web.AssemblyInfo.cs
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/Web.csproj.CoreCompileInputs.cache
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/Web.MvcApplicationPartsAssemblyInfo.cache
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/Web.sourcelink.json
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/appsettings.Development.json
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/appsettings.json
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Web.staticwebassets.runtime.json
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Web.staticwebassets.endpoints.json
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Web.exe
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Web.deps.json
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Web.runtimeconfig.json
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Web.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Web.pdb
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/BlazorBootstrap.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.AmbientMetadata.Application.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.Compliance.Abstractions.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.DependencyInjection.AutoActivation.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.Diagnostics.ExceptionSummarization.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.Http.Diagnostics.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.Http.Resilience.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.Resilience.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.ServiceDiscovery.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.ServiceDiscovery.Abstractions.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.ServiceDiscovery.Yarp.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.Telemetry.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.Telemetry.Abstractions.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Newtonsoft.Json.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/OpenTelemetry.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/OpenTelemetry.Api.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/OpenTelemetry.Api.ProviderBuilderExtensions.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/OpenTelemetry.Exporter.OpenTelemetryProtocol.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/OpenTelemetry.Extensions.Hosting.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/OpenTelemetry.Instrumentation.AspNetCore.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/OpenTelemetry.Instrumentation.Http.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/OpenTelemetry.Instrumentation.Runtime.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Polly.Core.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Polly.Extensions.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Polly.RateLimiting.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/System.IO.Hashing.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Yarp.ReverseProxy.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Shared.ServiceDefaults.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Shared.ServiceDefaults.pdb
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/scopedcss/Components/Layout/MainLayout.razor.rz.scp.css
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/scopedcss/bundle/Web.styles.css
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/scopedcss/projectbundle/Web.bundle.scp.css
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/compressed/yxfdm33bor-63oqyoiiv4.gz
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/compressed/d5o4a4wkq9-ct0ej5e0q0.gz
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/compressed/sismm8xg1l-ezlxc6gzv3.gz
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/compressed/q8v6i1uv3e-pisakkcwob.gz
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/compressed/36w3eu0hkb-j8zp7bt7w3.gz
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/compressed/mfzx4sb2rv-79hai7knhw.gz
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/compressed/lqvgqijwbg-0vuc4zh205.gz
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/compressed/eojifsclv0-7t9tbfaemk.gz
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/staticwebassets.build.json
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/staticwebassets.development.json
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/staticwebassets.build.endpoints.json
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/Web.csproj.Up2Date
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/Web.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/refint/Web.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/Web.pdb
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/Web.genruntimeconfig.cache
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/ref/Web.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.AspNetCore.Authorization.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.AspNetCore.Components.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.AspNetCore.Components.Authorization.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.AspNetCore.Components.Forms.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.AspNetCore.Components.Web.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.AspNetCore.Components.WebAssembly.Authentication.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.AspNetCore.Metadata.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.Configuration.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.Configuration.Abstractions.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.Configuration.Binder.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.DependencyInjection.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.Diagnostics.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.Diagnostics.Abstractions.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.Http.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.Logging.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.Logging.Abstractions.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.Options.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.Options.ConfigurationExtensions.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.Primitives.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.JSInterop.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/compressed/f32kn295nz-gcvjxldlff.gz
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.AspNetCore.Components.WebAssembly.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.Configuration.FileExtensions.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.Configuration.Json.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.FileProviders.Abstractions.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.FileProviders.Physical.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.FileSystemGlobbing.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.JSInterop.WebAssembly.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Blazored.LocalStorage.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.IdentityModel.Abstractions.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.IdentityModel.JsonWebTokens.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.IdentityModel.Logging.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.IdentityModel.Tokens.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/System.IdentityModel.Tokens.Jwt.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/scopedcss/Components/Pages/NavMenu.razor.rz.scp.css
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/rpswa.dswa.cache.json
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/rjimswa.dswa.cache.json
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/rjsmrazor.dswa.cache.json
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/rjsmcshtml.dswa.cache.json
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/staticwebassets.build.json.cache
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.Hosting.Abstractions.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.Logging.Configuration.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.ObjectPool.dll
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/compressed/refgsao5tb-5vmds449nb.gz
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/scopedcss/Components/Pages/Login/Login.razor.rz.scp.css
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/scopedcss/Components/Pages/Login/Register.razor.rz.scp.css
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/scopedcss/Components/Pages/User/UserProfile.razor.rz.scp.css
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/scopedcss/Components/Pages/Home.razor.rz.scp.css
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/compressed/gga45437c7-zuk2k62xvn.gz
+G:/MyProjects/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/compressed/6bir0r8491-grcjxm5wiy.gz
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/appsettings.Development.json
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/appsettings.json
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Web.staticwebassets.runtime.json
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Web.staticwebassets.endpoints.json
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Web
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Web.deps.json
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Web.runtimeconfig.json
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Web.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Web.pdb
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/BlazorBootstrap.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Blazored.LocalStorage.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.AspNetCore.Authorization.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.AspNetCore.Components.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.AspNetCore.Components.Authorization.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.AspNetCore.Components.Forms.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.AspNetCore.Components.Web.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.AspNetCore.Components.WebAssembly.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.AspNetCore.Components.WebAssembly.Authentication.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.AspNetCore.Metadata.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.AmbientMetadata.Application.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.Compliance.Abstractions.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.Configuration.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.Configuration.Abstractions.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.Configuration.Binder.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.Configuration.FileExtensions.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.Configuration.Json.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.DependencyInjection.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.DependencyInjection.AutoActivation.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.Diagnostics.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.Diagnostics.Abstractions.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.Diagnostics.ExceptionSummarization.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.FileProviders.Abstractions.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.FileProviders.Physical.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.FileSystemGlobbing.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.Hosting.Abstractions.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.Http.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.Http.Diagnostics.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.Http.Resilience.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.Logging.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.Logging.Abstractions.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.Logging.Configuration.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.ObjectPool.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.Options.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.Options.ConfigurationExtensions.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.Primitives.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.Resilience.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.ServiceDiscovery.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.ServiceDiscovery.Abstractions.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.ServiceDiscovery.Yarp.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.Telemetry.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.Extensions.Telemetry.Abstractions.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.IdentityModel.Abstractions.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.IdentityModel.JsonWebTokens.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.IdentityModel.Logging.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.IdentityModel.Tokens.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.JSInterop.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Microsoft.JSInterop.WebAssembly.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Newtonsoft.Json.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/OpenTelemetry.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/OpenTelemetry.Api.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/OpenTelemetry.Api.ProviderBuilderExtensions.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/OpenTelemetry.Exporter.OpenTelemetryProtocol.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/OpenTelemetry.Extensions.Hosting.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/OpenTelemetry.Instrumentation.AspNetCore.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/OpenTelemetry.Instrumentation.Http.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/OpenTelemetry.Instrumentation.Runtime.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Polly.Core.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Polly.Extensions.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Polly.RateLimiting.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/System.IdentityModel.Tokens.Jwt.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/System.IO.Hashing.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Yarp.ReverseProxy.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Shared.ServiceDefaults.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/bin/Debug/net9.0/Shared.ServiceDefaults.pdb
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/Web.csproj.AssemblyReference.cache
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/Web.GeneratedMSBuildEditorConfig.editorconfig
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/Web.AssemblyInfoInputs.cache
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/Web.AssemblyInfo.cs
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/Web.csproj.CoreCompileInputs.cache
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/Web.MvcApplicationPartsAssemblyInfo.cache
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/Web.sourcelink.json
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/scopedcss/Components/Layout/MainLayout.razor.rz.scp.css
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/scopedcss/Components/Pages/Home.razor.rz.scp.css
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/scopedcss/Components/Pages/Login/Login.razor.rz.scp.css
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/scopedcss/Components/Pages/Login/Register.razor.rz.scp.css
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/scopedcss/Components/Pages/NavMenu.razor.rz.scp.css
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/scopedcss/Components/Pages/User/UserProfile.razor.rz.scp.css
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/scopedcss/bundle/Web.styles.css
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/scopedcss/projectbundle/Web.bundle.scp.css
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/compressed/f32kn295nz-gcvjxldlff.gz
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/compressed/yxfdm33bor-63oqyoiiv4.gz
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/compressed/refgsao5tb-5vmds449nb.gz
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/compressed/d5o4a4wkq9-ct0ej5e0q0.gz
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/compressed/sismm8xg1l-ezlxc6gzv3.gz
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/compressed/q8v6i1uv3e-pisakkcwob.gz
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/compressed/36w3eu0hkb-j8zp7bt7w3.gz
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/compressed/mfzx4sb2rv-79hai7knhw.gz
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/compressed/lqvgqijwbg-xepmqzdr2x.gz
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/compressed/eojifsclv0-7t9tbfaemk.gz
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/staticwebassets.build.json
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/staticwebassets.development.json
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/staticwebassets.build.endpoints.json
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/staticwebassets/msbuild.Web.Microsoft.AspNetCore.StaticWebAssets.props
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/staticwebassets/msbuild.Web.Microsoft.AspNetCore.StaticWebAssetEndpoints.props
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/staticwebassets/msbuild.build.Web.props
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/staticwebassets/msbuild.buildMultiTargeting.Web.props
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/staticwebassets/msbuild.buildTransitive.Web.props
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/staticwebassets.pack.json
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/Web.csproj.Up2Date
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/Web.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/refint/Web.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/Web.pdb
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/Web.genruntimeconfig.cache
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/ref/Web.dll
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/scopedcss/Components/Pages/Cart/ShoppingCart.razor.rz.scp.css
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/scopedcss/Components/Pages/Orders/OrderDetails.razor.rz.scp.css
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/scopedcss/Components/Pages/Payment/Payment.razor.rz.scp.css
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/scopedcss/Components/Pages/Products/ProductCatalog.razor.rz.scp.css
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/compressed/gga45437c7-7ysqg2m6rx.gz
+/home/hganchev/Projects/GitHub/dotnet-web-microservice-template/Clients/Frontend/obj/Debug/net9.0/compressed/6bir0r8491-64m3ol7hki.gz
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/obj/Debug/net9.0/Web.csproj.AssemblyReference.cache
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/obj/Debug/net9.0/Web.GeneratedMSBuildEditorConfig.editorconfig
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/obj/Debug/net9.0/Web.AssemblyInfoInputs.cache
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/obj/Debug/net9.0/Web.AssemblyInfo.cs
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/obj/Debug/net9.0/Web.csproj.CoreCompileInputs.cache
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/obj/Debug/net9.0/Web.MvcApplicationPartsAssemblyInfo.cache
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/obj/Debug/net9.0/Web.sourcelink.json
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/obj/Debug/net9.0/Web.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/obj/Debug/net9.0/refint/Web.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/obj/Debug/net9.0/Web.pdb
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/appsettings.Development.json
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/appsettings.json
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Web.staticwebassets.runtime.json
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Web.staticwebassets.endpoints.json
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Web
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Web.deps.json
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Web.runtimeconfig.json
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Web.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Web.pdb
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/BlazorBootstrap.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Blazored.LocalStorage.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Microsoft.AspNetCore.Authorization.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Microsoft.AspNetCore.Components.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Microsoft.AspNetCore.Components.Authorization.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Microsoft.AspNetCore.Components.Forms.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Microsoft.AspNetCore.Components.Web.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Microsoft.AspNetCore.Components.WebAssembly.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Microsoft.AspNetCore.Components.WebAssembly.Authentication.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Microsoft.AspNetCore.Metadata.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Microsoft.Extensions.AmbientMetadata.Application.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Microsoft.Extensions.Compliance.Abstractions.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Microsoft.Extensions.Configuration.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Microsoft.Extensions.Configuration.Abstractions.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Microsoft.Extensions.Configuration.Binder.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Microsoft.Extensions.Configuration.FileExtensions.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Microsoft.Extensions.Configuration.Json.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Microsoft.Extensions.DependencyInjection.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Microsoft.Extensions.DependencyInjection.AutoActivation.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Microsoft.Extensions.Diagnostics.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Microsoft.Extensions.Diagnostics.Abstractions.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Microsoft.Extensions.Diagnostics.ExceptionSummarization.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Microsoft.Extensions.FileProviders.Abstractions.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Microsoft.Extensions.FileProviders.Physical.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Microsoft.Extensions.FileSystemGlobbing.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Microsoft.Extensions.Hosting.Abstractions.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Microsoft.Extensions.Http.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Microsoft.Extensions.Http.Diagnostics.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Microsoft.Extensions.Http.Resilience.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Microsoft.Extensions.Logging.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Microsoft.Extensions.Logging.Abstractions.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Microsoft.Extensions.Logging.Configuration.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Microsoft.Extensions.ObjectPool.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Microsoft.Extensions.Options.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Microsoft.Extensions.Options.ConfigurationExtensions.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Microsoft.Extensions.Primitives.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Microsoft.Extensions.Resilience.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Microsoft.Extensions.ServiceDiscovery.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Microsoft.Extensions.ServiceDiscovery.Abstractions.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Microsoft.Extensions.ServiceDiscovery.Yarp.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Microsoft.Extensions.Telemetry.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Microsoft.Extensions.Telemetry.Abstractions.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Microsoft.IdentityModel.Abstractions.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Microsoft.IdentityModel.JsonWebTokens.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Microsoft.IdentityModel.Logging.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Microsoft.IdentityModel.Tokens.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Microsoft.JSInterop.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Microsoft.JSInterop.WebAssembly.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Newtonsoft.Json.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/OpenTelemetry.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/OpenTelemetry.Api.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/OpenTelemetry.Api.ProviderBuilderExtensions.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/OpenTelemetry.Exporter.OpenTelemetryProtocol.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/OpenTelemetry.Extensions.Hosting.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/OpenTelemetry.Instrumentation.AspNetCore.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/OpenTelemetry.Instrumentation.Http.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/OpenTelemetry.Instrumentation.Runtime.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Polly.Core.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Polly.Extensions.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Polly.RateLimiting.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/System.IdentityModel.Tokens.Jwt.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/System.IO.Hashing.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Yarp.ReverseProxy.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Shared.ServiceDefaults.dll
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/bin/Debug/net9.0/Shared.ServiceDefaults.pdb
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/obj/Debug/net9.0/scopedcss/Components/Layout/MainLayout.razor.rz.scp.css
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/obj/Debug/net9.0/scopedcss/Components/Pages/Cart/ShoppingCart.razor.rz.scp.css
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/obj/Debug/net9.0/scopedcss/Components/Pages/Home.razor.rz.scp.css
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/obj/Debug/net9.0/scopedcss/Components/Pages/Login/Login.razor.rz.scp.css
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/obj/Debug/net9.0/scopedcss/Components/Pages/Login/Register.razor.rz.scp.css
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/obj/Debug/net9.0/scopedcss/Components/Pages/NavMenu.razor.rz.scp.css
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/obj/Debug/net9.0/scopedcss/Components/Pages/Orders/OrderDetails.razor.rz.scp.css
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/obj/Debug/net9.0/scopedcss/Components/Pages/Payment/Payment.razor.rz.scp.css
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/obj/Debug/net9.0/scopedcss/Components/Pages/Products/ProductCatalog.razor.rz.scp.css
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/obj/Debug/net9.0/scopedcss/Components/Pages/User/UserProfile.razor.rz.scp.css
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/obj/Debug/net9.0/scopedcss/bundle/Web.styles.css
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/obj/Debug/net9.0/scopedcss/projectbundle/Web.bundle.scp.css
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/obj/Debug/net9.0/compressed/f32kn295nz-gcvjxldlff.gz
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/obj/Debug/net9.0/compressed/yxfdm33bor-63oqyoiiv4.gz
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/obj/Debug/net9.0/compressed/refgsao5tb-5vmds449nb.gz
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/obj/Debug/net9.0/compressed/d5o4a4wkq9-ct0ej5e0q0.gz
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/obj/Debug/net9.0/compressed/sismm8xg1l-ezlxc6gzv3.gz
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/obj/Debug/net9.0/compressed/q8v6i1uv3e-pisakkcwob.gz
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/obj/Debug/net9.0/compressed/36w3eu0hkb-j8zp7bt7w3.gz
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/obj/Debug/net9.0/compressed/mfzx4sb2rv-79hai7knhw.gz
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/obj/Debug/net9.0/compressed/lqvgqijwbg-xepmqzdr2x.gz
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/obj/Debug/net9.0/compressed/eojifsclv0-7t9tbfaemk.gz
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/obj/Debug/net9.0/compressed/gga45437c7-7ysqg2m6rx.gz
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/obj/Debug/net9.0/compressed/6bir0r8491-64m3ol7hki.gz
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/obj/Debug/net9.0/staticwebassets.build.json
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/obj/Debug/net9.0/staticwebassets.development.json
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/obj/Debug/net9.0/staticwebassets.build.endpoints.json
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/obj/Debug/net9.0/staticwebassets/msbuild.Web.Microsoft.AspNetCore.StaticWebAssets.props
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/obj/Debug/net9.0/staticwebassets/msbuild.Web.Microsoft.AspNetCore.StaticWebAssetEndpoints.props
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/obj/Debug/net9.0/staticwebassets/msbuild.build.Web.props
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/obj/Debug/net9.0/staticwebassets/msbuild.buildMultiTargeting.Web.props
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/obj/Debug/net9.0/staticwebassets/msbuild.buildTransitive.Web.props
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/obj/Debug/net9.0/staticwebassets.pack.json
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/obj/Debug/net9.0/Web.csproj.Up2Date
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/obj/Debug/net9.0/Web.genruntimeconfig.cache
+/home/hganchev/Projects/Github DHS Hub/e-commerce-microservice-project/client/blazor/Web/obj/Debug/net9.0/ref/Web.dll

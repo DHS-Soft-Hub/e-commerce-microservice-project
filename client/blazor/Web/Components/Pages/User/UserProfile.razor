@@ -1,0 +1,216 @@
+@page "/profile"
+@rendermode InteractiveServer
+@inject Services.AuthService AuthService
+@inject NavigationManager Navigation
+
+@inject IJSRuntime JSRuntime
+@using Microsoft.AspNetCore.Authorization
+@using Web.Services
+@using Web.DTOs
+
+<div class="profile-container">
+    <div class="profile-header">
+        <div class="avatar-section">
+            <div class="avatar">
+                <i class="fas fa-user-circle"></i>
+            </div>
+            <button class="btn btn-secondary" @onclick="ChangeAvatar">
+                <i class="fas fa-camera"></i> Change Photo
+            </button>
+        </div>
+        <div class="user-info">
+            <h2 class="user-name">@currentUser.UserName</h2>
+            <p class="user-email">@currentUser.Email</p>
+        </div>
+    </div>
+
+    <div class="profile-content">
+        <!-- Personal Information and Security Row -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="profile-card card h-100">
+                    <div class="card-header">
+                        <div class="card-header-content">
+                            <h4><i class="fas fa-user"></i> Personal Information</h4>
+                            <button class="btn btn-light" @onclick="ToggleEditMode">
+                                <i class="fas fa-edit"></i> @(isEditMode ? "Cancel" : "Edit")
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        @if (isEditMode)
+                        {
+                            <div class="form-group">
+                                <label for="username">Username</label>
+                                <input @bind="editUser.UserName" class="form-control" id="username" />
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input @bind="editUser.Email" class="form-control" id="email" />
+                            </div>
+                            <div class="button-group">
+                                <button class="btn btn-success" @onclick="SaveChanges">
+                                    <i class="fas fa-save"></i> Save Changes
+                                </button>
+                                <button class="btn btn-secondary" @onclick="ToggleEditMode">
+                                    <i class="fas fa-times"></i> Cancel
+                                </button>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="info-row">
+                                <strong>Username:</strong>
+                                <span>@currentUser.UserName</span>
+                            </div>
+                            <div class="info-row">
+                                <strong>Email:</strong>
+                                <span>@currentUser.Email</span>
+                            </div>
+                            <div class="info-row">
+                                <strong>Member Since:</strong>
+                                <span>@memberSince.ToString("MMMM dd, yyyy")</span>
+                            </div>
+                            <div class="info-row">
+                                <strong>Last Login:</strong>
+                                <span>@lastLogin.ToString("MMMM dd, yyyy HH:mm")</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="security-card card h-100">
+                    <div class="card-header">
+                        <h4><i class="fas fa-shield-alt"></i> Security</h4>
+                    </div>
+                    <div class="card-body">
+                        <button class="btn btn-warning mb-2" @onclick="ChangePassword">
+                            <i class="fas fa-key"></i> Change Password
+                        </button>
+                        <button class="btn btn-info" @onclick="EnableTwoFactor">
+                            <i class="fas fa-mobile-alt"></i> Enable Two-Factor Authentication
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Account Activity Row -->
+        <div class="row">
+            <div class="col-12">
+                <div class="activity-card card">
+                    <div class="card-header">
+                        <h4><i class="fas fa-chart-line"></i> Account Activity</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="activity-stats">
+                            <div class="stat-item">
+                                <div class="stat-value">@totalLogins</div>
+                                <div class="stat-label">Total Logins</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">@daysActive</div>
+                                <div class="stat-label">Days Active</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (!string.IsNullOrEmpty(Message))
+{
+    <div class="alert @(Message.Contains("successfully") ? "alert-success" : "alert-danger")" role="alert">
+        @Message
+    </div>
+}
+
+@code {
+    private AuthUserDto currentUser = new();
+    private AuthUserDto editUser = new();
+    private bool isEditMode = false;
+    private string Message = "";
+    private DateTime memberSince = DateTime.Now.AddMonths(-6);
+    private DateTime lastLogin = DateTime.Now.AddHours(-2);
+    private int totalLogins = 127;
+    private int daysActive = 45;
+
+    protected override Task OnInitializedAsync()
+    {
+        // Initialize with sample data - in real app, get from API
+        currentUser = new AuthUserDto
+        {
+            Id = "1",
+            UserName = "JohnDoe",
+            Email = "john.doe@example.com",
+        };
+        
+        editUser = new AuthUserDto
+        {
+            Id = currentUser.Id,
+            UserName = currentUser.UserName,
+            Email = currentUser.Email,
+        };
+
+        return Task.CompletedTask;
+    }
+
+    private void ToggleEditMode()
+    {
+        isEditMode = !isEditMode;
+        if (!isEditMode)
+        {
+            // Reset edit user to current user values
+            editUser.UserName = currentUser.UserName;
+            editUser.Email = currentUser.Email;
+        }
+    }
+
+    private async Task SaveChanges()
+    {
+        try
+        {
+            // In real app, make API call to update user
+            // var success = await UserProfile.UpdateProfile(editUser);
+            
+            // Simulate API call
+            await Task.Delay(500);
+            
+            currentUser.UserName = editUser.UserName;
+            currentUser.Email = editUser.Email;
+            
+            isEditMode = false;
+            Message = "Profile updated successfully!";
+            
+            // Clear message after 3 seconds
+            await Task.Delay(3000);
+            Message = "";
+            StateHasChanged();
+        }
+        catch (Exception)
+        {
+            Message = "Failed to update profile. Please try again.";
+            await Task.Delay(3000);
+            Message = "";
+            StateHasChanged();
+        }
+    }
+
+    private async Task ChangeAvatar()
+    {
+        await JSRuntime.InvokeVoidAsync("alert", "Avatar change feature coming soon!");
+    }
+
+    private void ChangePassword()
+    {
+        Navigation.NavigateTo("/user/settings#security");
+    }
+
+    private async Task EnableTwoFactor()
+    {
+        await JSRuntime.InvokeVoidAsync("alert", "Two-factor authentication setup coming soon!");
+    }
+}
