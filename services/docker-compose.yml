@@ -3,7 +3,7 @@ include:
   - path: ./api-gateway/docker-compose.gateway.yml
   - path: ./docker/docker-compose.orders.yml
   - path: ./docker/docker-compose.payments.yml
-  - path: ./products/docker-compose.shoppingcart.yml
+  - path: ./docker/docker-compose.shoppingcart.yml
 
 services:
 
