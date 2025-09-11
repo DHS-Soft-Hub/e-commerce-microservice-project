@@ -1,0 +1,174 @@
+@page "/payment"
+@using Web.DTOs
+@using Web.Services
+@inject CartService CartService
+@inject PaymentService PaymentService
+@inject OrderService OrderService
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+@rendermode InteractiveServer
+@attribute [AllowAnonymous]
+
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <NavMenu />
+    </aside>
+    <main class="main-content">
+        <header class="topbar">
+            <div class="brand">
+                <span class="dot"></span>
+                <span>Payment</span>
+            </div>
+            <div class="topbar-actions">
+                <input class="search" placeholder="Search…" />
+                <div class="avatar" title="Account"></div>
+            </div>
+        </header>
+        <div class="content-wrapper">
+            <section class="greeting">
+                <h1>Checkout</h1>
+                <p>Review your order details</p>
+            </section>
+            
+            @if (isLoading)
+            {
+                <div class="loading">
+                    <p>Loading payment details...</p>
+                </div>
+            }
+            else
+            {
+                <div class="payment-container">
+                    <div class="payment-form">
+                        <div class="form-card">
+                            <h3>Order Summary</h3>
+                            
+                            <div class="form-group">
+                                <label for="price">Total Amount</label>
+                                <div class="price-display">
+                                    <span class="amount">@cart.TotalPrice.ToString("C")</span>
+                                    <span class="currency">@cart.Currency</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="currency">Currency</label>
+                                <select @bind="selectedCurrency" class="form-control" id="currency">
+                                    <option value="USD">USD - US Dollar</option>
+                                    <option value="EUR">EUR - Euro</option>
+                                    <option value="GBP">GBP - British Pound</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="paymentMethod">Payment Method</label>
+                                <select @bind="selectedPaymentMethod" class="form-control" id="paymentMethod">
+                                    <option value="">Select payment method</option>
+                                    <option value="Credit Card">Credit Card</option>
+                                    <option value="Debit Card">Debit Card</option>
+                                    <option value="PayPal">PayPal</option>
+                                    <option value="Bank Transfer">Bank Transfer</option>
+                                </select>
+                            </div>
+
+                            <button class="btn btn-success pay-btn" 
+                                    @onclick="ProcessPayment"
+                                    disabled="@(isProcessing || string.IsNullOrEmpty(selectedPaymentMethod))">
+                                @if (isProcessing)
+                                {
+                                    <span>Creating Order...</span>
+                                }
+                                else
+                                {
+                                    <span>Place Order @cart.TotalPrice.ToString("C")</span>
+                                }
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="order-summary">
+                        <div class="summary-card">
+                            <h3>Order Summary</h3>
+                            @foreach (var item in cart.Items)
+                            {
+                                <div class="summary-item">
+                                    <div class="item-details">
+                                        <span class="item-name">@item.ProductName</span>
+                                        <span class="item-qty">Qty: @item.Quantity</span>
+                                    </div>
+                                    <span class="item-price">@((item.Price * item.Quantity).ToString("C"))</span>
+                                </div>
+                            }
+                            <div class="summary-total">
+                                <span>Total: @cart.TotalPrice.ToString("C") @cart.Currency</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </main>
+</div>
+
+@code {
+    private CartDto cart = new(new List<CartItemDto>(), 0, "USD");
+    private string selectedCurrency = "USD";
+    private string selectedPaymentMethod = "";
+    private bool isLoading = true;
+    private bool isProcessing = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCart();
+    }
+
+    private async Task LoadCart()
+    {
+        isLoading = true;
+        try
+        {
+            cart = await CartService.GetCartAsync();
+            if (cart.Items.Count == 0)
+            {
+                Navigation.NavigateTo("/cart");
+                return;
+            }
+            // Ensure selectedCurrency is never null
+            selectedCurrency = !string.IsNullOrEmpty(cart.Currency) ? cart.Currency : "USD";
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading cart: {ex.Message}");
+            Navigation.NavigateTo("/cart");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task ProcessPayment()
+    {
+        isProcessing = true;
+        try
+        {
+            // Only create order - let the saga handle the rest
+            var customerId = Guid.NewGuid(); 
+            var order = await OrderService.CreateOrderAsync(cart.Items, customerId);
+
+            // Clear cart after successful order creation
+            await CartService.ClearCartAsync();
+
+            // Redirect to order tracking - saga will handle inventory, payment, and shipping
+            Navigation.NavigateTo($"/orders/{order.Id}/tracking");
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", $"Order creation failed: {ex.Message}");
+        }
+        finally
+        {
+            isProcessing = false;
+        }
+    }
+}

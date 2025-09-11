@@ -1,0 +1,66 @@
+﻿@rendermode InteractiveServer
+@inject Services.CustomAuthStateProvider AuthenticationProvider
+
+<nav class="nav-menu">
+    <div class="nav-header">
+        <div class="nav-brand">
+            <h2 class="brand-title">Microservice Template</h2>
+            <span class="brand-badge">v0.1</span>
+        </div>
+        <button class="nav-toggle" @onclick="ToggleNav">
+            <span class="hamburger"></span>
+            <span class="hamburger"></span>
+            <span class="hamburger"></span>
+        </button>
+    </div>
+    
+    <div class="nav-content @(isNavExpanded ? "expanded" : "")">
+        <ul class="nav-list">
+            <li class="nav-item">
+                <NavLink class="nav-link" href="/" Match="NavLinkMatch.All">
+                    <i class="nav-icon bi bi-house-door-fill"></i>
+                    <span class="nav-text">Dashboard</span>
+                </NavLink>
+            </li>
+            <li class="nav-item">
+                <NavLink class="nav-link" href="/products" Match="NavLinkMatch.Prefix">
+                    <i class="nav-icon bi bi-grid-fill"></i>
+                    <span class="nav-text">Products</span>
+                </NavLink>
+            </li>
+            <li class="nav-item">
+                <NavLink class="nav-link" href="/cart" Match="NavLinkMatch.Prefix">
+                    <i class="nav-icon bi bi-cart-fill"></i>
+                    <span class="nav-text">Cart</span>
+                </NavLink>
+            </li>
+            <li class="nav-item">
+                <NavLink class="nav-link" href="/profile" Match="NavLinkMatch.Prefix">
+                    <i class="nav-icon bi bi-person-circle"></i>
+                    <span class="nav-text">Profile</span>
+                </NavLink>
+            </li>
+            <li class="nav-item">
+                <NavLink class="nav-link" href="/user/settings" Match="NavLinkMatch.Prefix">
+                    <i class="nav-icon bi bi-gear-fill"></i>
+                    <span class="nav-text">Settings</span>
+                </NavLink>
+            </li>
+            <li class="nav-item nav-item-bottom">
+                <NavLink class="nav-link logout-link" href="/logout" Match="NavLinkMatch.Prefix">
+                    <i class="nav-icon bi bi-box-arrow-right"></i>
+                    <span class="nav-text">Logout</span>
+                </NavLink>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+@code {
+    private bool isNavExpanded = false;
+
+    private void ToggleNav()
+    {
+        isNavExpanded = !isNavExpanded;
+    }
+}

@@ -1,0 +1,545 @@
+@page "/orders/{OrderId}/tracking"
+@using Web.DTOs
+@using Web.Services
+@inject OrderService OrderService
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+@rendermode InteractiveServer
+@attribute [AllowAnonymous]
+
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <NavMenu />
+    </aside>
+    <main class="main-content">
+        <header class="topbar">
+            <div class="brand">
+                <span class="dot"></span>
+                <span>Order Tracking</span>
+            </div>
+            <div class="topbar-actions">
+                <input class="search" placeholder="Search…" />
+                <div class="avatar" title="Account"></div>
+            </div>
+        </header>
+        <div class="content-wrapper">
+            <section class="greeting">
+                <h1>Order Tracking</h1>
+                <p>Track your order progress in real-time</p>
+            </section>
+            
+            @if (isLoading)
+            {
+                <div class="loading">
+                    <p>Loading order details...</p>
+                </div>
+            }
+            else if (order == null)
+            {
+                <div class="error">
+                    <h3>Order Not Found</h3>
+                    <p>The order you're looking for doesn't exist or has been removed.</p>
+                    <button class="btn btn-primary" @onclick="GoToOrders">
+                        View All Orders
+                    </button>
+                </div>
+            }
+            else
+            {
+                <div class="order-tracking-container">
+                    <div class="order-header">
+                        <h2>Order #@order.Id.ToString()[..8]</h2>
+                        <div class="order-status @GetStatusClass(order.Status)">
+                            @order.Status
+                        </div>
+                    </div>
+
+                    <div class="order-progress">
+                        <div class="progress-step @GetStepClass("Pending")">
+                            <div class="step-icon">📋</div>
+                            <div class="step-label">Order Placed</div>
+                        </div>
+                        <div class="progress-step @GetStepClass("InventoryReserved")">
+                            <div class="step-icon">📦</div>
+                            <div class="step-label">Inventory Reserved</div>
+                        </div>
+                        <div class="progress-step @GetStepClass("Paid")">
+                            <div class="step-icon">💳</div>
+                            <div class="step-label">Payment Processed</div>
+                        </div>
+                        <div class="progress-step @GetStepClass("Shipped")">
+                            <div class="step-icon">🚚</div>
+                            <div class="step-label">Shipped</div>
+                        </div>
+                        <div class="progress-step @GetStepClass("Completed")">
+                            <div class="step-icon">✅</div>
+                            <div class="step-label">Delivered</div>
+                        </div>
+                    </div>
+
+                    <div class="order-details">
+                        <div class="order-items">
+                            <h3>Order Items</h3>
+                            @foreach (var item in order.Items)
+                            {
+                                <div class="order-item">
+                                    <div class="item-info">
+                                        <h4>@item.ProductName</h4>
+                                        <p>Quantity: @item.Quantity</p>
+                                        <p>Price: @item.UnitPrice.ToString("C") @item.Currency</p>
+                                    </div>
+                                    <div class="item-total">
+                                        @((item.UnitPrice * item.Quantity).ToString("C"))
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="order-summary">
+                            <h3>Order Summary</h3>
+                            <div class="summary-row">
+                                <span>Order Date:</span>
+                                <span>@order.CreatedAt.ToString("MMM dd, yyyy HH:mm")</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Total Amount:</span>
+                                <span>@order.TotalPrice.ToString("C") @order.Currency</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Status:</span>
+                                <span class="status @GetStatusClass(order.Status)">@order.Status</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="order-actions">
+                        <button class="btn btn-secondary" @onclick="RefreshOrder">
+                            Refresh Status
+                        </button>
+                        <button class="btn btn-primary" @onclick="GoToOrders">
+                            View All Orders
+                        </button>
+                    </div>
+                </div>
+            }
+        </div>
+    </main>
+</div>
+
+<style>
+    .dashboard-container {
+        display: flex;
+        min-height: 100vh;
+        background-color: #f8fafc;
+    }
+
+    .sidebar {
+        width: 250px;
+        flex-shrink: 0;
+    }
+
+    .main-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+
+    .topbar {
+        background: white;
+        border-bottom: 1px solid #e5e7eb;
+        padding: 1rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .brand {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 600;
+    }
+
+    .dot {
+        width: 8px;
+        height: 8px;
+        background: #3b82f6;
+        border-radius: 50%;
+    }
+
+    .topbar-actions {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .search {
+        padding: 0.5rem 1rem;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        width: 200px;
+    }
+
+    .avatar {
+        width: 32px;
+        height: 32px;
+        background: #6b7280;
+        border-radius: 50%;
+    }
+
+    .content-wrapper {
+        flex: 1;
+        padding: 2rem;
+        overflow-y: auto;
+    }
+
+    .greeting {
+        margin-bottom: 2rem;
+    }
+
+    .greeting h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #111827;
+        margin: 0 0 0.5rem 0;
+    }
+
+    .greeting p {
+        color: #6b7280;
+        margin: 0;
+    }
+
+    .loading, .error {
+        text-align: center;
+        padding: 3rem;
+    }
+
+    .order-tracking-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .order-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .order-header h2 {
+        margin: 0;
+        color: #111827;
+        font-size: 1.5rem;
+    }
+
+    .order-status {
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+    }
+
+    .order-status.pending { background: #fef3c7; color: #92400e; }
+    .order-status.inventoryreserved { background: #dbeafe; color: #1e40af; }
+    .order-status.paid { background: #d1fae5; color: #065f46; }
+    .order-status.shipped { background: #e0e7ff; color: #3730a3; }
+    .order-status.completed { background: #dcfce7; color: #166534; }
+    .order-status.cancelled { background: #fee2e2; color: #991b1b; }
+
+    .order-progress {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 3rem;
+        position: relative;
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .order-progress::before {
+        content: '';
+        position: absolute;
+        top: 50px;
+        left: 10%;
+        right: 10%;
+        height: 2px;
+        background: #e5e7eb;
+        z-index: 1;
+    }
+
+    .progress-step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        z-index: 2;
+        flex: 1;
+    }
+
+    .step-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: #f3f4f6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+        border: 3px solid #e5e7eb;
+    }
+
+    .progress-step.completed .step-icon {
+        background: #10b981;
+        border-color: #10b981;
+        color: white;
+    }
+
+    .progress-step.active .step-icon {
+        background: #3b82f6;
+        border-color: #3b82f6;
+        color: white;
+    }
+
+    .step-label {
+        font-size: 0.8rem;
+        font-weight: 500;
+        text-align: center;
+        margin-top: 0.5rem;
+    }
+
+    .order-details {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .order-items, .order-summary {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .order-items h3, .order-summary h3 {
+        margin: 0 0 1rem 0;
+        color: #111827;
+        font-size: 1.25rem;
+    }
+
+    .order-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 0;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .order-item:last-child {
+        border-bottom: none;
+    }
+
+    .item-info h4 {
+        margin: 0 0 0.25rem 0;
+        color: #111827;
+    }
+
+    .item-info p {
+        margin: 0.25rem 0;
+        color: #6b7280;
+        font-size: 0.9rem;
+    }
+
+    .item-total {
+        font-weight: 600;
+        color: #111827;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        color: #374151;
+    }
+
+    .summary-row.total {
+        border-top: 1px solid #e5e7eb;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    .status {
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+
+    .order-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 2rem;
+    }
+
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 8px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-primary {
+        background: #3b82f6;
+        color: white;
+    }
+
+    .btn-secondary {
+        background: #6b7280;
+        color: white;
+    }
+
+    .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    @@media (max-width: 768px) {
+        .dashboard-container {
+            flex-direction: column;
+        }
+        
+        .sidebar {
+            width: 100%;
+        }
+        
+        .order-details {
+            grid-template-columns: 1fr;
+        }
+        
+        .order-progress {
+            padding: 1rem;
+        }
+        
+        .progress-step {
+            font-size: 0.8rem;
+        }
+        
+        .step-icon {
+            width: 40px;
+            height: 40px;
+            font-size: 1.2rem;
+        }
+        
+        .content-wrapper {
+            padding: 1rem;
+        }
+    }
+</style>
+
+@code {
+    [Parameter] public string OrderId { get; set; } = "";
+    
+    private OrderDto? order;
+    private bool isLoading = true;
+    private Timer? refreshTimer;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadOrder();
+        
+        // Auto-refresh every 5 seconds if order is not completed
+        if (order != null && !IsOrderFinal(order.Status))
+        {
+            refreshTimer = new Timer(async _ => await InvokeAsync(RefreshOrder), null, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(5));
+        }
+    }
+
+    private async Task LoadOrder()
+    {
+        isLoading = true;
+        try
+        {
+            if (Guid.TryParse(OrderId, out var orderId))
+            {
+                order = await OrderService.GetOrderAsync(orderId);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading order: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task RefreshOrder()
+    {
+        if (!isLoading)
+        {
+            await LoadOrder();
+            StateHasChanged();
+            
+            // Stop auto-refresh if order is in final state
+            if (order != null && IsOrderFinal(order.Status) && refreshTimer != null)
+            {
+                refreshTimer.Dispose();
+                refreshTimer = null;
+            }
+        }
+    }
+
+    private string GetStatusClass(string status)
+    {
+        return status.ToLower().Replace(" ", "");
+    }
+
+    private string GetStepClass(string stepStatus)
+    {
+        if (order == null) return "";
+        
+        var currentStatus = order.Status.ToLower();
+        var step = stepStatus.ToLower();
+        
+        var statusOrder = new[] { "pending", "inventoryreserved", "paid", "shipped", "completed" };
+        var currentIndex = Array.IndexOf(statusOrder, currentStatus);
+        var stepIndex = Array.IndexOf(statusOrder, step);
+        
+        if (stepIndex < currentIndex) return "completed";
+        if (stepIndex == currentIndex) return "active";
+        
+        return "";
+    }
+
+    private bool IsOrderFinal(string status)
+    {
+        var finalStatuses = new[] { "Completed", "Cancelled", "Failed" };
+        return finalStatuses.Contains(status);
+    }
+
+    private void GoToOrders()
+    {
+        Navigation.NavigateTo("/orders");
+    }
+
+    public void Dispose()
+    {
+        refreshTimer?.Dispose();
+    }
+}

@@ -1,0 +1,199 @@
+@page "/login"
+@rendermode InteractiveServer
+@inject Services.AuthService AuthService
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+@using Web.Services
+
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-header">
+            <h2 class="login-title">Welcome Back</h2>
+            <p class="login-subtitle">Sign in to your account</p>
+        </div>
+
+        @if (!string.IsNullOrEmpty(Message))
+        {
+            <div class="alert @(Message.Contains("Successful") ? "alert-success" : "alert-danger")">
+                <i class="fas @(Message.Contains("Successful") ? "fa-check-circle" : "fa-exclamation-circle")"></i>
+                @Message
+            </div>
+        }
+
+        <form @onsubmit="HandleLogin" @onsubmit:preventDefault="true" class="login-form">
+            <div class="form-group">
+                <label for="email" class="form-label">
+                    <i class="fas fa-envelope"></i>
+                    Email Address
+                </label>
+                <input @bind="loginModel.Email" 
+                       type="email" 
+                       id="email"
+                       class="form-control @(emailError ? "error" : "")" 
+                       placeholder="Enter your email address"
+                       @onblur="ValidateEmail"
+                       required />
+                @if (emailError)
+                {
+                    <span class="error-text">Please enter a valid email address</span>
+                }
+            </div>
+
+            <div class="form-group">
+                <label for="password" class="form-label">
+                    <i class="fas fa-lock"></i>
+                    Password
+                </label>
+                <div class="password-input-container">
+                    <input @bind="loginModel.Password" 
+                           type="@(showPassword ? "text" : "password")" 
+                           id="password"
+                           class="form-control @(passwordError ? "error" : "")" 
+                           placeholder="Enter your password"
+                           @onblur="ValidatePassword"
+                           required />
+                    <button type="button" 
+                            class="password-toggle" 
+                            @onclick="TogglePasswordVisibility">
+                        <i class="fas @(showPassword ? "fa-eye-slash" : "fa-eye")"></i>
+                    </button>
+                </div>
+                @if (passwordError)
+                {
+                    <span class="error-text">Password is required</span>
+                }
+            </div>
+
+            <div class="form-options">
+                <label class="remember-me">
+                    <input type="checkbox" @bind="rememberMe" />
+                    <span class="checkmark"></span>
+                    Remember me
+                </label>
+                <a href="/forgot-password" class="forgot-password">Forgot password?</a>
+            </div>
+
+            <button type="submit" class="btn btn-primary login-btn" disabled="@isLoading">
+                @if (isLoading)
+                {
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <text>Signing in...</text>
+                }
+                else
+                {
+                    <i class="fas fa-sign-in-alt"></i>
+                    <text>Sign In</text>
+                }
+            </button>
+        </form>
+
+        <div class="login-divider">
+            <span>or</span>
+        </div>
+
+        <div class="social-login">
+            <button class="btn btn-social btn-google" @onclick="LoginWithGoogle">
+                <i class="fab fa-google"></i>
+                Continue with Google
+            </button>
+            <button class="btn btn-social btn-microsoft" @onclick="LoginWithMicrosoft">
+                <i class="fab fa-microsoft"></i>
+                Continue with Microsoft
+            </button>
+        </div>
+
+        <div class="signup-prompt">
+            <p>Don't have an account? 
+                <a href="/register" class="signup-link">Create one here</a>
+            </p>
+        </div>
+    </div>
+
+    <div class="login-footer">
+        <p>&copy; 2025 Your Company. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="/privacy">Privacy Policy</a>
+            <a href="/terms">Terms of Service</a>
+            <a href="/help">Help</a>
+        </div>
+    </div>
+</div>
+
+
+
+@code {
+    private LoginModel loginModel = new LoginModel();
+    private string Message = "";
+    private bool isLoading = false;
+    private bool showPassword = false;
+    private bool rememberMe = false;
+    private bool emailError = false;
+    private bool passwordError = false;
+
+    private async Task HandleLogin()
+    {
+        // Validate form
+        ValidateEmail();
+        ValidatePassword();
+
+        if (emailError || passwordError)
+        {
+            return;
+        }
+
+        isLoading = true;
+        Message = "";
+
+        try
+        {
+            // Use the new ImprovedAuthService for better token handling
+            var success = await AuthService.LoginAsync(loginModel);
+            
+            if (success)
+            {
+                Message = "Login successful! Redirecting...";
+                await Task.Delay(1000); // Show success message briefly
+                Navigation.NavigateTo("/", forceLoad: true);
+            }
+            else
+            {
+                Message = "Invalid email or password. Please try again.";
+            }
+        }
+        catch (Exception)
+        {
+            Message = "An error occurred while signing in. Please try again.";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void TogglePasswordVisibility()
+    {
+        showPassword = !showPassword;
+    }
+
+    private void ValidateEmail()
+    {
+        emailError = string.IsNullOrWhiteSpace(loginModel.Email) || 
+                    !loginModel.Email.Contains("@") || 
+                    !loginModel.Email.Contains(".");
+    }
+
+    private void ValidatePassword()
+    {
+        passwordError = string.IsNullOrWhiteSpace(loginModel.Password);
+    }
+
+    private async Task LoginWithGoogle()
+    {
+        await JSRuntime.InvokeVoidAsync("alert", "Google OAuth integration coming soon!");
+    }
+
+    private async Task LoginWithMicrosoft()
+    {
+        await JSRuntime.InvokeVoidAsync("alert", "Microsoft OAuth integration coming soon!");
+    }
+}
