@@ -32,7 +32,7 @@ public class Cart : AggregateRoot<Guid>
         return new Cart(userId, null);
     }
 
-    public void AddItem(Guid productId, string productName, decimal price, int quantity)
+    public void AddItem(Guid productId, string productName, decimal price, string currency, int quantity)
     {
         var existingItem = _items.FirstOrDefault(x => x.ProductId == productId);
 
@@ -42,7 +42,7 @@ public class Cart : AggregateRoot<Guid>
         }
         else
         {
-            _items.Add(CartItem.Create(productId, productName, price, quantity));
+            _items.Add(CartItem.Create(productId, productName, price, currency, quantity));
         }
 
         UpdatedAt = DateTime.UtcNow;
@@ -80,7 +80,7 @@ public class Cart : AggregateRoot<Guid>
     {
         foreach (var item in otherCart.Items)
         {
-            AddItem(item.ProductId, item.ProductName, item.Price, item.Quantity);
+            AddItem(item.ProductId, item.ProductName, item.Price, item.Currency, item.Quantity);
         }
     }
 }

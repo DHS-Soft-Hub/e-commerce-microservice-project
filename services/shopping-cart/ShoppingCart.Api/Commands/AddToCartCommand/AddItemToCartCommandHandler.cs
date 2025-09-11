@@ -28,8 +28,8 @@ public class AddItemToCartCommandHandler : IRequestHandler<AddItemToCartCommand,
                 cart = Cart.CreateUserCart(request.UserId.Value);
         }
 
-        cart.AddItem(request.ProductId, request.ProductName, request.Price, request.Quantity);
-        
+        cart.AddItem(request.ProductId, request.ProductName, request.Price, request.Currency, request.Quantity);
+
         await _cartRepository.SaveAsync(cart);
         
         return Unit.Value;
