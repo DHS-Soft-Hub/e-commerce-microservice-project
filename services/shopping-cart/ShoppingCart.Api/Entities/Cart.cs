@@ -1,8 +1,9 @@
+using Shared.Domain.Aggregates;
+
 namespace ShoppingCart.Api.Entities;
 
-public class Cart
+public class Cart : AggregateRoot<Guid>
 {
-    public Guid Id { get; private set; }
     public Guid? UserId { get; private set; } // Null for anonymous sessions
     public string? SessionId { get; private set; } // For anonymous users
     private List<CartItem> _items = new();
@@ -12,7 +13,7 @@ public class Cart
 
     private Cart() { } // EF Core
 
-    public Cart(Guid? userId, string? sessionId)
+    protected Cart(Guid? userId, string? sessionId)
     {
         Id = Guid.NewGuid();
         UserId = userId;
@@ -20,20 +21,30 @@ public class Cart
         CreatedAt = DateTime.UtcNow;
         UpdatedAt = DateTime.UtcNow;
     }
+    
+    public static Cart CreateAnonymousCart(string sessionId)
+    {
+        return new Cart(null, sessionId);
+    }
+
+    public static Cart CreateUserCart(Guid userId)
+    {
+        return new Cart(userId, null);
+    }
 
     public void AddItem(Guid productId, string productName, decimal price, int quantity)
     {
         var existingItem = _items.FirstOrDefault(x => x.ProductId == productId);
-        
+
         if (existingItem != null)
         {
             existingItem.UpdateQuantity(existingItem.Quantity + quantity);
         }
         else
         {
-            _items.Add(new CartItem(productId, productName, price, quantity));
+            _items.Add(CartItem.Create(productId, productName, price, quantity));
         }
-        
+
         UpdatedAt = DateTime.UtcNow;
     }
 

@@ -36,7 +36,7 @@ public class CartSessionService : ICartSessionService
             if (userCart == null)
             {
                 // Transfer anonymous cart to user
-                userCart = new Cart(userId, null);
+                userCart = Cart.CreateUserCart(userId);
                 userCart.MergeWith(anonymousCart);
             }
             else

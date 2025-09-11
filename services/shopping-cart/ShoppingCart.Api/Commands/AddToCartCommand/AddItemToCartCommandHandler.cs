@@ -16,10 +16,16 @@ public class AddItemToCartCommandHandler : IRequestHandler<AddItemToCartCommand,
     public async Task<Unit> Handle(AddItemToCartCommand request, CancellationToken cancellationToken)
     {
         var cart = await _cartRepository.GetByUserOrSessionAsync(request.UserId, request.SessionId);
-        
+
         if (cart == null)
         {
-            cart = new Cart(request.UserId, request.SessionId);
+            if (request.UserId == null && request.SessionId == null)
+                throw new ArgumentException("Either UserId or SessionId must be provided to create a cart.");
+
+            if (request.UserId == null)
+                cart = Cart.CreateAnonymousCart(request.SessionId!);
+            else
+                cart = Cart.CreateUserCart(request.UserId.Value);
         }
 
         cart.AddItem(request.ProductId, request.ProductName, request.Price, request.Quantity);
