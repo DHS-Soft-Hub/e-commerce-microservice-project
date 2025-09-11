@@ -32,6 +32,15 @@ namespace Orders.Domain.Aggregates
             Items = new List<OrderItem>();
         }
 
+        /// <summary>
+        /// Creates a new order instance.
+        /// Raises an OrderCreatedDomainEvent upon successful creation.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="customerId"></param>
+        /// <param name="items"></param>
+        /// <param name="currency"></param>
+        /// <returns></returns>
         public static Result<Order> Create(OrderId id, CustomerId customerId, List<OrderItem> items, string currency)
         {
             var order = new Order(id, customerId, items, currency);
@@ -43,6 +52,16 @@ namespace Orders.Domain.Aggregates
             return Result<Order>.Success(order);
         }
 
+        /// <summary>
+        /// Updates the order details.
+        /// Validates that the order ID cannot be changed and customer ID is not null.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="customerId"></param>
+        /// <param name="items"></param>
+        /// <param name="currency"></param>
+        /// <param name="status"></param>
+        /// <returns></returns>
         public Result<Order> Update(OrderId id, CustomerId customerId, List<OrderItem> items, string currency, string? status = null)
         {
             if (id != Id)
@@ -72,6 +91,12 @@ namespace Orders.Domain.Aggregates
             return Result<Order>.Success(this);
         }
 
+        /// <summary>
+        /// Updates the order status.
+        /// Validates that the new status is a valid enum value.
+        /// </summary>
+        /// <param name="newStatus"></param>
+        /// <returns></returns>
         public Result UpdateStatus(OrderStatus newStatus)
         {
             if (!Enum.IsDefined(typeof(OrderStatus), newStatus))
@@ -83,6 +108,12 @@ namespace Orders.Domain.Aggregates
             return Result.Success();
         }
     
+        /// <summary>
+        /// Adds an item to the order.
+        /// Validates that the item is not null, unit price is non-negative, and quantity
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
         public Result AddItem(OrderItem item)
         {
             if (item == null)
@@ -104,6 +135,12 @@ namespace Orders.Domain.Aggregates
             return Result.Success();
         }
 
+        /// <summary>
+        /// Removes an item from the order.
+        /// Validates that the item is not null and exists in the order.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
         public Result RemoveItem(OrderItem item)
         {
             if (item == null)
