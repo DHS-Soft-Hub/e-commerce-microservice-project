@@ -3,6 +3,7 @@ package ecommerce.userprofile.profile.domain.entities;
 import ecommerce.userprofile.profile.domain.types.ProfileFieldType;
 import ecommerce.userprofile.profile.domain.valueobjects.*;
 import ecommerce.userprofile.shared.domain.entities.DomainEntity;
+import ecommerce.userprofile.shared.domain.valueobject.UserId;
 import ecommerce.userprofile.shared.exceptions.DomainException;
 import lombok.*;
 import org.jetbrains.annotations.Contract;
@@ -17,13 +18,12 @@ import java.util.Optional;
 /**
  * Profile domain entity representing a user's profile information.
  *
- * @author Daniel Terziev
  * @version 1.0
  */
 @Getter
 @Builder(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 public class Profile extends DomainEntity<ProfileId> {
 
     public static final String PROFILE_ID_REQUIRED_MESSAGE = "Profile ID cannot be null";
@@ -39,6 +39,10 @@ public class Profile extends DomainEntity<ProfileId> {
     @NotNull
     @NonNull
     private ProfileId id;
+
+    @NotNull
+    @NonNull
+    private final UserId userId;
 
     @NotNull
     @NonNull
@@ -78,6 +82,7 @@ public class Profile extends DomainEntity<ProfileId> {
     /**
      * Creates a new profile with the provided information.
      *
+     * @param userId      User's ID (required)
      * @param firstName   User's first name (required)
      * @param middleName  User's middle name (optional)
      * @param lastName    User's last name (required)
@@ -89,8 +94,9 @@ public class Profile extends DomainEntity<ProfileId> {
      * @return New Profile instance with generated ID and initial metadata
      * @throws IllegalArgumentException if any required field is null
      */
-    @Contract(value = "_, _, _, _, _, _, _, _ -> new")
+    @Contract(value = "_, _, _, _, _, _, _, _, _ -> new")
     public static @NotNull Profile create(
+            @NotNull UserId userId,
             @NotNull NameField firstName,
             @Nullable NameField middleName,
             @NotNull NameField lastName,
@@ -106,6 +112,7 @@ public class Profile extends DomainEntity<ProfileId> {
 
         return Profile.builder()
                 .id(ProfileId.generateId())
+                .userId(userId)
                 .firstName(firstName)
                 .middleName(middleName)
                 .lastName(lastName)
@@ -126,22 +133,24 @@ public class Profile extends DomainEntity<ProfileId> {
      * and preserves all existing metadata, including a version and timestamps.
      *
      * @param id          Existing profile ID
-     * @param firstName   User's first name
+     * @param userId      User's ID (required)
+     * @param firstName   User's first name (required)
      * @param middleName  User's middle name (optional)
-     * @param lastName    User's last name
+     * @param lastName    User's last name (required)
      * @param username    User's username (optional)
-     * @param phoneNumber User's phone number
+     * @param phoneNumber User's phone number (required)
      * @param avatar      User's avatar (optional)
      * @param dateOfBirth User's date of birth (optional)
      * @param gender      User's gender (optional)
-     * @param version     Current version for concurrency control
-     * @param updatedAt   Last update timestamp
+     * @param version     Current version for concurrency control (required)
+     * @param updatedAt   Last update timestamp (required)
      * @return Profile instance with existing data
      * @throws IllegalArgumentException if any required field is null
      */
-    @Contract(value = "_, _, _, _, _, _, _, _, _, _, _ -> new")
+    @Contract(value = "_, _, _, _, _, _, _, _, _, _, _, _ -> new")
     public static @NotNull Profile fromPersistence(
             @NotNull ProfileId id,
+            @NotNull UserId userId,
             @NotNull NameField firstName,
             @Nullable NameField middleName,
             @NotNull NameField lastName,
@@ -412,7 +421,7 @@ public class Profile extends DomainEntity<ProfileId> {
         if (businessRuleValidator != null) {
             String error = businessRuleValidator.get();
             if (error != null) {
-                throw new DomainException(error);
+                throw new DomainException(error, e);
             }
         }
 
