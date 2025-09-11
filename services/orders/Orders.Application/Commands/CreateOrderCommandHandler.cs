@@ -28,8 +28,11 @@ namespace Orders.Application.Commands
             {
                 await _unitOfWork.BeginTransactionAsync(cancellationToken);
 
-                // Create order
-                var orderId = new OrderId(Guid.NewGuid());
+                // Create order with saga-provided OrderId if available
+                var orderId = request.OrderId.HasValue 
+                    ? new OrderId(request.OrderId.Value) 
+                    : new OrderId(Guid.NewGuid());
+                    
                 var order = Order.Create(
                     orderId,
                     new CustomerId(request.CustomerId),

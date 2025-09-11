@@ -5,6 +5,7 @@ namespace Orders.Application.Commands
 {
     public class CreateOrderCommand : IRequest<OrderDto>
     {
+        public Guid? OrderId { get; set; } // Optional: Let saga specify the OrderId
         public Guid CustomerId { get; set; }
         public List<CreateOrderItemDto> Items { get; set; } = new();
         public string Currency { get; set; } = "USD";

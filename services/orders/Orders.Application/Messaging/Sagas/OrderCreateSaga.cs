@@ -1,15 +1,19 @@
 using MassTransit;
+using Orders.Application.Commands;
 using Shared.Contracts.Orders.Commands;
 using Shared.Contracts.Inventory.Events;
 using Shared.Contracts.Orders.Events;
+using Shared.Contracts.Orders.Models;
 using Shared.Contracts.Payments.Events;
 using Shared.Contracts.Shipment.Events;
+using Shared.Contracts.ShoppingCart.Events;
 
 namespace Orders.Application.Sagas
 {
     public class OrderCreateSaga : MassTransitStateMachine<OrderCreateSagaStateData>
     {
         // States
+        public State CreatingOrder { get; private set; } = null!;
         public State ReservingInventory { get; private set; } = null!;
         public State ProcessingPayment { get; private set; } = null!;
         public State CreatingShipment { get; private set; } = null!;
@@ -20,6 +24,7 @@ namespace Orders.Application.Sagas
         public State Failed { get; private set; } = null!;
 
         // Events - Incoming
+        public Event<CartCheckedOutIntegrationEvent> CartCheckedOut { get; private set; } = null!;
         public Event<OrderCreatedIntegrationEvent> OrderCreated { get; private set; } = null!;
         public Event<InventoryReservedIntegrationEvent> InventoryReserved { get; private set; } = null!;
         public Event<InventoryReservationFailedIntegrationEvent> InventoryReservationFailed { get; private set; } = null!;
@@ -35,11 +40,18 @@ namespace Orders.Application.Sagas
             InstanceState(x => x.CurrentState);
 
             // Configure event correlations
+            Event(() => CartCheckedOut, x =>
+            {
+                // Start saga with cart checkout - generate a new OrderId for correlation
+                x.CorrelateById(context => NewId.NextGuid()); // Generate unique OrderId for this saga
+                x.SelectId(context => NewId.NextGuid()); // This will be our OrderId
+            });
+
             Event(() => OrderCreated, x =>
             {
-                // Correlate all saga messages by OrderId and create the saga instance using OrderId as CorrelationId
-                x.CorrelateById(m => m.Message.OrderId);
-                x.SelectId(m => m.Message.OrderId);
+                // Correlate by OrderId for backward compatibility
+                x.CorrelateById(context => context.Message.OrderId);
+                x.SelectId(context => context.Message.OrderId);
             });
 
             Event(() => InventoryReserved, x => x.CorrelateById(m => m.Message.OrderId));
@@ -59,8 +71,40 @@ namespace Orders.Application.Sagas
                 x.OnMissingInstance(m => m.Discard());
             });
 
-            // Initial state: Order Created -> Reserve Inventory
+            // Initial state: Cart Checked Out -> Create Order -> Wait for OrderCreated
             Initially(
+                When(CartCheckedOut)
+                    .Then(context =>
+                    {
+                        // Generate a new OrderId for this order
+                        var orderId = context.Saga.CorrelationId; // Use saga correlation ID as OrderId
+                        context.Saga.OrderId = orderId;
+                        context.Saga.CustomerId = context.Message.UserId; // Cart has UserId, Order needs CustomerId
+                        context.Saga.TotalPrice = context.Message.Total;
+                        context.Saga.Currency = context.Message.Currency;
+                        context.Saga.CreatedAt = DateTime.UtcNow;
+                        context.Saga.InventoryStatus = "Pending";
+                        context.Saga.RetryCount = 0;
+                    })
+                    // Send command to create the order entity
+                    .Send(context => new CreateOrderCommand
+                    {
+                        OrderId = context.Saga.OrderId, // Saga controls the OrderId
+                        CustomerId = context.Message.UserId, // UserId from cart becomes CustomerId for order
+                        Currency = context.Message.Currency,
+                        Items = context.Message.Items.Select(item => new CreateOrderItemDto
+                        {
+                            ProductId = item.ProductId,
+                            ProductName = item.ProductName,
+                            Price = item.UnitPrice,
+                            Currency = item.Currency,
+                            Quantity = item.Quantity
+                        }).ToList()
+                    })
+                    // Wait in CreatingOrder state for OrderCreatedIntegrationEvent
+                    .TransitionTo(CreatingOrder),
+
+                // Handle direct OrderCreated events (for backward compatibility)
                 When(OrderCreated)
                     .Then(context =>
                     {
@@ -71,6 +115,27 @@ namespace Orders.Application.Sagas
                         context.Saga.CreatedAt = DateTime.UtcNow;
                         context.Saga.InventoryStatus = "Pending";
                         context.Saga.RetryCount = 0;
+                    })
+                    .Send(context => new ReserveInventoryCommand(
+                        context.Message.OrderId,
+                        context.Message.CustomerId,
+                        context.Message.Items.Select(item => new OrderItemRequest(
+                            item.ProductId,
+                            item.ProductName,
+                            item.Quantity,
+                            item.UnitPrice
+                        )).ToList()
+                    ))
+                    .TransitionTo(ReservingInventory)
+            );
+
+            // Order creation completed -> Start inventory reservation
+            During(CreatingOrder,
+                When(OrderCreated)
+                    .Then(context =>
+                    {
+                        // Order was successfully created, now proceed with inventory reservation
+                        context.Saga.InventoryStatus = "Pending";
                     })
                     .Send(context => new ReserveInventoryCommand(
                         context.Message.OrderId,
