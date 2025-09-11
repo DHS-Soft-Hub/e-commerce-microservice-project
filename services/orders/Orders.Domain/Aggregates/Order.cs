@@ -46,7 +46,14 @@ namespace Orders.Domain.Aggregates
             var order = new Order(id, customerId, items, currency);
 
             // Raise domain event
-            OrderCreatedDomainEvent orderCreatedEvent = new OrderCreatedDomainEvent(id, customerId, order.Status, order.TotalPrice, order.Items);
+            OrderCreatedDomainEvent orderCreatedEvent = new OrderCreatedDomainEvent(
+                id,
+                customerId,
+                order.Status,
+                order.TotalPrice,
+                order.Currency,
+                order.Items
+            );
             order.AddDomainEvent(orderCreatedEvent);
 
             return Result<Order>.Success(order);

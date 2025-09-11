@@ -25,8 +25,8 @@ namespace Orders.Application.Events.Domain
                 notification.OrderId.Value,
                 notification.CustomerId.Value,
                 notification.TotalPrice,
-                "USD", // Default currency
-                notification.Items.Select(item => new OrderItemDto
+                notification.Currency,
+                notification.Items.Select(item => new OrderItemCheckedOutDto
                 {
                     Id = item.Id.Value,
                     ProductId = item.ProductId.Value,

@@ -113,7 +113,7 @@ namespace Orders.Application.Tests
                 // Kick off the saga with a concrete event instance
                 var items = new[]
                 {
-                    new OrderItemDto
+                    new OrderItemCheckedOutDto
                     {
                         ProductId = NewId.NextGuid(),
                         ProductName = "Demo Product",
@@ -225,7 +225,7 @@ namespace Orders.Application.Tests
 
                 var items2 = new[]
                 {
-                    new OrderItemDto
+                    new OrderItemCheckedOutDto
                     {
                         ProductId = NewId.NextGuid(),
                         ProductName = "Item",

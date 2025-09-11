@@ -8,4 +8,4 @@ public record OrderCreatedIntegrationEvent (
     Guid CustomerId,
     decimal TotalPrice,
     string Currency,
-    List<OrderItemDto> Items) : BaseIntegrationEvent;
+    List<OrderItemCheckedOutDto> Items) : BaseIntegrationEvent;

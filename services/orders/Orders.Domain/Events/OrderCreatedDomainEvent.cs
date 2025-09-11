@@ -10,4 +10,5 @@ public sealed record OrderCreatedDomainEvent(
     CustomerId CustomerId,
     OrderStatus Status,
     decimal TotalPrice,
+    string Currency,
     List<OrderItem> Items) : IDomainEvent;

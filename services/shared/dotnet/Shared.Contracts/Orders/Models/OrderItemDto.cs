@@ -1,6 +1,6 @@
 namespace Shared.Contracts.Orders.Models;
 
-public class OrderItemDto
+public class OrderItemCheckedOutDto
 {
     public Guid Id { get; set; }
     public Guid OrderId { get; set; }
