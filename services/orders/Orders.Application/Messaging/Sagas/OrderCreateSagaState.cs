@@ -6,10 +6,12 @@ namespace Orders.Application.Sagas
     {
         public Guid CorrelationId { get; set; }
         public string CurrentState { get; set; } = null!;
+
+        // Order Details
         public Guid OrderId { get; set; }
         public Guid CustomerId { get; set; }
         public decimal TotalPrice { get; set; }
-        public string Currency { get; set; } = "USD";
+        public string Currency { get; set; } = "EUR";
         
         // Inventory Management
         public string? InventoryStatus { get; set; }

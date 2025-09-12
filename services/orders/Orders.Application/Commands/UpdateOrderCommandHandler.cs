@@ -20,6 +20,11 @@ public class UpdateOrderCommandHandler : IRequestHandler<UpdateOrderCommand, Ord
     {
         Order order = await _orderRepository.GetByIdAsync(request.OrderId);
 
+        if (order == null)
+        {
+            throw new Exception("Order not found.");
+        }
+
         // Update order properties
         var result = order.Update(
             request.OrderId,
@@ -36,7 +41,7 @@ public class UpdateOrderCommandHandler : IRequestHandler<UpdateOrderCommand, Ord
             request.Status
         );
 
-        if (result.IsFailure)
+        if (result.IsFailure || result.Value == null)
         {
             throw new Exception("Failed to update order.");
         }
