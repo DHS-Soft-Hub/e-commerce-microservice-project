@@ -194,6 +194,7 @@ namespace Orders.Application.Sagas
                         context.Saga.PaymentProcessedAt = DateTime.UtcNow;
                         context.Saga.ShippingStatus = "Paid";
                     })
+                    //TODO: Send UpdateOrderPaymentStatusCommand to update order status to Paid + PaymentId
                     .Send(context => new CreateShipmentCommand(
                         context.Saga.OrderId,
                         context.Saga.CustomerId,
@@ -237,6 +238,7 @@ namespace Orders.Application.Sagas
                         context.Saga.ShipmentId = context.Message.ShipmentId;
                         context.Saga.ShippedAt = DateTime.UtcNow;
                     })
+                    //TODO: Send UpdateOrderShipmentStatusCommand to update order status to Shipped
                     .Publish(context => new OrderStatusChangedIntegrationEvent(
                         context.Saga.OrderId,
                         "CreatingShipment",
