@@ -206,8 +206,8 @@ namespace Orders.Domain.Aggregates
             if (items == null || !items.Any())
                 return Money.Zero(currency);
 
-            var total = items.Sum(i => i.UnitPrice.Amount * i.Quantity);
-            return new Money(total, currency);
+            var total = items.Sum(item => item.GetTotal().IsSuccess ? item.GetTotal().Value?.Amount : 0);
+            return new Money(total ?? 0, currency);
         }
     }
 }
