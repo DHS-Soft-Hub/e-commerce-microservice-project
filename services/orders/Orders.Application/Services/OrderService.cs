@@ -52,23 +52,24 @@ namespace Orders.Application.Services
             return await _mediator.Send(command, cancellationToken);
         }
 
-        // public async Task<OrderDto> RemoveItemFromOrderAsync(
-        //     Guid orderId,
-        //     Guid productId,
-        //     CancellationToken cancellationToken = default)
-        // {
-        //     var command = new RemoveOrderItemCommand(orderId, productId);
-        //     return await _mediator.Send(command, cancellationToken);
-        // }
+        public async Task<OrderDto> RemoveItemFromOrderAsync(
+            Guid orderId,
+            Guid itemId,
+            CancellationToken cancellationToken = default)
+        {
+            var command = new RemoveOrderItemCommand(orderId, itemId);
+            return await _mediator.Send(command, cancellationToken);
+        }
 
-        // public async Task<OrderDto> UpdateOrderItemQuantityAsync(
-        //     Guid itemId,
-        //     OrderItemDto quantity,
-        //     CancellationToken cancellationToken = default)
-        // {
-        //     var command = new UpdateOrderItemQuantityCommand(itemId, quantity);
-        //     return await _mediator.Send(command, cancellationToken);
-        // }
+        public async Task<OrderDto> UpdateOrderItemQuantityAsync(
+            Guid orderId,
+            Guid itemId,
+            int quantity,
+            CancellationToken cancellationToken = default)
+        {
+            var command = new UpdateOrderItemQuantityCommand(orderId, itemId, quantity);
+            return await _mediator.Send(command, cancellationToken);
+        }
 
         public async Task<Unit> UpdateOrderStatusAsync(
             Guid orderId,
