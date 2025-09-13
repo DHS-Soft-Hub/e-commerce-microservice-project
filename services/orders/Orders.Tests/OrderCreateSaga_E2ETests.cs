@@ -51,8 +51,7 @@ public class OrderCreateSaga_E2ETests
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
                 ["ConnectionStrings:RabbitMQ"] = "amqp://guest:guest@localhost:5672/",
-                ["ConnectionStrings:postgresdb"] = "Host=localhost;Port=5433;Database=ordersdb;Username=postgres;Password=order@123",
-                ["USE_E2E_STUBS"] = "true" // Enable E2E stub routing
+                ["ConnectionStrings:postgresdb"] = "Host=localhost;Port=5433;Database=ordersdb;Username=postgres;Password=order@123"
             })
             .Build();
 
@@ -84,6 +83,21 @@ public class OrderCreateSaga_E2ETests
         services.AddInfrastructure(configuration);
 
         await using var provider = services.BuildServiceProvider();
+        
+        // Configure endpoint conventions for E2E test stubs
+        // This routes commands to RabbitMQ queues handled by test stub consumers
+        try
+        {
+            EndpointConvention.Map<ReserveInventoryCommand>(new Uri("queue:inventory-e2e-stub"));
+            EndpointConvention.Map<ReleaseInventoryCommand>(new Uri("queue:inventory-e2e-stub"));
+            EndpointConvention.Map<ProcessPaymentCommand>(new Uri("queue:payment-e2e-stub"));
+            EndpointConvention.Map<RefundPaymentCommand>(new Uri("queue:payment-e2e-stub"));
+            EndpointConvention.Map<CreateShipmentCommand>(new Uri("queue:shipping-e2e-stub"));
+        }
+        catch (InvalidOperationException)
+        {
+            // Endpoint conventions already mapped - expected in test scenarios
+        }
         
         // Initialize database
         using var scope = provider.CreateScope();

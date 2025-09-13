@@ -442,8 +442,7 @@ public class OrderCreateSaga_StepByStep_E2ETests
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
                 ["ConnectionStrings:RabbitMQ"] = "amqp://guest:guest@localhost:5672/",
-                ["ConnectionStrings:postgresdb"] = "Host=localhost;Port=5433;Database=ordersdb;Username=postgres;Password=order@123",
-                ["USE_E2E_STUBS"] = "true" // Enable E2E stub routing
+                ["ConnectionStrings:postgresdb"] = "Host=localhost;Port=5433;Database=ordersdb;Username=postgres;Password=order@123"
             })
             .Build();
 
@@ -466,8 +465,104 @@ public class OrderCreateSaga_StepByStep_E2ETests
         // Add real application services
         services.AddApplicationServices();
 
-        // Add real infrastructure services (this already includes MassTransit configuration)
-        services.AddInfrastructure(configuration);
+        // Add MassTransit with test stubs for E2E testing
+        services.AddMassTransit(x =>
+        {
+            // Add saga
+            x.AddSagaStateMachine<OrderCreateSaga, OrderCreateSagaStateData>()
+                .EntityFrameworkRepository(r =>
+                {
+                    r.ConcurrencyMode = ConcurrencyMode.Optimistic;
+                    r.ExistingDbContext<OrdersDbContext>();
+                });
+
+            x.UsingRabbitMq((context, cfg) =>
+            {
+                cfg.Host(configuration.GetConnectionString("RabbitMQ"));
+                
+                // Configure test stub endpoints
+                cfg.ReceiveEndpoint("inventory-e2e-stub", e =>
+                {
+                    e.Handler<ReserveInventoryCommand>(async ctx =>
+                    {
+                        var reservationId = $"RSV-{ctx.Message.OrderId:N}";
+                        await ctx.Publish(new InventoryReservedIntegrationEvent(
+                            ctx.Message.OrderId,
+                            reservationId,
+                            "Reserved",
+                            DateTime.UtcNow
+                        ));
+                    });
+
+                    e.Handler<ReleaseInventoryCommand>(async ctx =>
+                    {
+                        // No-op for success case testing
+                        await Task.CompletedTask;
+                    });
+                });
+
+                cfg.ReceiveEndpoint("payment-e2e-stub", e =>
+                {
+                    e.Handler<ProcessPaymentCommand>(async ctx =>
+                    {
+                        await ctx.Publish(new PaymentProcessedIntegrationEvent(
+                            ctx.Message.OrderId,
+                            NewId.NextGuid(),
+                            ctx.Message.Amount,
+                            ctx.Message.Currency,
+                            ctx.Message.PaymentMethod,
+                            "Processed",
+                            DateTime.UtcNow
+                        ));
+                    });
+
+                    e.Handler<RefundPaymentCommand>(async ctx =>
+                    {
+                        // No-op for success case testing
+                        await Task.CompletedTask;
+                    });
+                });
+
+                cfg.ReceiveEndpoint("shipping-e2e-stub", e =>
+                {
+                    e.Handler<CreateShipmentCommand>(async ctx =>
+                    {
+                        var shipmentId = $"SHP-{ctx.Message.OrderId:N}";
+                        await ctx.Publish(new ShipmentCreatedIntegrationEvent(
+                            ctx.Message.OrderId,
+                            shipmentId,
+                            "Created",
+                            DateTime.UtcNow
+                        ));
+                        
+                        // Auto-transition to delivered for test simplicity
+                        await Task.Delay(100);
+                        await ctx.Publish(new OrderDeliveredIntegrationEvent(
+                            ctx.Message.OrderId,
+                            shipmentId,
+                            DateTime.UtcNow
+                        ));
+                    });
+                });
+
+                cfg.ConfigureEndpoints(context);
+            });
+        });
+
+        // Configure endpoint conventions for test stubs
+        // This routes commands to the stub queues instead of external services
+        try
+        {
+            EndpointConvention.Map<ReserveInventoryCommand>(new Uri("queue:inventory-e2e-stub"));
+            EndpointConvention.Map<ReleaseInventoryCommand>(new Uri("queue:inventory-e2e-stub"));
+            EndpointConvention.Map<ProcessPaymentCommand>(new Uri("queue:payment-e2e-stub"));
+            EndpointConvention.Map<RefundPaymentCommand>(new Uri("queue:payment-e2e-stub"));
+            EndpointConvention.Map<CreateShipmentCommand>(new Uri("queue:shipping-e2e-stub"));
+        }
+        catch (InvalidOperationException)
+        {
+            // Endpoint conventions already mapped - expected in test scenarios
+        }
 
         var provider = services.BuildServiceProvider();
         

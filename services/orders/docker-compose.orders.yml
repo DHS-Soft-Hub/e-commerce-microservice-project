@@ -17,7 +17,6 @@ services:
       - Jwt__Issuer=http://orderservice
       - Jwt__Audience=api-clients
       - Jwt__Key=12382198398#*@&*$*#$&#*$#$AKSJDLKSADDAKDOPADI&^&^%$#@!@#$
-      - USE_E2E_STUBS=true
     ports:
       - "5002:8080"
     networks:
