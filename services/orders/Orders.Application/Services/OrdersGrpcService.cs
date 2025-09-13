@@ -1,10 +1,8 @@
 using Grpc.Core;
-using Orders.Application.Commands;
 using Orders.Application.DTOs;
 using Orders.Application.DTOs.Requests;
 using Orders.Application.DTOs.Responses;
 using Orders.Application.Grpc;
-using Shared.Domain.ValueObjects;
 
 namespace Orders.Application.Services;
 
@@ -22,7 +20,7 @@ public class OrdersGrpcService : Orders.Application.Grpc.Orders.OrdersBase
         var dto = new CreateOrderRequestDto
         (
             Guid.Parse(request.CustomerId),
-            request.Items.Select(i => new OrderItemDto
+            request.Items.Select(i => new CreateOrderItemRequestDto
             (
                 Guid.Parse(i.ProductId),
                 i.ProductName,
@@ -51,7 +49,7 @@ public class OrdersGrpcService : Orders.Application.Grpc.Orders.OrdersBase
         return resp;
     }
 
-    private static Order ResponseMap(OrderResponseDto dto)
+    private static Order ResponseMap(OrderDto dto)
     {
         var order = new Order
         {
@@ -82,7 +80,7 @@ public class OrdersGrpcService : Orders.Application.Grpc.Orders.OrdersBase
         return order;
     }
 
-    private static OrderUpdate UpdateMap(OrderResponseDto cmd)
+    private static OrderUpdate UpdateMap(OrderDto cmd)
     {
         var update = new OrderUpdate
         {

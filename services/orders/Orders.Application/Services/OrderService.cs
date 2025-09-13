@@ -1,5 +1,6 @@
 using MediatR;
 using Orders.Application.Commands;
+using Orders.Application.DTOs;
 using Orders.Application.DTOs.Requests;
 using Orders.Application.DTOs.Responses;
 using Orders.Application.Queries;
@@ -27,7 +28,7 @@ namespace Orders.Application.Services
             return await _mediator.Send(orderCommand, cancellationToken);
         }
 
-        public async Task<OrderResponseDto> GetOrderAsync(
+        public async Task<OrderDto> GetOrderAsync(
             Guid orderId,
             CancellationToken cancellationToken = default)
         {
@@ -35,11 +36,47 @@ namespace Orders.Application.Services
             return await _mediator.Send(query, cancellationToken);
         }
 
-        public async Task<List<OrderResponseDto>> GetOrdersAsync(
+        public async Task<List<OrderDto>> GetOrdersAsync(
             CancellationToken cancellationToken = default)
         {
             var query = new GetOrdersQuery();
             return await _mediator.Send(query, cancellationToken);
+        }
+
+        public async Task<OrderDto> AddItemToOrderAsync(
+            Guid orderId,
+            CreateOrderItemRequestDto item,
+            CancellationToken cancellationToken = default)
+        {
+            var command = new AddOrderItemCommand(orderId, item);
+            return await _mediator.Send(command, cancellationToken);
+        }
+
+        public async Task<OrderDto> RemoveItemFromOrderAsync(
+            Guid orderId,
+            Guid productId,
+            CancellationToken cancellationToken = default)
+        {
+            var command = new RemoveOrderItemCommand(orderId, productId);
+            return await _mediator.Send(command, cancellationToken);
+        }
+
+        public async Task<OrderDto> UpdateOrderItemQuantityAsync(
+            Guid itemId,
+            OrderItemDto quantity,
+            CancellationToken cancellationToken = default)
+        {
+            var command = new UpdateOrderItemQuantityCommand(itemId, quantity);
+            return await _mediator.Send(command, cancellationToken);
+        }
+
+        public async Task<Unit> UpdateOrderStatusAsync(
+            Guid orderId,
+            string status,
+            CancellationToken cancellationToken = default)
+        {
+            var command = new UpdateOrderStatusCommand(orderId, status);
+            return await _mediator.Send(command, cancellationToken);
         }
     }
 }

@@ -1,6 +1,7 @@
 using MediatR;
 using Orders.Application.DTOs;
 using Orders.Domain.Entities;
+using Orders.Domain.Enums;
 using Orders.Domain.Repositories;
 using Orders.Domain.ValueObjects;
 using Shared.Domain.Interfaces;
@@ -8,7 +9,7 @@ using Shared.Domain.ValueObjects;
 
 namespace Orders.Application.Commands;
 
-public class AddOrderItemCommandHandler : IRequestHandler<AddOrderItemCommand, OrderItemDto>
+public class AddOrderItemCommandHandler : IRequestHandler<AddOrderItemCommand, OrderDto>
 {
     private readonly IOrderRepository _orderRepository;
     private readonly IUnitOfWork _unitOfWork;
@@ -22,7 +23,7 @@ public class AddOrderItemCommandHandler : IRequestHandler<AddOrderItemCommand, O
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<OrderItemDto> Handle(AddOrderItemCommand request, CancellationToken cancellationToken)
+    public async Task<OrderDto> Handle(AddOrderItemCommand request, CancellationToken cancellationToken)
     {
         try
         {
@@ -34,13 +35,13 @@ public class AddOrderItemCommandHandler : IRequestHandler<AddOrderItemCommand, O
                 await _unitOfWork.RollbackTransactionAsync(cancellationToken);
                 throw new Exception($"Order with ID {request.OrderId} not found.");
             }
-
+    
             var orderItemResult = OrderItem.Create(
                 order.Id,
-                new ProductId(request.ProductId),
-                request.ProductName,
-                request.Quantity,
-                new Money(request.UnitPrice, request.Currency)
+                new ProductId(request.Item.ProductId),
+                request.Item.ProductName,
+                request.Item.Quantity,
+                new Money(request.Item.UnitPrice, request.Item.Currency)
             );
 
             if (orderItemResult.IsFailure)
@@ -54,13 +55,23 @@ public class AddOrderItemCommandHandler : IRequestHandler<AddOrderItemCommand, O
             await _orderRepository.UpdateAsync(order, cancellationToken);
             await _unitOfWork.CommitTransactionAsync(cancellationToken);
 
-            return new OrderItemDto
+            return new OrderDto
             (
-                orderItemResult.Value.ProductId.Value,
-                orderItemResult.Value.ProductName,
-                orderItemResult.Value.Quantity,
-                orderItemResult.Value.UnitPrice.Amount,
-                orderItemResult.Value.UnitPrice.Currency
+                order.Id,
+                order.CustomerId,
+                order.Items.Select(i => new OrderItemDto
+                (
+                    i.Id,
+                    i.ProductId,
+                    i.ProductName,
+                    i.Quantity,
+                    i.UnitPrice.Amount,
+                    i.UnitPrice.Currency
+                )).ToList(),
+                order.TotalPrice.Currency,
+                Enum.GetName<OrderStatus>(order.Status)!,
+                order.CreatedDate,
+                order.UpdatedDate
             );
         }
         catch (Exception)

@@ -1,13 +1,10 @@
 using MediatR;
 using Orders.Application.DTOs;
+using Orders.Application.DTOs.Requests;
 
 namespace Orders.Application.Commands;
 
 public record AddOrderItemCommand (
     Guid OrderId,
-    Guid ProductId,
-    string ProductName,
-    int Quantity,
-    decimal UnitPrice,
-    string Currency
-) : IRequest<OrderItemDto>;
+    CreateOrderItemRequestDto Item
+) : IRequest<OrderDto>;

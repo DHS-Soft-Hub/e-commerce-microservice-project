@@ -8,6 +8,7 @@ using Shared.Contracts.Payments.Events;
 using Shared.Contracts.Shipment.Events;
 using Shared.Contracts.ShoppingCart.Events;
 using Orders.Application.DTOs;
+using Orders.Application.DTOs.Requests;
 
 namespace Orders.Application.Sagas
 {
@@ -91,7 +92,7 @@ namespace Orders.Application.Sagas
                     .Send(context => new CreateOrderCommand
                     (
                         context.Message.UserId, // UserId from cart becomes CustomerId for order
-                        context.Message.Items.Select(item => new OrderItemDto
+                        context.Message.Items.Select(item => new CreateOrderItemRequestDto
                         (
                             item.ProductId,
                             item.ProductName,
