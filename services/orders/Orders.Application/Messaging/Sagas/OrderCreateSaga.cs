@@ -116,7 +116,7 @@ namespace Orders.Application.Sagas
                         context.Saga.InventoryStatus = "Pending";
                         context.Saga.RetryCount = 0;
                     })
-                    .Send(context => new ReserveInventoryCommand(
+                    .Publish(context => new ReserveInventoryCommand(
                         context.Message.OrderId,
                         context.Message.CustomerId,
                         context.Message.Items.Select(item => new OrderItemRequest(
@@ -137,7 +137,7 @@ namespace Orders.Application.Sagas
                         // Order was successfully created, now proceed with inventory reservation
                         context.Saga.InventoryStatus = "Pending";
                     })
-                    .Send(context => new ReserveInventoryCommand(
+                    .Publish(context => new ReserveInventoryCommand(
                         context.Message.OrderId,
                         context.Message.CustomerId,
                         context.Message.Items.Select(item => new OrderItemRequest(
@@ -163,7 +163,7 @@ namespace Orders.Application.Sagas
                         context.Saga.OrderId,
                         "InventoryReserved"
                     ))
-                    .Send(context => new ProcessPaymentCommand(
+                    .Publish(context => new ProcessPaymentCommand(
                         context.Saga.OrderId,
                         context.Saga.CustomerId,
                         context.Saga.TotalPrice,
@@ -201,7 +201,7 @@ namespace Orders.Application.Sagas
                         context.Saga.OrderId,
                         "Paid"
                     ))
-                    .Send(context => new CreateShipmentCommand(
+                    .Publish(context => new CreateShipmentCommand(
                         context.Saga.OrderId,
                         context.Saga.CustomerId,
                         new ShippingAddress(
@@ -222,7 +222,7 @@ namespace Orders.Application.Sagas
                         context.Saga.PaymentStatus = "Failed";
                         context.Saga.LastError = context.Message.Reason;
                     })
-                    .Send(context => new ReleaseInventoryCommand(
+                    .Publish(context => new ReleaseInventoryCommand(
                         context.Saga.OrderId,
                         context.Saga.InventoryReservationId!
                     ))
@@ -256,13 +256,13 @@ namespace Orders.Application.Sagas
                         context.Saga.ShippingStatus = "Failed";
                         context.Saga.LastError = context.Message.Reason;
                     })
-                    .Send(context => new RefundPaymentCommand(
+                    .Publish(context => new RefundPaymentCommand(
                         context.Saga.OrderId,
                         context.Saga.PaymentId!.Value,
                         context.Saga.TotalPrice,
                         "Shipping failed"
                     ))
-                    .Send(context => new ReleaseInventoryCommand(
+                    .Publish(context => new ReleaseInventoryCommand(
                         context.Saga.OrderId,
                         context.Saga.InventoryReservationId!
                     ))

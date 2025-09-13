@@ -110,6 +110,10 @@ public class OrderCreateSaga_E2ETests
                 {
                     e.ConfigureConsumer<OrderStatusListener>(context);
                 });
+
+                cfg.Send<ReserveInventoryCommand>(x => x.UseRoutingKeyFormatter(context => "inventory-e2e-stub"));
+                cfg.Send<ReleaseInventoryCommand>(x => x.UseRoutingKeyFormatter(context => "inventory-e2e-stub"));
+
             });
         });
 
