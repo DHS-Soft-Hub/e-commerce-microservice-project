@@ -7,7 +7,7 @@ using Orders.Application.Queries;
 
 namespace Orders.Application.Services
 {
-    public class OrderService
+    public class OrderService : IOrderService
     {
         private readonly IMediator _mediator;
 

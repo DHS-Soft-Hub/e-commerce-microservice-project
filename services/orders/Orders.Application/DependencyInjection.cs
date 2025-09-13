@@ -13,7 +13,7 @@ public static class DependencyInjection
             cfg.RegisterServicesFromAssembly(typeof(OrderService).Assembly);
         });
 
-        services.AddScoped<OrderService>();
+        services.AddScoped<IOrderService, OrderService>();
         services.AddScoped<IMessagePublisher, MessagePublisher>();
 
         // Add Logging
