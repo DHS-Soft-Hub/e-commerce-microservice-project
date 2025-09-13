@@ -18,6 +18,10 @@ namespace Orders.Application.Services
         Task<List<OrderDto>> GetOrdersAsync(
             CancellationToken cancellationToken = default);
 
+        Task<List<OrderDto>> GetOrdersByCustomerIdAsync(
+            Guid customerId,
+            CancellationToken cancellationToken = default);
+
         Task<OrderDto> AddItemToOrderAsync(
             Guid orderId,
             CreateOrderItemRequestDto item,
