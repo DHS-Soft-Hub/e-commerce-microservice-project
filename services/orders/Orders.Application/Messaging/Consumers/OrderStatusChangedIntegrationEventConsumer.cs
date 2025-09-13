@@ -8,16 +8,16 @@ using Shared.Domain.Interfaces;
 
 namespace Orders.Application.Messaging.Consumers;
 
-public class OrderStatusChangedConsumer : IConsumer<OrderStatusChangedIntegrationEvent>
+public class OrderStatusChangedIntegrationEventConsumer : IConsumer<OrderStatusChangedIntegrationEvent>
 {
     private readonly IOrderRepository _orderRepository;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ILogger<OrderStatusChangedConsumer> _logger;
+    private readonly ILogger<OrderStatusChangedIntegrationEventConsumer> _logger;
 
-    public OrderStatusChangedConsumer(
+    public OrderStatusChangedIntegrationEventConsumer(
         IOrderRepository orderRepository,
         IUnitOfWork unitOfWork,
-        ILogger<OrderStatusChangedConsumer> logger)
+        ILogger<OrderStatusChangedIntegrationEventConsumer> logger)
     {
         _orderRepository = orderRepository;
         _unitOfWork = unitOfWork;
