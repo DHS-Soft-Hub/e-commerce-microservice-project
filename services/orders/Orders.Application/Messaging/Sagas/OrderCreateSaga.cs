@@ -4,8 +4,6 @@ using Shared.Contracts.Inventory.Events;
 using Shared.Contracts.Orders.Events;
 using Shared.Contracts.Payments.Events;
 using Shared.Contracts.Shipment.Events;
-using Shared.Contracts.ShoppingCart.Events;
-using Orders.Application.Grpc;
 
 namespace Orders.Application.Sagas
 {
