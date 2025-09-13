@@ -44,9 +44,8 @@ namespace Orders.Application.Sagas
             // Configure event correlations
             Event(() => CartCheckedOut, x =>
             {
-                // Start saga with cart checkout - generate a new OrderId for correlation
-                x.CorrelateById(context => NewId.NextGuid()); // Generate unique OrderId for this saga
-                x.SelectId(context => NewId.NextGuid()); // This will be our OrderId
+                // For cart checkout, generate a unique correlation ID for each new saga
+                x.SelectId(context => NewId.NextGuid());
             });
 
             Event(() => OrderCreated, x =>
@@ -102,31 +101,7 @@ namespace Orders.Application.Sagas
                         )).ToList(),
                         context.Message.Currency
                     ))
-                    .TransitionTo(CreatingOrder),
-
-                // Handle direct OrderCreated events (for backward compatibility)
-                When(OrderCreated)
-                    .Then(context =>
-                    {
-                        context.Saga.OrderId = context.Message.OrderId;
-                        context.Saga.CustomerId = context.Message.CustomerId;
-                        context.Saga.TotalPrice = context.Message.TotalPrice;
-                        context.Saga.Currency = context.Message.Currency;
-                        context.Saga.CreatedAt = DateTime.UtcNow;
-                        context.Saga.InventoryStatus = "Pending";
-                        context.Saga.RetryCount = 0;
-                    })
-                    .Publish(context => new ReserveInventoryCommand(
-                        context.Message.OrderId,
-                        context.Message.CustomerId,
-                        context.Message.Items.Select(item => new OrderItemRequest(
-                            item.ProductId,
-                            item.ProductName,
-                            item.Quantity,
-                            item.UnitPrice
-                        )).ToList()
-                    ))
-                    .TransitionTo(ReservingInventory)
+                    .TransitionTo(CreatingOrder)
             );
 
             // Order creation completed -> Start inventory reservation
