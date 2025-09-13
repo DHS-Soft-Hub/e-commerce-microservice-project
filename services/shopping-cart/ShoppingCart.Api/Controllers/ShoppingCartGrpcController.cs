@@ -8,11 +8,11 @@ using ShoppingCart.Api.Queries;
 
 namespace ShoppingCart.Api.Services;
 
-public class ShoppingCartGrpcService : Protos.ShoppingCart.ShoppingCartBase
+public class ShoppingCartGrpcController : Protos.ShoppingCart.ShoppingCartBase
 {
     private readonly IShoppingCartService _shoppingCartService;
 
-    public ShoppingCartGrpcService(IShoppingCartService shoppingCartService)
+    public ShoppingCartGrpcController(IShoppingCartService shoppingCartService)
     {
         _shoppingCartService = shoppingCartService;
     }

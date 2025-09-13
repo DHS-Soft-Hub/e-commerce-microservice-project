@@ -72,7 +72,7 @@ if (app.Environment.IsDevelopment())
 }
 
 // Map gRPC service
-app.MapGrpcService<ShoppingCartGrpcService>();
+app.MapGrpcService<ShoppingCartGrpcController>();
 
 app.MapControllers();
 app.Run();
