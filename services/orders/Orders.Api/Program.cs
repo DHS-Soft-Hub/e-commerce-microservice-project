@@ -1,4 +1,4 @@
-using Orders.Application.Services;
+using Orders.Api.Contollers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,7 +29,7 @@ if (app.Environment.IsDevelopment())
 }
 
 // Map gRPC service
-app.MapGrpcService<OrdersGrpcService>();
+app.MapGrpcService<OrdersGrpcController>();
 
 app.MapControllers();
 

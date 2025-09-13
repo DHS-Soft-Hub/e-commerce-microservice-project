@@ -2,15 +2,16 @@ using Grpc.Core;
 using Orders.Application.DTOs;
 using Orders.Application.DTOs.Requests;
 using Orders.Application.DTOs.Responses;
-using Orders.Application.Grpc;
+using Orders.Api.Grpc;
+using Orders.Application.Services;
 
-namespace Orders.Application.Services;
+namespace Orders.Api.Contollers;
 
-public class OrdersGrpcService : Orders.Application.Grpc.Orders.OrdersBase
+public class OrdersGrpcController : Orders.Api.Grpc.Orders.OrdersBase
 {
-    private readonly OrderService _app;
+    private readonly IOrderService _app;
 
-    public OrdersGrpcService(OrderService app)
+    public OrdersGrpcController(IOrderService app)
     {
         _app = app;
     }

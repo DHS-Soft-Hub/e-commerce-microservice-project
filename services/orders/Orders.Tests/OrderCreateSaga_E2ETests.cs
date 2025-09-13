@@ -18,7 +18,7 @@ using Microsoft.Extensions.Logging;
 using Orders.Application.Sagas;
 using Orders.Infrastructure.Persistence;
 using Shared.Infrastructure.Persistence.Interceptors;
-using Orders.Application.Grpc;
+using Orders.Api.Grpc;
 
 public class OrderCreateSaga_E2ETests
 {

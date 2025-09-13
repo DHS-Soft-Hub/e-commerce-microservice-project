@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Orders.Api\Orders.Api.csproj" />
     <ProjectReference Include="..\Orders.Application\Orders.Application.csproj" />
     <ProjectReference Include="..\Orders.Infrastructure\Orders.Infrastructure.csproj" />
     <ProjectReference Include="..\..\shared\dotnet\Shared.Contracts\Shared.Contracts.csproj" />
