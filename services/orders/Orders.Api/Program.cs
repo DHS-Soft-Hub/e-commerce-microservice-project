@@ -1,4 +1,4 @@
-using Orders.Api.Contollers;
+using Orders.Api.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 

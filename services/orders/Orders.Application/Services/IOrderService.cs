@@ -1,3 +1,4 @@
+using MediatR;
 using Orders.Application.DTOs;
 using Orders.Application.DTOs.Requests;
 using Orders.Application.DTOs.Responses;
@@ -31,6 +32,11 @@ namespace Orders.Application.Services
             Guid orderId,
             Guid itemId,
             int newQuantity,
+            CancellationToken cancellationToken = default);
+
+        Task<Unit> UpdateOrderStatusAsync(
+            Guid orderId,
+            string status,
             CancellationToken cancellationToken = default);
     }
 }

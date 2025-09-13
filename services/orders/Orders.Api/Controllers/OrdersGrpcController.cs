@@ -5,7 +5,7 @@ using Orders.Application.DTOs.Responses;
 using Orders.Api.Grpc;
 using Orders.Application.Services;
 
-namespace Orders.Api.Contollers;
+namespace Orders.Api.Controllers;
 
 public class OrdersGrpcController : Orders.Api.Grpc.Orders.OrdersBase
 {
@@ -33,7 +33,10 @@ public class OrdersGrpcController : Orders.Api.Grpc.Orders.OrdersBase
         );
 
         var response = await _app.CreateOrderAsync(dto, context.CancellationToken);
-        return new CreateOrderResponse { Order = CreateMap(response) };
+        
+        // Get the full order details to return complete information
+        var fullOrder = await _app.GetOrderAsync(response.Id, context.CancellationToken);
+        return new CreateOrderResponse { Order = ResponseMap(fullOrder) };
     }
 
     public override async Task<GetOrderResponse> GetOrder(GetOrderRequest request, ServerCallContext context)
@@ -50,6 +53,48 @@ public class OrdersGrpcController : Orders.Api.Grpc.Orders.OrdersBase
         return resp;
     }
 
+    public override async Task<AddItemToOrderResponse> AddItemToOrder(AddItemToOrderRequest request, ServerCallContext context)
+    {
+        var item = new CreateOrderItemRequestDto(
+            Guid.Parse(request.Item.ProductId),
+            request.Item.ProductName,
+            request.Item.Quantity,
+            (decimal)request.Item.UnitPrice,
+            request.Item.Currency
+        );
+
+        var order = await _app.AddItemToOrderAsync(Guid.Parse(request.OrderId), item, context.CancellationToken);
+        return new AddItemToOrderResponse { Order = ResponseMap(order) };
+    }
+
+    public override async Task<RemoveItemFromOrderResponse> RemoveItemFromOrder(RemoveItemFromOrderRequest request, ServerCallContext context)
+    {
+        var order = await _app.RemoveItemFromOrderAsync(
+            Guid.Parse(request.OrderId), 
+            Guid.Parse(request.ItemId), 
+            context.CancellationToken);
+        return new RemoveItemFromOrderResponse { Order = ResponseMap(order) };
+    }
+
+    public override async Task<UpdateOrderItemQuantityResponse> UpdateOrderItemQuantity(UpdateOrderItemQuantityRequest request, ServerCallContext context)
+    {
+        var order = await _app.UpdateOrderItemQuantityAsync(
+            Guid.Parse(request.OrderId), 
+            Guid.Parse(request.ItemId), 
+            request.Quantity, 
+            context.CancellationToken);
+        return new UpdateOrderItemQuantityResponse { Order = ResponseMap(order) };
+    }
+
+    public override async Task<UpdateOrderStatusResponse> UpdateOrderStatus(UpdateOrderStatusRequest request, ServerCallContext context)
+    {
+        await _app.UpdateOrderStatusAsync(
+            Guid.Parse(request.OrderId), 
+            request.Status, 
+            context.CancellationToken);
+        return new UpdateOrderStatusResponse { Success = true };
+    }
+
     private static Order ResponseMap(OrderDto dto)
     {
         var order = new Order
@@ -57,26 +102,21 @@ public class OrdersGrpcController : Orders.Api.Grpc.Orders.OrdersBase
             Id = dto.Id.ToString(),
             CustomerId = dto.CustomerId.ToString(),
             Currency = dto.Currency,
+            Status = dto.Status,
+            CreatedAt = dto.CreatedAt.Ticks,
+            UpdatedAt = dto.UpdatedAt.Ticks,
+            TotalAmount = (double)dto.Items.Sum(i => i.UnitPrice * i.Quantity)
         };
 
         order.Items.AddRange(dto.Items.Select(i => new OrderItem
         {
+            Id = i.Id.ToString(),
             ProductId = i.ProductId.ToString(),
             ProductName = i.ProductName,
             Quantity = i.Quantity,
             UnitPrice = (double)i.UnitPrice,
             Currency = i.Currency
         }));
-
-        return order;
-    }
-
-    private static Order CreateMap(CreateOrderResponseDto dto)
-    {
-        var order = new Order
-        {
-            Id = dto.Id.ToString()
-        };
 
         return order;
     }

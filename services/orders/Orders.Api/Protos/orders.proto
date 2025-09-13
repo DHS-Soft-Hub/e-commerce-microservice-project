@@ -31,6 +31,10 @@ message Order {
   string customerId = 2;
   repeated OrderItem items = 3;
   string currency = 4;
+  string status = 5;
+  int64 createdAt = 6;
+  int64 updatedAt = 7;
+  double totalAmount = 8;
 }
 
 message OrderUpdate {
@@ -64,9 +68,50 @@ message GetOrderResponse {
   Order order = 1;
 }
 
+message AddItemToOrderRequest {
+  string orderId = 1;
+  CreateOrderItem item = 2;
+}
+
+message AddItemToOrderResponse {
+  Order order = 1;
+}
+
+message RemoveItemFromOrderRequest {
+  string orderId = 1;
+  string itemId = 2;
+}
+
+message RemoveItemFromOrderResponse {
+  Order order = 1;
+}
+
+message UpdateOrderItemQuantityRequest {
+  string orderId = 1;
+  string itemId = 2;
+  int32 quantity = 3;
+}
+
+message UpdateOrderItemQuantityResponse {
+  Order order = 1;
+}
+
+message UpdateOrderStatusRequest {
+  string orderId = 1;
+  string status = 2;
+}
+
+message UpdateOrderStatusResponse {
+  bool success = 1;
+}
+
 service Orders {
   rpc CreateOrder(CreateOrderRequest) returns (CreateOrderResponse);
   rpc UpdateOrder(UpdateOrderRequest) returns (UpdateOrderResponse);
   rpc GetOrder(GetOrderRequest) returns (GetOrderResponse);
   rpc GetOrders(GetOrdersRequest) returns (GetOrdersResponse);
+  rpc AddItemToOrder(AddItemToOrderRequest) returns (AddItemToOrderResponse);
+  rpc RemoveItemFromOrder(RemoveItemFromOrderRequest) returns (RemoveItemFromOrderResponse);
+  rpc UpdateOrderItemQuantity(UpdateOrderItemQuantityRequest) returns (UpdateOrderItemQuantityResponse);
+  rpc UpdateOrderStatus(UpdateOrderStatusRequest) returns (UpdateOrderStatusResponse);
 }
