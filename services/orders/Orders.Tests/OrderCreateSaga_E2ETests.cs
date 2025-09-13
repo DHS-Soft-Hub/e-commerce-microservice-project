@@ -103,26 +103,153 @@ public class OrderCreateSaga_E2ETests
             // Wait a moment for the endpoints to be ready
             await Task.Delay(2000);
             
-            // For this simplified E2E test, we'll publish an InventoryReserved event directly
-            // to verify that the saga can receive and process events with real infrastructure
-            _logger.LogInformation("Publishing InventoryReserved event for Order {OrderId}", orderId);
+            // Start the saga workflow by publishing OrderCreatedIntegrationEvent
+            _logger.LogInformation("Publishing OrderCreatedIntegrationEvent for Order {OrderId}", orderId);
             
+            var items = new[]
+            {
+                new OrderItemCheckedOutDto
+                {
+                    Id = NewId.NextGuid(),
+                    ProductId = NewId.NextGuid(),
+                    ProductName = "E2E Test Product",
+                    Quantity = 1,
+                    UnitPrice = 99.99m,
+                    Currency = "USD"
+                }
+            }.ToList();
+
+            await busControl.Publish(new OrderCreatedIntegrationEvent(
+                orderId,
+                customerId,
+                99.99m,
+                "USD",
+                items
+            ));
+
+            // Wait a moment for the saga to process and move to ReservingInventory
+            await Task.Delay(2000);
+            
+            _logger.LogInformation("Publishing InventoryReservedIntegrationEvent for Order {OrderId}", orderId);
+            
+            // Simulate inventory service response
             await busControl.Publish(new InventoryReservedIntegrationEvent(
                 orderId,
                 $"RSV-{orderId:N}",
-                "InventoryReserved", 
+                "InventoryReserved",
                 DateTime.UtcNow
             ));
 
-            // Wait for processing
-            await Task.Delay(5000);
+            // Wait for saga to process inventory and move to ProcessingPayment
+            await Task.Delay(2000);
             
-            _logger.LogInformation("E2E test completed - check logs for saga processing");
+            _logger.LogInformation("Publishing PaymentProcessedIntegrationEvent for Order {OrderId}", orderId);
+            
+            // Simulate payment service response  
+            await busControl.Publish(new PaymentProcessedIntegrationEvent(
+                orderId,
+                NewId.NextGuid(),
+                99.99m,
+                "USD",
+                "CreditCard",
+                "Paid",
+                DateTime.UtcNow
+            ));
+
+            // Wait for saga to process payment and move to CreatingShipment
+            await Task.Delay(2000);
+            
+            _logger.LogInformation("Publishing ShipmentCreatedIntegrationEvent for Order {OrderId}", orderId);
+            
+            // Simulate shipping service response
+            await busControl.Publish(new ShipmentCreatedIntegrationEvent(
+                orderId,
+                $"SHP-{orderId:N}",
+                "ShipmentCreated",
+                DateTime.UtcNow
+            ));
+
+            // Wait for saga to process shipment and move to Shipped
+            await Task.Delay(2000);
+            
+            _logger.LogInformation("Publishing OrderDeliveredIntegrationEvent for Order {OrderId}", orderId);
+            
+            // Simulate delivery
+            await busControl.Publish(new OrderDeliveredIntegrationEvent(
+                orderId,
+                $"SHP-{orderId:N}",
+                DateTime.UtcNow
+            ));
+
+            // Wait for processing and check database for saga data
+            await Task.Delay(3000);
+            
+            // Check if saga instance was created in database
+            using var checkScope = provider.CreateScope();
+            var checkDbContext = checkScope.ServiceProvider.GetRequiredService<OrdersDbContext>();
+            var sagaCount = await checkDbContext.Database.ExecuteSqlRawAsync("SELECT 1");
+            
+            // Try to get actual saga count and final state using a simple query
+            using var connection = checkDbContext.Database.GetDbConnection();
+            await connection.OpenAsync();
+            using var command = connection.CreateCommand();
+            command.CommandText = $"SELECT COUNT(*) FROM \"OrderCreateSagaStates\"";
+            var result = await command.ExecuteScalarAsync();
+            var actualSagaCount = Convert.ToInt32(result);
+            
+            // Get the state of our specific saga
+            using var stateCommand = connection.CreateCommand();
+            stateCommand.CommandText = $"SELECT \"CurrentState\", \"InventoryStatus\", \"PaymentStatus\", \"ShippingStatus\" FROM \"OrderCreateSagaStates\" WHERE \"OrderId\" = '{orderId}'";
+            using var reader = await stateCommand.ExecuteReaderAsync();
+            
+            string? currentState = null, inventoryStatus = null, paymentStatus = null, shippingStatus = null;
+            if (await reader.ReadAsync())
+            {
+                currentState = reader[0]?.ToString();
+                inventoryStatus = reader[1]?.ToString();
+                paymentStatus = reader[2]?.ToString();
+                shippingStatus = reader[3]?.ToString();
+            }
+            
+            _logger.LogInformation("E2E test completed - Saga instances in database: {Count}", actualSagaCount);
+            _logger.LogInformation("Our saga state: {State}, Inventory: {Inventory}, Payment: {Payment}, Shipping: {Shipping}", 
+                currentState, inventoryStatus, paymentStatus, shippingStatus);
         }
         finally
         {
             await busControl.StopAsync(TimeSpan.FromSeconds(30));
         }
+    }
+}
+
+public class InventoryE2EStubConsumer : IConsumer<ReserveInventoryCommand>, IConsumer<ReleaseInventoryCommand>
+{
+    private readonly IPublishEndpoint _publishEndpoint;
+    private readonly ILogger<InventoryE2EStubConsumer> _logger;
+
+    public InventoryE2EStubConsumer(IPublishEndpoint publishEndpoint, ILogger<InventoryE2EStubConsumer> logger)
+    {
+        _publishEndpoint = publishEndpoint;
+        _logger = logger;
+    }
+
+    public async Task Consume(ConsumeContext<ReserveInventoryCommand> context)
+    {
+        _logger.LogInformation("E2E Stub: Reserving inventory for Order {OrderId}", context.Message.OrderId);
+        
+        await _publishEndpoint.Publish(new InventoryReservedIntegrationEvent(
+            context.Message.OrderId,
+            $"RSV-{context.Message.OrderId:N}",
+            "InventoryReserved",
+            DateTime.UtcNow
+        ));
+    }
+
+    public async Task Consume(ConsumeContext<ReleaseInventoryCommand> context)
+    {
+        _logger.LogInformation("E2E Stub: Releasing inventory for Order {OrderId}", context.Message.OrderId);
+        // For this test, we don't need to publish anything for release
+        await Task.CompletedTask;
     }
 }
 
