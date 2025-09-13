@@ -2,6 +2,7 @@ using MediatR;
 using Orders.Application.DTOs;
 using Orders.Application.DTOs.Requests;
 using Orders.Application.DTOs.Responses;
+using Shared.Domain.Common;
 
 namespace Orders.Application.Services
 {
@@ -11,14 +12,14 @@ namespace Orders.Application.Services
             CreateOrderRequestDto order,
             CancellationToken cancellationToken = default);
 
-        Task<OrderDto> GetOrderAsync(
+        Task<OrderDto> GetOrderByIdAsync(
             Guid orderId,
             CancellationToken cancellationToken = default);
 
-        Task<List<OrderDto>> GetOrdersAsync(
+        Task<PaginatedResult<OrderDto>> GetOrdersAsync(
             CancellationToken cancellationToken = default);
 
-        Task<List<OrderDto>> GetOrdersByCustomerIdAsync(
+        Task<PaginatedResult<OrderDto>> GetOrdersByCustomerIdAsync(
             Guid customerId,
             CancellationToken cancellationToken = default);
 

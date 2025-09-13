@@ -105,6 +105,14 @@ message UpdateOrderStatusResponse {
   bool success = 1;
 }
 
+message GetOrdersByCustomerIdRequest {
+  string customerId = 1;
+}
+
+message GetOrdersByCustomerIdResponse {
+  repeated Order orders = 1;
+}
+
 service Orders {
   rpc CreateOrder(CreateOrderRequest) returns (CreateOrderResponse);
   rpc UpdateOrder(UpdateOrderRequest) returns (UpdateOrderResponse);
@@ -114,4 +122,5 @@ service Orders {
   rpc RemoveItemFromOrder(RemoveItemFromOrderRequest) returns (RemoveItemFromOrderResponse);
   rpc UpdateOrderItemQuantity(UpdateOrderItemQuantityRequest) returns (UpdateOrderItemQuantityResponse);
   rpc UpdateOrderStatus(UpdateOrderStatusRequest) returns (UpdateOrderStatusResponse);
+  rpc GetOrdersByCustomerId(GetOrdersByCustomerIdRequest) returns (GetOrdersByCustomerIdResponse);
 }

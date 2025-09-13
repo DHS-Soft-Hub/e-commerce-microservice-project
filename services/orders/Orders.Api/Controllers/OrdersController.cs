@@ -34,9 +34,7 @@ namespace Orders.Api.Controllers
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetOrderById(Guid id)
         {
-            var orders = await _orderService.GetOrdersAsync();
-            var order = orders.FirstOrDefault(o => o.Id == id);
-            
+            var order = await _orderService.GetOrderByIdAsync(id);
             if (order == null)
             {
                 return NotFound();

@@ -4,6 +4,7 @@ using Orders.Application.DTOs;
 using Orders.Application.DTOs.Requests;
 using Orders.Application.DTOs.Responses;
 using Orders.Application.Queries;
+using Shared.Domain.Common;
 
 namespace Orders.Application.Services
 {
@@ -28,7 +29,7 @@ namespace Orders.Application.Services
             return await _mediator.Send(orderCommand, cancellationToken);
         }
 
-        public async Task<OrderDto> GetOrderAsync(
+        public async Task<OrderDto> GetOrderByIdAsync(
             Guid orderId,
             CancellationToken cancellationToken = default)
         {
@@ -36,14 +37,14 @@ namespace Orders.Application.Services
             return await _mediator.Send(query, cancellationToken);
         }
 
-        public async Task<List<OrderDto>> GetOrdersAsync(
+        public async Task<PaginatedResult<OrderDto>> GetOrdersAsync(
             CancellationToken cancellationToken = default)
         {
             var query = new GetOrdersQuery();
             return await _mediator.Send(query, cancellationToken);
         }
 
-        public async Task<List<OrderDto>> GetOrdersByCustomerIdAsync(
+        public async Task<PaginatedResult<OrderDto>> GetOrdersByCustomerIdAsync(
             Guid customerId,
             CancellationToken cancellationToken = default)
         {

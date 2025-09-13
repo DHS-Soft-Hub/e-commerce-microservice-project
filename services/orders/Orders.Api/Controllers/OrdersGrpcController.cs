@@ -4,6 +4,7 @@ using Orders.Application.DTOs.Requests;
 using Orders.Application.DTOs.Responses;
 using Orders.Api.Grpc;
 using Orders.Application.Services;
+using Shared.Domain.Common;
 
 namespace Orders.Api.Controllers;
 
@@ -35,13 +36,13 @@ public class OrdersGrpcController : Orders.Api.Grpc.Orders.OrdersBase
         var response = await _app.CreateOrderAsync(dto, context.CancellationToken);
         
         // Get the full order details to return complete information
-        var fullOrder = await _app.GetOrderAsync(response.Id, context.CancellationToken);
+        var fullOrder = await _app.GetOrderByIdAsync(response.Id, context.CancellationToken);
         return new CreateOrderResponse { Order = ResponseMap(fullOrder) };
     }
 
     public override async Task<GetOrderResponse> GetOrderById(GetOrderRequest request, ServerCallContext context)
     {
-        var dto = await _app.GetOrderAsync(Guid.Parse(request.OrderId), context.CancellationToken);
+        var dto = await _app.GetOrderByIdAsync(Guid.Parse(request.OrderId), context.CancellationToken);
         return new GetOrderResponse { Order = ResponseMap(dto) };
     }
 
@@ -49,7 +50,7 @@ public class OrdersGrpcController : Orders.Api.Grpc.Orders.OrdersBase
     {
         var list = await _app.GetOrdersAsync(context.CancellationToken);
         var resp = new GetOrdersResponse();
-        resp.Orders.AddRange(list.Select(ResponseMap));
+        resp.Orders.AddRange(PaginatedResponseMap(list).Items);
         return resp;
     }
 
@@ -95,6 +96,14 @@ public class OrdersGrpcController : Orders.Api.Grpc.Orders.OrdersBase
         return new UpdateOrderStatusResponse { Success = true };
     }
 
+    public override async Task<GetOrdersByCustomerIdResponse> GetOrdersByCustomerId(GetOrdersByCustomerIdRequest request, ServerCallContext context)
+    {
+        var list = await _app.GetOrdersByCustomerIdAsync(Guid.Parse(request.CustomerId), context.CancellationToken);
+        var resp = new GetOrdersByCustomerIdResponse();
+        resp.Orders.AddRange(PaginatedResponseMap(list).Items);
+        return resp;
+    }
+
     private static Order ResponseMap(OrderDto dto)
     {
         var order = new Order
@@ -119,6 +128,19 @@ public class OrdersGrpcController : Orders.Api.Grpc.Orders.OrdersBase
         }));
 
         return order;
+    }
+
+    private static PaginatedResult<Order> PaginatedResponseMap(PaginatedResult<OrderDto> dto)
+    {
+        var response = new PaginatedResult<Order>
+        {
+            TotalCount = dto.TotalCount,
+            PageSize = dto.PageSize,
+            PageNumber = dto.PageNumber
+        };
+        
+        response.Items.AddRange(dto.Items.Select(ResponseMap));
+        return response;
     }
 
     private static OrderUpdate UpdateMap(OrderDto cmd)

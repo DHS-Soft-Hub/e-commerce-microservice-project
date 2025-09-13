@@ -39,6 +39,11 @@ namespace Orders.Infrastructure.Repositories
                 .FirstOrDefaultAsync(o => o.Id == id, cancellationToken);
         }
 
+        public Task<int> GetCountAsync(CancellationToken cancellationToken = default)
+        {
+            return _dbContext.Orders.CountAsync(cancellationToken);
+        }
+
         public Task<List<Order>> GetAllAsync(CancellationToken cancellationToken = default)
         {
             return _dbContext.Orders
