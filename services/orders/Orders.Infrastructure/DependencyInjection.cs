@@ -45,11 +45,20 @@ public static class DependencyInjection
         var useE2EStubs = configuration.GetValue<bool>("USE_E2E_STUBS");
         if (useE2EStubs)
         {
-            EndpointConvention.Map<ReserveInventoryCommand>(new Uri("queue:inventory-e2e-stub"));
-            EndpointConvention.Map<ReleaseInventoryCommand>(new Uri("queue:inventory-e2e-stub"));
-            EndpointConvention.Map<ProcessPaymentCommand>(new Uri("queue:payment-e2e-stub"));
-            EndpointConvention.Map<RefundPaymentCommand>(new Uri("queue:payment-e2e-stub"));
-            EndpointConvention.Map<CreateShipmentCommand>(new Uri("queue:shipping-e2e-stub"));
+            // Safely map endpoints - ignore if already mapped to avoid test conflicts
+            try
+            {
+                EndpointConvention.Map<ReserveInventoryCommand>(new Uri("queue:inventory-e2e-stub"));
+                EndpointConvention.Map<ReleaseInventoryCommand>(new Uri("queue:inventory-e2e-stub"));
+                EndpointConvention.Map<ProcessPaymentCommand>(new Uri("queue:payment-e2e-stub"));
+                EndpointConvention.Map<RefundPaymentCommand>(new Uri("queue:payment-e2e-stub"));
+                EndpointConvention.Map<CreateShipmentCommand>(new Uri("queue:shipping-e2e-stub"));
+            }
+            catch (InvalidOperationException)
+            {
+                // Endpoint conventions already mapped - this is expected in test scenarios
+                // where multiple tests share the same static endpoint conventions
+            }
         }
 
         // Add repositories

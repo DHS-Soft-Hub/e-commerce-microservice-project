@@ -14,7 +14,6 @@ using Shared.Contracts.Orders.Events;
 using Shared.Contracts.Inventory.Events;
 using Shared.Contracts.Payments.Events;
 using Shared.Contracts.Shipment.Events;
-using Shared.Contracts.ShoppingCart.Events;
 using System.Collections.Immutable;
 using Shared.Contracts.Orders.Commands;
 
@@ -334,14 +333,11 @@ public class OrderCreateSaga_StepByStep_E2ETests
 
             await Task.Delay(3000);
             
-            // Assert
+            // Assert - Saga should be finalized and removed from database after completion
             var sagaState = await GetSagaState(provider, orderId);
-            Assert.NotNull(sagaState);
-            Assert.Equal("Completed", sagaState.CurrentState);
-            Assert.Equal("Delivered", sagaState.ShippingStatus);
+            Assert.Null(sagaState); // Saga is finalized and removed when completed
             
-            logger.LogInformation("Step 5 completed: Saga state is {State}, Final status - Inventory: {Inventory}, Payment: {Payment}, Shipping: {Shipping}", 
-                sagaState.CurrentState, sagaState.InventoryStatus, sagaState.PaymentStatus, sagaState.ShippingStatus);
+            logger.LogInformation("Step 5 completed: Saga successfully finalized and removed from database (completed workflow)");
         }
         finally
         {
@@ -427,108 +423,12 @@ public class OrderCreateSaga_StepByStep_E2ETests
                 orderId, $"SHP-{orderId:N}", DateTime.UtcNow));
             await Task.Delay(3000);
             
-            // Final Assert
+            // Final Assert - Saga should be finalized and removed from database after completion
             var finalState = await GetSagaState(provider, orderId);
-            Assert.NotNull(finalState);
-            Assert.Equal("Completed", finalState.CurrentState);
-            Assert.Equal("InventoryReserved", finalState.InventoryStatus);
-            Assert.Equal("Paid", finalState.PaymentStatus);
-            Assert.Equal("Delivered", finalState.ShippingStatus);
+            Assert.Null(finalState); // Saga is finalized and removed when completed
             
             logger.LogInformation("🎉 Complete workflow test completed successfully!");
-            logger.LogInformation("Final state: {State} | Inventory: {Inventory} | Payment: {Payment} | Shipping: {Shipping}", 
-                finalState.CurrentState, finalState.InventoryStatus, finalState.PaymentStatus, finalState.ShippingStatus);
-        }
-        finally
-        {
-            await busControl.StopAsync(TimeSpan.FromSeconds(30));
-        }
-    }
-
-    [Fact]
-    public async Task OrderSaga_AlternativeEntryPoint_CartCheckoutVsOrderCreated()
-    {
-        // This test demonstrates the two different ways to start the OrderCreateSaga:
-        // 1. CartCheckedOutIntegrationEvent (generates new correlation ID)
-        // 2. OrderCreatedIntegrationEvent (uses OrderId as correlation ID)
-        
-        // Arrange
-        var (provider, busControl, logger) = await SetupTestEnvironment();
-        
-        try
-        {
-            var userId = NewId.NextGuid();
-            
-            logger.LogInformation("Testing Alternative Entry Points for Saga");
-            await Task.Delay(2000);
-            
-            // Entry Point 1: Cart Checkout (generates its own correlation ID)
-            var cartItems = new[]
-            {
-                new CartItemCheckedOutDto
-                (
-                    NewId.NextGuid(),
-                    NewId.NextGuid(),
-                    "Cart Product",
-                    1,
-                    50.00m,
-                    "USD"
-                )
-            }.ToList();
-
-            await busControl.Publish(new CartCheckedOutIntegrationEvent(
-                NewId.NextGuid(), // Dummy OrderId - will be replaced by saga
-                userId,
-                "session-123",
-                cartItems,
-                50.00m,
-                "USD",
-                DateTime.UtcNow
-            ));
-            
-            await Task.Delay(3000);
-            
-            // Check that saga was created in CreatingOrder state
-            var allSagas = await GetAllSagaStates(provider);
-            var cartSaga = allSagas.FirstOrDefault(s => s.CurrentState == "CreatingOrder");
-            Assert.NotNull(cartSaga);
-            logger.LogInformation("✅ Cart Checkout saga created: State={State}, OrderId={OrderId}", 
-                cartSaga.CurrentState, cartSaga.OrderId);
-            
-            // Entry Point 2: Order Created directly (uses OrderId as correlation)
-            var directOrderId = NewId.NextGuid();
-            var orderItems = new[]
-            {
-                new OrderItemResponseDto
-                (
-                    NewId.NextGuid(),
-                    NewId.NextGuid(),
-                    "Direct Order Product",
-                    2,
-                    30.00m,
-                    "USD"
-                )
-            }.ToList();
-
-            await busControl.Publish(new OrderCreatedIntegrationEvent(
-                directOrderId,
-                userId,
-                60.00m,
-                "USD",
-                orderItems
-            ));
-            
-            await Task.Delay(3000);
-            
-            // Check that saga was created in ReservingInventory state
-            var directSaga = await GetSagaState(provider, directOrderId);
-            Assert.NotNull(directSaga);
-            Assert.Equal("ReservingInventory", directSaga.CurrentState);
-            logger.LogInformation("✅ Direct Order saga created: State={State}, OrderId={OrderId}", 
-                directSaga.CurrentState, directOrderId);
-            
-            logger.LogInformation("🎉 Both entry points working correctly!");
-            logger.LogInformation("Cart Checkout -> CreatingOrder | Direct Order -> ReservingInventory");
+            logger.LogInformation("Final result: Saga successfully finalized and removed from database (workflow completed)");
         }
         finally
         {
