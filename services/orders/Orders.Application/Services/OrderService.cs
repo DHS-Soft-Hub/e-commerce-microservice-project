@@ -38,17 +38,28 @@ namespace Orders.Application.Services
         }
 
         public async Task<PaginatedResult<OrderDto>> GetOrdersAsync(
+            int pageNumber, int pageSize,
             CancellationToken cancellationToken = default)
         {
-            var query = new GetOrdersQuery();
+            var query = new GetOrdersQuery
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
             return await _mediator.Send(query, cancellationToken);
         }
 
         public async Task<PaginatedResult<OrderDto>> GetOrdersByCustomerIdAsync(
             Guid customerId,
+            int pageNumber, int pageSize,
             CancellationToken cancellationToken = default)
         {
-            var query = new GetOrdersByCustomerIdQuery { CustomerId = customerId };
+            var query = new GetOrdersByCustomerIdQuery
+            {
+                CustomerId = customerId,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
             return await _mediator.Send(query, cancellationToken);
         }
 

@@ -56,9 +56,17 @@ message UpdateOrderResponse {
   OrderUpdate order = 1;
 }
 
-message GetOrdersRequest {}
-message GetOrdersResponse {
+message PaginatedOrdersResponse {
   repeated Order orders = 1;
+  int32 totalCount = 2;
+  int32 pageNumber = 3;
+  int32 pageSize = 4;
+  int32 totalPages = 5;
+}
+
+message GetOrdersRequest { 
+  int32 pageNumber = 1;
+  int32 pageSize = 2;
 }
 
 message GetOrderRequest {
@@ -107,20 +115,18 @@ message UpdateOrderStatusResponse {
 
 message GetOrdersByCustomerIdRequest {
   string customerId = 1;
-}
-
-message GetOrdersByCustomerIdResponse {
-  repeated Order orders = 1;
+  int32 pageNumber = 2;
+  int32 pageSize = 3;
 }
 
 service Orders {
   rpc CreateOrder(CreateOrderRequest) returns (CreateOrderResponse);
   rpc UpdateOrder(UpdateOrderRequest) returns (UpdateOrderResponse);
   rpc GetOrderById(GetOrderRequest) returns (GetOrderResponse);
-  rpc GetOrders(GetOrdersRequest) returns (GetOrdersResponse);
+  rpc GetOrders(GetOrdersRequest) returns (PaginatedOrdersResponse);
   rpc AddItemToOrder(AddItemToOrderRequest) returns (AddItemToOrderResponse);
   rpc RemoveItemFromOrder(RemoveItemFromOrderRequest) returns (RemoveItemFromOrderResponse);
   rpc UpdateOrderItemQuantity(UpdateOrderItemQuantityRequest) returns (UpdateOrderItemQuantityResponse);
   rpc UpdateOrderStatus(UpdateOrderStatusRequest) returns (UpdateOrderStatusResponse);
-  rpc GetOrdersByCustomerId(GetOrdersByCustomerIdRequest) returns (GetOrdersByCustomerIdResponse);
+  rpc GetOrdersByCustomerId(GetOrdersByCustomerIdRequest) returns (PaginatedOrdersResponse);
 }

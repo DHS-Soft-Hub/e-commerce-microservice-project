@@ -46,11 +46,15 @@ public class OrdersGrpcController : Orders.Api.Grpc.Orders.OrdersBase
         return new GetOrderResponse { Order = ResponseMap(dto) };
     }
 
-    public override async Task<GetOrdersResponse> GetOrders(GetOrdersRequest request, ServerCallContext context)
+    public override async Task<PaginatedOrdersResponse> GetOrders(GetOrdersRequest request, ServerCallContext context)
     {
-        var list = await _app.GetOrdersAsync(context.CancellationToken);
-        var resp = new GetOrdersResponse();
+        var list = await _app.GetOrdersAsync(request.PageNumber, request.PageSize, context.CancellationToken);
+        var resp = new PaginatedOrdersResponse();
         resp.Orders.AddRange(PaginatedResponseMap(list).Items);
+        resp.TotalCount = list.TotalCount;
+        resp.PageNumber = list.PageNumber;
+        resp.PageSize = list.PageSize;
+        resp.TotalPages = (int)Math.Ceiling((double)list.TotalCount / list.PageSize);
         return resp;
     }
 
@@ -96,11 +100,18 @@ public class OrdersGrpcController : Orders.Api.Grpc.Orders.OrdersBase
         return new UpdateOrderStatusResponse { Success = true };
     }
 
-    public override async Task<GetOrdersByCustomerIdResponse> GetOrdersByCustomerId(GetOrdersByCustomerIdRequest request, ServerCallContext context)
+    public override async Task<PaginatedOrdersResponse> GetOrdersByCustomerId(GetOrdersByCustomerIdRequest request, ServerCallContext context)
     {
-        var list = await _app.GetOrdersByCustomerIdAsync(Guid.Parse(request.CustomerId), context.CancellationToken);
-        var resp = new GetOrdersByCustomerIdResponse();
+        var list = await _app.GetOrdersByCustomerIdAsync(
+            Guid.Parse(request.CustomerId),
+            request.PageNumber, request.PageSize,
+            context.CancellationToken);
+        var resp = new PaginatedOrdersResponse();
         resp.Orders.AddRange(PaginatedResponseMap(list).Items);
+        resp.TotalCount = list.TotalCount;
+        resp.PageNumber = list.PageNumber;
+        resp.PageSize = list.PageSize;
+        resp.TotalPages = (int)Math.Ceiling((double)list.TotalCount / list.PageSize);
         return resp;
     }
 

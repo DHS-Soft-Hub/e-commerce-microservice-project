@@ -17,10 +17,12 @@ namespace Orders.Application.Services
             CancellationToken cancellationToken = default);
 
         Task<PaginatedResult<OrderDto>> GetOrdersAsync(
+            int pageNumber, int pageSize,
             CancellationToken cancellationToken = default);
 
         Task<PaginatedResult<OrderDto>> GetOrdersByCustomerIdAsync(
             Guid customerId,
+            int pageNumber, int pageSize,
             CancellationToken cancellationToken = default);
 
         Task<OrderDto> AddItemToOrderAsync(
