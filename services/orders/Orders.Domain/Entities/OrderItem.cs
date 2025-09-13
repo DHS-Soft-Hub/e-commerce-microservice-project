@@ -7,21 +7,18 @@ namespace Orders.Domain.Entities
 {
     public sealed class OrderItem : BaseEntity<OrderItemId>
     {
-        public OrderId OrderId { get; private set; }
         public ProductId ProductId { get; private set; }
         public string ProductName { get; private set; } = string.Empty;
         public int Quantity { get; private set; }
         public Money UnitPrice { get; private set; } = null!;
 
         private OrderItem(
-            OrderId orderId,
             ProductId productId,
             string productName,
             int quantity,
             Money unitPrice) 
             : base(new OrderItemId())
         {
-            OrderId = orderId;
             ProductId = productId;
             ProductName = productName;
             Quantity = quantity;
@@ -31,7 +28,6 @@ namespace Orders.Domain.Entities
         // parameterless constructor for EF Core
         private OrderItem() : base(new OrderItemId())
         {
-            OrderId = new OrderId();
             ProductId = new ProductId();
             ProductName = string.Empty;
             Quantity = 0;
@@ -64,7 +60,7 @@ namespace Orders.Domain.Entities
                 return Result<OrderItem>.Failure("Unit price cannot be negative.");
             }
 
-            var orderItem = new OrderItem(orderId, productId, productName, quantity, unitPrice);
+            var orderItem = new OrderItem(productId, productName, quantity, unitPrice);
             return Result<OrderItem>.Success(orderItem);
         }
 

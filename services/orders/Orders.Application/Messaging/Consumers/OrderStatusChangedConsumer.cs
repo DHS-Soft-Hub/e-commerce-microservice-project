@@ -31,27 +31,28 @@ public class OrderStatusChangedConsumer : IConsumer<OrderStatusChangedIntegratio
 
         try
         {
-            var order = await _orderRepository.GetByIdAsync(new OrderId(@event.OrderId));
+
+            await _unitOfWork.BeginTransactionAsync(CancellationToken.None);
+
+            var order = await _orderRepository.GetByIdAsync(new OrderId(@event.OrderId), context.CancellationToken);
             if (order == null)
             {
                 _logger.LogWarning("Order {OrderId} not found", @event.OrderId);
                 return;
             }
-
-            // Parse the status string to OrderStatus enum
-            if (Enum.TryParse<OrderStatus>(@event.Status, out var newStatus))
+            
+            var resultStatus = order.UpdateStatus(@event.Status);
+            if (resultStatus.IsSuccess)
             {
-                order.UpdateStatus(newStatus);
-
-                await _unitOfWork.BeginTransactionAsync(CancellationToken.None);
+                _logger.LogInformation("Order {OrderId} status updated to {Status}", @event.OrderId, @event.Status);
                 await _unitOfWork.SaveChangesAsync(CancellationToken.None);
                 await _unitOfWork.CommitTransactionAsync(CancellationToken.None);
-
-                _logger.LogInformation("Order {OrderId} status updated to {Status}", @event.OrderId, @event.Status);
             }
             else
             {
-                _logger.LogWarning("Invalid status {Status} for order {OrderId}", @event.Status, @event.OrderId);
+                _logger.LogWarning("Failed to update order {OrderId} status to {Status}", @event.OrderId, @event.Status);
+                await _unitOfWork.RollbackTransactionAsync(CancellationToken.None);
+
             }
         }
         catch (Exception ex)

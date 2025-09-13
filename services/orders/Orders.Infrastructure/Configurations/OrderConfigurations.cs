@@ -75,7 +75,6 @@ namespace Orders.Infrastructure.Configurations
             // Relationship with OrderItems
             builder.HasMany(o => o.Items)
                 .WithOne()
-                .HasForeignKey(oi => oi.OrderId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

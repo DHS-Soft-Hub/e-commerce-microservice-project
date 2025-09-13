@@ -88,14 +88,10 @@ namespace Orders.Domain.Aggregates
             CustomerId = customerId;
             Items = items ?? new List<OrderItem>();
             TotalPrice = CalculateTotal(Items, currency);
-
-            if (!string.IsNullOrWhiteSpace(status) &&
-                Enum.TryParse<OrderStatus>(status, true, out var parsedStatus))
+            var resultStatus = UpdateStatus(status ?? Status.ToString());
+            if (resultStatus.IsFailure)
             {
-                if (UpdateStatus(parsedStatus).IsFailure)
-                {
-                    return Result<Order>.Failure("Failed to update order status.");
-                }
+                return Result<Order>.Failure(resultStatus.Errors);
             }
 
             return Result<Order>.Success(this);
@@ -107,14 +103,14 @@ namespace Orders.Domain.Aggregates
         /// </summary>
         /// <param name="newStatus"></param>
         /// <returns></returns>
-        public Result UpdateStatus(OrderStatus newStatus)
+        public Result UpdateStatus(string newStatus)
         {
             if (!Enum.IsDefined(typeof(OrderStatus), newStatus))
             {
                 return Result.Failure("Invalid order status.");
             }
 
-            Status = newStatus;
+            Status = (OrderStatus)Enum.Parse(typeof(OrderStatus), newStatus);
             return Result.Success();
         }
     

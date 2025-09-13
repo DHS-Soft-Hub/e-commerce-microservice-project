@@ -7,6 +7,6 @@ namespace Orders.Application.Commands
     public record CreateOrderCommand(
         Guid CustomerId,
         IReadOnlyList<OrderItemDto> Items,
-        string Currency = "USD"
+        string Currency = "EUR"
     ) : IRequest<CreateOrderResponseDto>;
 }

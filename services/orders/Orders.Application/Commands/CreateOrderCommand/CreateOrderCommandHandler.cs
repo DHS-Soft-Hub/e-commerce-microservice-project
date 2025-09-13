@@ -70,7 +70,7 @@ namespace Orders.Application.Commands
                     }
                 }
 
-                await _orderRepository.AddAsync(order.Value);
+                await _orderRepository.AddAsync(order.Value, cancellationToken);
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
                 await _unitOfWork.CommitTransactionAsync(cancellationToken);
 

@@ -21,13 +21,6 @@ namespace Orders.Infrastructure.Configurations
                     value => new OrderItemId(value))
                 .ValueGeneratedOnAdd();
 
-            // OrderId value object conversion
-            builder.Property(oi => oi.OrderId)
-                .HasConversion(
-                    orderId => orderId.Value, 
-                    value => new OrderId(value)) 
-                .IsRequired();
-
             // ProductId value object conversion
             builder.Property(oi => oi.ProductId)
                 .HasConversion(

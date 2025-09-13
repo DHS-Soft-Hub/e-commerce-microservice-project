@@ -12,7 +12,7 @@ using Orders.Infrastructure.Persistence;
 namespace Orders.Infrastructure.Migrations
 {
     [DbContext(typeof(OrdersDbContext))]
-    [Migration("20250911180535_InitialMigration")]
+    [Migration("20250913073334_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -125,7 +125,7 @@ namespace Orders.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("OrderId")
+                    b.Property<Guid?>("OrderId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("ProductId")
@@ -180,8 +180,7 @@ namespace Orders.Infrastructure.Migrations
                     b.HasOne("Orders.Domain.Aggregates.Order", null)
                         .WithMany("Items")
                         .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.OwnsOne("Shared.Domain.ValueObjects.Money", "UnitPrice", b1 =>
                         {

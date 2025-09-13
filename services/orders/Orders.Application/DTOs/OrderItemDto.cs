@@ -5,5 +5,5 @@ public record OrderItemDto(
     string ProductName,
     int Quantity,
     decimal UnitPrice,
-    string Currency = "USD"
+    string Currency = "EUR"
 );

@@ -16,7 +16,7 @@ namespace Orders.Infrastructure.Repositories
             _dbContext = dbContext;
         }
 
-        public Task AddAsync(Order order)
+        public Task AddAsync(Order order, CancellationToken cancellationToken = default)
         {
             if (order == null)
             {
@@ -32,21 +32,21 @@ namespace Orders.Infrastructure.Repositories
             return _dbContext.SaveChangesAsync();
         }
 
-        public Task<Order?> GetByIdAsync(OrderId id)
+        public Task<Order?> GetByIdAsync(OrderId id, CancellationToken cancellationToken = default)
         {
             return _dbContext.Orders
                 .Include(o => o.Items)
-                .FirstOrDefaultAsync(o => o.Id == id);
+                .FirstOrDefaultAsync(o => o.Id == id, cancellationToken);
         }
 
-        public Task<List<Order>> GetAllAsync()
+        public Task<List<Order>> GetAllAsync(CancellationToken cancellationToken = default)
         {
             return _dbContext.Orders
             .Include(o => o.Items)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
         }
 
-        public Task UpdateAsync(Order order)
+        public Task UpdateAsync(Order order, CancellationToken cancellationToken = default)
         {
             if (order == null)
             {
