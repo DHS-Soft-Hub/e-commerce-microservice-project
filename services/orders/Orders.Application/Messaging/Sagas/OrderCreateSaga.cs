@@ -159,6 +159,10 @@ namespace Orders.Application.Sagas
                         context.Saga.InventoryReservationId = context.Message.ReservationId;
                         context.Saga.PaymentStatus = "InventoryReserved";
                     })
+                    .Send(context => new UpdateOrderStatusCommand(
+                        context.Saga.OrderId,
+                        "InventoryReserved"
+                    ))
                     .Send(context => new ProcessPaymentCommand(
                         context.Saga.OrderId,
                         context.Saga.CustomerId,
@@ -175,10 +179,9 @@ namespace Orders.Application.Sagas
                         context.Saga.InventoryStatus = "Failed";
                         context.Saga.LastError = context.Message.Reason;
                     })
-                    .Publish(context => new OrderStatusChangedIntegrationEvent(
+                    .Send(context => new UpdateOrderStatusCommand(
                         context.Saga.OrderId,
-                        "Cancelled",
-                        "Inventory not available"
+                        "Cancelled"
                     ))
                     .TransitionTo(Cancelled)
                     .Finalize()
@@ -194,7 +197,10 @@ namespace Orders.Application.Sagas
                         context.Saga.PaymentProcessedAt = DateTime.UtcNow;
                         context.Saga.ShippingStatus = "Paid";
                     })
-                    //TODO: Send UpdateOrderPaymentStatusCommand to update order status to Paid + PaymentId
+                    .Send(context => new UpdateOrderStatusCommand(
+                        context.Saga.OrderId,
+                        "Paid"
+                    ))
                     .Send(context => new CreateShipmentCommand(
                         context.Saga.OrderId,
                         context.Saga.CustomerId,
@@ -220,10 +226,9 @@ namespace Orders.Application.Sagas
                         context.Saga.OrderId,
                         context.Saga.InventoryReservationId!
                     ))
-                    .Publish(context => new OrderStatusChangedIntegrationEvent(
+                    .Send(context => new UpdateOrderStatusCommand(
                         context.Saga.OrderId,
-                        "Cancelled",
-                        "Payment failed"
+                        "Cancelled"
                     ))
                     .TransitionTo(Cancelled)
                     .Finalize()
@@ -238,11 +243,9 @@ namespace Orders.Application.Sagas
                         context.Saga.ShipmentId = context.Message.ShipmentId;
                         context.Saga.ShippedAt = DateTime.UtcNow;
                     })
-                    //TODO: Send UpdateOrderShipmentStatusCommand to update order status to Shipped
-                    .Publish(context => new OrderStatusChangedIntegrationEvent(
+                    .Send(context => new UpdateOrderStatusCommand(
                         context.Saga.OrderId,
-                        "CreatingShipment",
-                        "Order shipment created"
+                        "Shipped"
                     ))
                     .TransitionTo(Shipped),
 
@@ -263,10 +266,9 @@ namespace Orders.Application.Sagas
                         context.Saga.OrderId,
                         context.Saga.InventoryReservationId!
                     ))
-                    .Publish(context => new OrderStatusChangedIntegrationEvent(
+                    .Send(context => new UpdateOrderStatusCommand(
                         context.Saga.OrderId,
-                        "Cancelled",
-                        "Shipping failed"
+                        "Cancelled"
                     ))
                     .TransitionTo(Cancelled)
                     .Finalize(),
@@ -279,11 +281,10 @@ namespace Orders.Application.Sagas
                         context.Saga.ShippingStatus = "Delivered";
                         context.Saga.CompletedAt = DateTime.UtcNow;
                     })
-                    // .Send(context => new UpdateOrderCommand(
-                    //     context.Saga.OrderId,
-                    //     "Completed",
-                    //     "Order delivered successfully"
-                    // ))
+                    .Send(context => new UpdateOrderStatusCommand(
+                        context.Saga.OrderId,
+                        "Completed"
+                    ))
                     .TransitionTo(Completed)
                     .Finalize()
             );
@@ -304,10 +305,9 @@ namespace Orders.Application.Sagas
                         context.Saga.ShippingStatus = "Delivered";
                         context.Saga.CompletedAt = DateTime.UtcNow;
                     })
-                    .Publish(context => new OrderStatusChangedIntegrationEvent(
+                    .Send(context => new UpdateOrderStatusCommand(
                         context.Saga.OrderId,
-                        "Completed",
-                        "Order delivered successfully"
+                        "Completed"
                     ))
                     .TransitionTo(Completed)
                     .Finalize()
@@ -321,10 +321,9 @@ namespace Orders.Application.Sagas
                         context.Saga.ShippingStatus = "Delivered";
                         context.Saga.CompletedAt = DateTime.UtcNow;
                     })
-                    .Publish(context => new OrderStatusChangedIntegrationEvent(
+                    .Send(context => new UpdateOrderStatusCommand(
                         context.Saga.OrderId,
-                        "Completed",
-                        "Order delivered successfully"
+                        "Completed"
                     ))
                     .TransitionTo(Completed)
                     .Finalize()

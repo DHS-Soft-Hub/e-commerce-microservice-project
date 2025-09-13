@@ -17,7 +17,7 @@ public class UpdateOrderStatusCommandHandler : IRequestHandler<UpdateOrderStatus
 
     public async Task<Unit> Handle(UpdateOrderStatusCommand request, CancellationToken cancellationToken)
     {
-        var order = await _orderRepository.GetByIdAsync(new Orders.Domain.ValueObjects.OrderId(request.OrderId), cancellationToken);
+        var order = await _orderRepository.GetByIdAsync(request.OrderId, cancellationToken);
         if (order == null)
         {
             throw new KeyNotFoundException($"Order with ID {request.OrderId} not found.");
