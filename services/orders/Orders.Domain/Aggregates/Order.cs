@@ -111,6 +111,12 @@ namespace Orders.Domain.Aggregates
             }
 
             Status = (OrderStatus)Enum.Parse(typeof(OrderStatus), newStatus);
+
+            // Raise domain event
+            var statusChangedEvent = new OrderStatusChangedDomainEvent(Id, newStatus, "Status updated");
+            AddDomainEvent(statusChangedEvent);
+
+            
             return Result.Success();
         }
     
