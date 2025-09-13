@@ -7,6 +7,7 @@ using Shared.Contracts.Orders.Models;
 using Shared.Contracts.Payments.Events;
 using Shared.Contracts.Shipment.Events;
 using Shared.Contracts.ShoppingCart.Events;
+using Orders.Application.DTOs;
 
 namespace Orders.Application.Sagas
 {
@@ -88,20 +89,18 @@ namespace Orders.Application.Sagas
                     })
                     // Send command to create the order entity
                     .Send(context => new CreateOrderCommand
-                    {
-                        OrderId = context.Saga.OrderId, // Saga controls the OrderId
-                        CustomerId = context.Message.UserId, // UserId from cart becomes CustomerId for order
-                        Currency = context.Message.Currency,
-                        Items = context.Message.Items.Select(item => new CreateOrderItemDto
-                        {
-                            ProductId = item.ProductId,
-                            ProductName = item.ProductName,
-                            Price = item.UnitPrice,
-                            Currency = item.Currency,
-                            Quantity = item.Quantity
-                        }).ToList()
-                    })
-                    // Wait in CreatingOrder state for OrderCreatedIntegrationEvent
+                    (
+                        context.Message.UserId, // UserId from cart becomes CustomerId for order
+                        context.Message.Items.Select(item => new OrderItemDto
+                        (
+                            item.ProductId,
+                            item.ProductName,
+                            item.Quantity,
+                            item.UnitPrice,
+                            item.Currency
+                        )).ToList(),
+                        context.Message.Currency
+                    ))
                     .TransitionTo(CreatingOrder),
 
                 // Handle direct OrderCreated events (for backward compatibility)
@@ -279,11 +278,11 @@ namespace Orders.Application.Sagas
                         context.Saga.ShippingStatus = "Delivered";
                         context.Saga.CompletedAt = DateTime.UtcNow;
                     })
-                    .Publish(context => new OrderStatusChangedIntegrationEvent(
-                        context.Saga.OrderId,
-                        "Completed",
-                        "Order delivered successfully"
-                    ))
+                    // .Send(context => new UpdateOrderCommand(
+                    //     context.Saga.OrderId,
+                    //     "Completed",
+                    //     "Order delivered successfully"
+                    // ))
                     .TransitionTo(Completed)
                     .Finalize()
             );

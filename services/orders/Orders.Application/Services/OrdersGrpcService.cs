@@ -1,6 +1,8 @@
 using Grpc.Core;
 using Orders.Application.Commands;
 using Orders.Application.DTOs;
+using Orders.Application.DTOs.Requests;
+using Orders.Application.DTOs.Responses;
 using Orders.Application.Grpc;
 using Shared.Domain.ValueObjects;
 
@@ -17,89 +19,76 @@ public class OrdersGrpcService : Orders.Application.Grpc.Orders.OrdersBase
 
     public override async Task<CreateOrderResponse> CreateOrder(CreateOrderRequest request, ServerCallContext context)
     {
-        var cmd = new CreateOrderCommand
-        {
-            CustomerId = Guid.Parse(request.CustomerId),
-            Currency = request.Currency,
-            Items = request.Items.Select(i => new CreateOrderItemDto
-            {
-                ProductId = Guid.Parse(i.ProductId),
-                ProductName = i.ProductName,
-                Quantity = i.Quantity,
-                Price = (decimal)i.UnitPrice,
-                Currency = i.Currency
-            }).ToList()
-        };
+        var dto = new CreateOrderRequestDto
+        (
+            Guid.Parse(request.CustomerId),
+            request.Items.Select(i => new OrderItemDto
+            (
+                Guid.Parse(i.ProductId),
+                i.ProductName,
+                i.Quantity,
+                (decimal)i.UnitPrice,
+                i.Currency
+            )).ToList(),
+            request.Currency
+        );
 
-        var dto = await _app.CreateOrderAsync(cmd, context.CancellationToken);
-        return new CreateOrderResponse { Order = Map(dto) };
-    }
-
-    public override async Task<UpdateOrderResponse> UpdateOrder(UpdateOrderRequest request, ServerCallContext context)
-    {
-        var cmd = new UpdateOrderCommand
-        {
-            OrderId = Guid.Parse(request.Update.Id),
-            Currency = request.Update.Currency,
-            CustomerId = Guid.Parse(request.Update.CustomerId),
-            Items = request.Update.Items.Select(i => new OrderItemDto
-            {
-                Id = Guid.Parse(i.Id),
-                ProductId = Guid.Parse(i.ProductId),
-                ProductName = i.ProductName,
-                Quantity = i.Quantity,
-                UnitPrice = new Money((decimal)i.UnitPrice, i.Currency)
-            }).ToList(),
-            Status = request.Update.Status
-        };
-
-        var dto = await _app.UpdateOrderAsync(cmd, context.CancellationToken);
-        return new UpdateOrderResponse { Order = UpdateMap(dto) };
+        var response = await _app.CreateOrderAsync(dto, context.CancellationToken);
+        return new CreateOrderResponse { Order = CreateMap(response) };
     }
 
     public override async Task<GetOrderResponse> GetOrder(GetOrderRequest request, ServerCallContext context)
     {
         var dto = await _app.GetOrderAsync(Guid.Parse(request.OrderId), context.CancellationToken);
-        return new GetOrderResponse { Order = Map(dto) };
+        return new GetOrderResponse { Order = ResponseMap(dto) };
     }
 
     public override async Task<GetOrdersResponse> GetOrders(GetOrdersRequest request, ServerCallContext context)
     {
         var list = await _app.GetOrdersAsync(context.CancellationToken);
         var resp = new GetOrdersResponse();
-        resp.Orders.AddRange(list.Select(Map));
+        resp.Orders.AddRange(list.Select(ResponseMap));
         return resp;
     }
 
-    private static Order Map(OrderDto dto)
+    private static Order ResponseMap(OrderResponseDto dto)
     {
         var order = new Order
         {
             Id = dto.Id.ToString(),
             CustomerId = dto.CustomerId.ToString(),
-            Currency = dto.TotalPrice.Currency,
+            Currency = dto.Currency,
         };
 
         order.Items.AddRange(dto.Items.Select(i => new OrderItem
         {
-            Id = i.Id.ToString(),
             ProductId = i.ProductId.ToString(),
             ProductName = i.ProductName,
             Quantity = i.Quantity,
-            UnitPrice = (double)i.UnitPrice.Amount,
-            Currency = i.UnitPrice.Currency
+            UnitPrice = (double)i.UnitPrice,
+            Currency = i.Currency
         }));
 
         return order;
     }
 
-    private static OrderUpdate UpdateMap(OrderDto cmd)
+    private static Order CreateMap(CreateOrderResponseDto dto)
+    {
+        var order = new Order
+        {
+            Id = dto.Id.ToString()
+        };
+
+        return order;
+    }
+
+    private static OrderUpdate UpdateMap(OrderResponseDto cmd)
     {
         var update = new OrderUpdate
         {
             Id = cmd.Id.ToString(),
             CustomerId = cmd.CustomerId.ToString(),
-            Currency = cmd.TotalPrice.Currency,
+            Currency = cmd.Currency,
             Status = cmd.Status
         };
 
@@ -108,8 +97,8 @@ public class OrdersGrpcService : Orders.Application.Grpc.Orders.OrdersBase
             ProductId = i.ProductId.ToString(),
             ProductName = i.ProductName,
             Quantity = i.Quantity,
-            UnitPrice = (double)i.UnitPrice.Amount,
-            Currency = i.UnitPrice.Currency
+            UnitPrice = (double)i.UnitPrice,
+            Currency = i.Currency
         }));
 
         return update;

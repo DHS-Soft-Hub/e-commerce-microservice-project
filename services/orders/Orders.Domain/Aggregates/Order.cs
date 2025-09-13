@@ -20,8 +20,8 @@ namespace Orders.Domain.Aggregates
         public DateTime UpdatedDate { get; private set; } = DateTime.UtcNow;
 
 
-        private Order(OrderId id, CustomerId customerId, List<OrderItem> items, string currency)
-            : base(id)
+        private Order(CustomerId customerId, List<OrderItem> items, string currency)
+            : base(new OrderId())
         {
             CustomerId = customerId;
             Items = items ?? new List<OrderItem>();
@@ -45,13 +45,13 @@ namespace Orders.Domain.Aggregates
         /// <param name="items"></param>
         /// <param name="currency"></param>
         /// <returns></returns>
-        public static Result<Order> Create(OrderId id, CustomerId customerId, List<OrderItem> items, string currency)
+        public static Result<Order> Create(CustomerId customerId, string currency)
         {
-            var order = new Order(id, customerId, items, currency);
+            var order = new Order(customerId, new List<OrderItem>(), currency);
 
             // Raise domain event
             OrderCreatedDomainEvent orderCreatedEvent = new OrderCreatedDomainEvent(
-                id,
+                order.Id,
                 customerId,
                 order.Status,
                 order.TotalPrice.Amount,

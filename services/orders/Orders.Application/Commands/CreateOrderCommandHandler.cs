@@ -1,5 +1,6 @@
 using MediatR;
 using Orders.Application.DTOs;
+using Orders.Application.DTOs.Responses;
 using Orders.Domain.Aggregates;
 using Orders.Domain.Entities;
 using Orders.Domain.Repositories;
@@ -9,7 +10,7 @@ using Shared.Domain.ValueObjects;
 
 namespace Orders.Application.Commands
 {
-    public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, OrderDto>
+    public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, CreateOrderResponseDto>
     {
         private readonly IOrderRepository _orderRepository;
         private readonly IUnitOfWork _unitOfWork;
@@ -23,28 +24,14 @@ namespace Orders.Application.Commands
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<OrderDto> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
+        public async Task<CreateOrderResponseDto> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
         {
             try
             {
                 await _unitOfWork.BeginTransactionAsync(cancellationToken);
-
-                // Create order with saga-provided OrderId if available
-                var orderId = request.OrderId.HasValue 
-                    ? new OrderId(request.OrderId.Value) 
-                    : new OrderId(Guid.NewGuid());
                     
                 var order = Order.Create(
-                    orderId,
                     new CustomerId(request.CustomerId),
-                    request.Items.Select(item => new OrderItem(
-                        new OrderItemId(Guid.NewGuid()),
-                        orderId,
-                        new ProductId(item.ProductId),
-                        item.ProductName,
-                        item.Quantity,
-                        new Money(item.Price, item.Currency)
-                    )).ToList(),
                     request.Currency
                 );
 
@@ -60,27 +47,38 @@ namespace Orders.Application.Commands
                     throw new Exception("Order must contain at least one item.");
                 }
 
+                var orderId = order.Value.Id;
+                if (request.Items != null)
+                {
+                    foreach (var item in request.Items)
+                    {
+                        var orderItem = OrderItem.Create(
+                            orderId,
+                            new ProductId(item.ProductId),
+                            item.ProductName,
+                            item.Quantity,
+                            new Money(item.UnitPrice, item.Currency)
+                        );
+
+                        if (orderItem.IsFailure)
+                        {
+                            await _unitOfWork.RollbackTransactionAsync(cancellationToken);
+                            throw new Exception(orderItem.Errors.First());
+                        }
+
+                        order.Value.AddItem(orderItem.Value);
+                    }
+                }
+
                 await _orderRepository.AddAsync(order.Value);
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
                 await _unitOfWork.CommitTransactionAsync(cancellationToken);
 
                 // Return OrderDto matching Frontend expectations
-                return new OrderDto
-                {
-                    Id = order.Value.Id.Value,
-                    CustomerId = order.Value.CustomerId.Value,
-                    Items = order.Value.Items.Select(item => new OrderItemDto
-                    {
-                        Id = item.Id.Value,
-                        ProductId = item.ProductId.Value,
-                        ProductName = request.Items.First(i => i.ProductId == item.ProductId.Value).ProductName,
-                        Quantity = item.Quantity,
-                        UnitPrice = item.UnitPrice
-                    }).ToList(),
-                    TotalPrice = order.Value.TotalPrice,
-                    Status = order.Value.Status.ToString(),
-                    CreatedAt = order.Value.CreatedDate
-                };
+                return new CreateOrderResponseDto(
+                    orderId.Value,
+                    order.Value.Status.ToString()
+                );
             }
             catch
             {

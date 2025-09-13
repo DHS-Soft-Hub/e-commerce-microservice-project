@@ -1,6 +1,7 @@
 using MediatR;
 using Orders.Application.Commands;
-using Orders.Application.DTOs;
+using Orders.Application.DTOs.Requests;
+using Orders.Application.DTOs.Responses;
 using Orders.Application.Queries;
 
 namespace Orders.Application.Services
@@ -14,14 +15,19 @@ namespace Orders.Application.Services
             _mediator = mediator;
         }
 
-        public async Task<OrderDto> CreateOrderAsync(
-            CreateOrderCommand order,
+        public async Task<CreateOrderResponseDto> CreateOrderAsync(
+            CreateOrderRequestDto order,
             CancellationToken cancellationToken = default)
         {
-            return await _mediator.Send(order, cancellationToken);
+            var orderCommand = new CreateOrderCommand(
+                order.CustomerId,
+                order.Items,
+                order.Currency
+            );
+            return await _mediator.Send(orderCommand, cancellationToken);
         }
 
-        public async Task<OrderDto> GetOrderAsync(
+        public async Task<OrderResponseDto> GetOrderAsync(
             Guid orderId,
             CancellationToken cancellationToken = default)
         {
@@ -29,18 +35,11 @@ namespace Orders.Application.Services
             return await _mediator.Send(query, cancellationToken);
         }
 
-        public async Task<List<OrderDto>> GetOrdersAsync(
+        public async Task<List<OrderResponseDto>> GetOrdersAsync(
             CancellationToken cancellationToken = default)
         {
             var query = new GetOrdersQuery();
             return await _mediator.Send(query, cancellationToken);
-        }
-
-        public async Task<OrderDto> UpdateOrderAsync(
-            UpdateOrderCommand order,
-            CancellationToken cancellationToken = default)
-        {
-            return await _mediator.Send(order, cancellationToken);
         }
     }
 }

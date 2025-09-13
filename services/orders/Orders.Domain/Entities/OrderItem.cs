@@ -13,13 +13,13 @@ namespace Orders.Domain.Entities
         public int Quantity { get; private set; }
         public Money UnitPrice { get; private set; } = null!;
 
-        public OrderItem(
-            OrderItemId id,
+        private OrderItem(
             OrderId orderId,
             ProductId productId,
             string productName,
             int quantity,
-            Money unitPrice) : base(id)
+            Money unitPrice) 
+            : base(new OrderItemId())
         {
             OrderId = orderId;
             ProductId = productId;
@@ -36,6 +36,36 @@ namespace Orders.Domain.Entities
             ProductName = string.Empty;
             Quantity = 0;
             UnitPrice = Money.Zero("EUR");
+        }
+
+        /// <summary>
+        /// Factory method to create a new OrderItem instance.
+        /// </summary>
+        /// <param name="orderId"></param>
+        /// <param name="productId"></param>
+        /// <param name="productName"></param>
+        /// <param name="quantity"></param>
+        /// <param name="unitPrice"></param>
+        /// <returns></returns>
+        public static Result<OrderItem> Create(
+            OrderId orderId,
+            ProductId productId,
+            string productName,
+            int quantity,
+            Money unitPrice)
+        {
+            if (quantity <= 0)
+            {
+                return Result<OrderItem>.Failure("Quantity must be greater than zero.");
+            }
+
+            if (unitPrice.Amount < 0)
+            {
+                return Result<OrderItem>.Failure("Unit price cannot be negative.");
+            }
+
+            var orderItem = new OrderItem(orderId, productId, productName, quantity, unitPrice);
+            return Result<OrderItem>.Success(orderItem);
         }
 
         /// <summary>

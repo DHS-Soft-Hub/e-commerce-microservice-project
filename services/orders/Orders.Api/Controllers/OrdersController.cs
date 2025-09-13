@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Orders.Application.Commands;
 using Orders.Application.DTOs;
+using Orders.Application.DTOs.Requests;
 using Orders.Application.Services;
 
 namespace Orders.Api.Controllers
@@ -17,7 +18,7 @@ namespace Orders.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateOrder([FromBody] CreateOrderCommand order)
+        public async Task<IActionResult> CreateOrder([FromBody] CreateOrderRequestDto order)
         {
             var createdOrder = await _orderService.CreateOrderAsync(order);
             return Ok(createdOrder);
