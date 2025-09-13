@@ -9,7 +9,20 @@ The Orders Service provides gRPC endpoints for managing orders in the e-commerce
 
 ---
 
-## Endpoints
+## Table of Contents
+1. [CreateOrder](#1-createorder)
+2. [GetOrder](#2-getorder)
+3. [GetOrders](#3-getorders)
+4. [AddItemToOrder](#4-additemtoorder)
+5. [RemoveItemFromOrder](#5-removeitemfromorder)
+6. [UpdateOrderItemQuantity](#6-updateorderitemquantity)
+7. [UpdateOrderStatus](#7-updateorderstatus)
+8. [UpdateOrder](#8-updateorder)
+9. [Data Types](#data-types)
+10. [Error Handling](#error-handling)
+11. [Usage Examples](#usage-examples)
+
+---
 
 ### 1. CreateOrder
 

@@ -5,7 +5,7 @@ using Shared.Contracts.Orders.Events;
 using Shared.Domain.Interfaces;
 using Shared.Infrastructure.Messaging;
 
-namespace Orders.Application.Events.Domain;
+namespace Orders.Application.Events;
 
 public class OrderStatusChangedDomainEventHandler : INotificationHandler<OrderStatusChangedDomainEvent>
 {

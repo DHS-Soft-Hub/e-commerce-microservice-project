@@ -39,7 +39,7 @@ public class OrdersGrpcController : Orders.Api.Grpc.Orders.OrdersBase
         return new CreateOrderResponse { Order = ResponseMap(fullOrder) };
     }
 
-    public override async Task<GetOrderResponse> GetOrder(GetOrderRequest request, ServerCallContext context)
+    public override async Task<GetOrderResponse> GetOrderById(GetOrderRequest request, ServerCallContext context)
     {
         var dto = await _app.GetOrderAsync(Guid.Parse(request.OrderId), context.CancellationToken);
         return new GetOrderResponse { Order = ResponseMap(dto) };

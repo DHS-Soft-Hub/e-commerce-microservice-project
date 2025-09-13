@@ -108,7 +108,7 @@ message UpdateOrderStatusResponse {
 service Orders {
   rpc CreateOrder(CreateOrderRequest) returns (CreateOrderResponse);
   rpc UpdateOrder(UpdateOrderRequest) returns (UpdateOrderResponse);
-  rpc GetOrder(GetOrderRequest) returns (GetOrderResponse);
+  rpc GetOrderById(GetOrderRequest) returns (GetOrderResponse);
   rpc GetOrders(GetOrdersRequest) returns (GetOrdersResponse);
   rpc AddItemToOrder(AddItemToOrderRequest) returns (AddItemToOrderResponse);
   rpc RemoveItemFromOrder(RemoveItemFromOrderRequest) returns (RemoveItemFromOrderResponse);

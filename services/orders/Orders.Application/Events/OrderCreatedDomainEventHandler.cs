@@ -4,7 +4,7 @@ using Shared.Infrastructure.Messaging;
 using Shared.Contracts.Orders.Events;
 
 
-namespace Orders.Application.Events.Domain
+namespace Orders.Application.Events
 {
     public class OrderCreatedDomainEventHandler : INotificationHandler<OrderCreatedDomainEvent>
     {
