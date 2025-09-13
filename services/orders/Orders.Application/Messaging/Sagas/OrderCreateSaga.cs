@@ -22,7 +22,6 @@ namespace Orders.Application.Sagas
         public State Failed { get; private set; } = null!;
 
         // Events - Incoming
-        public Event<CartCheckedOutIntegrationEvent> CartCheckedOut { get; private set; } = null!;
         public Event<OrderCreatedIntegrationEvent> OrderCreated { get; private set; } = null!;
         public Event<InventoryReservedIntegrationEvent> InventoryReserved { get; private set; } = null!;
         public Event<InventoryReservationFailedIntegrationEvent> InventoryReservationFailed { get; private set; } = null!;
@@ -38,12 +37,6 @@ namespace Orders.Application.Sagas
             InstanceState(x => x.CurrentState);
 
             // Configure event correlations
-            Event(() => CartCheckedOut, x =>
-            {
-                // For cart checkout, generate a unique correlation ID for each new saga
-                x.SelectId(context => NewId.NextGuid());
-            });
-
             Event(() => OrderCreated, x =>
             {
                 // Correlate by OrderId for backward compatibility
@@ -68,37 +61,9 @@ namespace Orders.Application.Sagas
                 x.OnMissingInstance(m => m.Discard());
             });
 
-            // Initial state: Cart Checked Out -> Create Order -> Wait for OrderCreated
+            // Initial state: Order Created -> Reserve Inventory
             Initially(
-                When(CartCheckedOut)
-                    .Then(context =>
-                    {
-                        // Generate a new OrderId for this order
-                        var orderId = context.Saga.CorrelationId; // Use saga correlation ID as OrderId
-                        context.Saga.OrderId = orderId;
-                        context.Saga.CustomerId = context.Message.UserId; // Cart has UserId, Order needs CustomerId
-                        context.Saga.TotalPrice = context.Message.Total;
-                        context.Saga.Currency = context.Message.Currency;
-                        context.Saga.CreatedAt = DateTime.UtcNow;
-                        context.Saga.InventoryStatus = "Pending";
-                        context.Saga.RetryCount = 0;
-                    })
-                    // Send Order Created Integration Event
-                    .Send(context => new CreateOrderIntegrationCommand
-                    (
-                        context.Message.UserId,
-                        context.Message.SessionId,
-                        context.Message.Items.Select(item => new OrderItemRequest(
-                            item.ProductId,
-                            item.ProductName,
-                            item.Quantity,
-                            item.UnitPrice,
-                            item.Currency
-                        )).ToList(),
-                        context.Message.Currency
-                    )),
-                
-                // Alternative start: Order already created (for testing)
+                // Wait for Order Created event to proceed
                 When(OrderCreated)
                     .Then(context =>
                     {
@@ -114,12 +79,9 @@ namespace Orders.Application.Sagas
                     .Send(context => new ReserveInventoryCommand(
                         context.Message.Id,
                         context.Message.CustomerId,
-                        context.Message.Items.Select(item => new OrderItemRequest(
+                        context.Message.Items.Select(item => new InventoryItemRequest(
                             item.ProductId,
-                            item.ProductName,
-                            item.Quantity,
-                            item.UnitPrice,
-                            item.Currency
+                            item.Quantity
                         )).ToList()
                     ))
                     .TransitionTo(ReservingInventory)
@@ -198,7 +160,7 @@ namespace Orders.Application.Sagas
                             "12345",
                             "USA"
                         ),
-                        new List<OrderItemRequest>()
+                        new List<ShipmentItemRequest>()
                     ))
                     .TransitionTo(CreatingShipment),
 

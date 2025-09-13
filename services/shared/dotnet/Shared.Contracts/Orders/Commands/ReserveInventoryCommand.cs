@@ -5,6 +5,9 @@ namespace Shared.Contracts.Orders.Commands;
 public record ReserveInventoryCommand(
     Guid OrderId,
     Guid CustomerId,
-    List<OrderItemRequest> Items) : BaseIntegrationEvent;
+    List<InventoryItemRequest> Items) : BaseIntegrationEvent;
 
 
+public record InventoryItemRequest(
+    Guid ProductId,
+    int Quantity);
