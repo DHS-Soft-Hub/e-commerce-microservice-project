@@ -1,21 +1,17 @@
 using MassTransit;
-using Orders.Application.Commands;
 using Shared.Contracts.Orders.Commands;
 using Shared.Contracts.Inventory.Events;
 using Shared.Contracts.Orders.Events;
-using Shared.Contracts.Orders.Models;
 using Shared.Contracts.Payments.Events;
 using Shared.Contracts.Shipment.Events;
 using Shared.Contracts.ShoppingCart.Events;
-using Orders.Application.DTOs;
-using Orders.Application.DTOs.Requests;
+using Orders.Application.Grpc;
 
 namespace Orders.Application.Sagas
 {
     public class OrderCreateSaga : MassTransitStateMachine<OrderCreateSagaStateData>
     {
         // States
-        public State CreatingOrder { get; private set; } = null!;
         public State ReservingInventory { get; private set; } = null!;
         public State ProcessingPayment { get; private set; } = null!;
         public State CreatingShipment { get; private set; } = null!;
@@ -51,8 +47,8 @@ namespace Orders.Application.Sagas
             Event(() => OrderCreated, x =>
             {
                 // Correlate by OrderId for backward compatibility
-                x.CorrelateById(context => context.Message.OrderId);
-                x.SelectId(context => context.Message.OrderId);
+                x.CorrelateById(context => context.Message.Id);
+                x.SelectId(context => context.Message.Id);
             });
 
             Event(() => InventoryReserved, x => x.CorrelateById(m => m.Message.OrderId));
@@ -87,12 +83,12 @@ namespace Orders.Application.Sagas
                         context.Saga.InventoryStatus = "Pending";
                         context.Saga.RetryCount = 0;
                     })
-                    // Send command to create the order entity
-                    .Send(context => new CreateOrderCommand
+                    // Send Order Created Integration Event
+                    .Send(context => new CreateOrderIntegrationCommand
                     (
-                        context.Message.UserId, // UserId from cart becomes CustomerId for order
-                        context.Message.Items.Select(item => new CreateOrderItemRequestDto
-                        (
+                        context.Message.UserId,
+                        context.Message.SessionId,
+                        context.Message.Items.Select(item => new OrderItemRequest(
                             item.ProductId,
                             item.ProductName,
                             item.Quantity,
@@ -100,15 +96,14 @@ namespace Orders.Application.Sagas
                             item.Currency
                         )).ToList(),
                         context.Message.Currency
-                    ))
-                    .TransitionTo(CreatingOrder),
+                    )),
                 
                 // Alternative start: Order already created (for testing)
                 When(OrderCreated)
                     .Then(context =>
                     {
                         // Initialize saga state from the order created event
-                        context.Saga.OrderId = context.Message.OrderId;
+                        context.Saga.OrderId = context.Message.Id;
                         context.Saga.CustomerId = context.Message.CustomerId;
                         context.Saga.TotalPrice = context.Message.TotalPrice;
                         context.Saga.Currency = context.Message.Currency;
@@ -117,34 +112,14 @@ namespace Orders.Application.Sagas
                         context.Saga.RetryCount = 0;
                     })
                     .Send(context => new ReserveInventoryCommand(
-                        context.Message.OrderId,
+                        context.Message.Id,
                         context.Message.CustomerId,
                         context.Message.Items.Select(item => new OrderItemRequest(
                             item.ProductId,
                             item.ProductName,
                             item.Quantity,
-                            item.UnitPrice
-                        )).ToList()
-                    ))
-                    .TransitionTo(ReservingInventory)
-            );
-
-            // Order creation completed -> Start inventory reservation
-            During(CreatingOrder,
-                When(OrderCreated)
-                    .Then(context =>
-                    {
-                        // Order was successfully created, now proceed with inventory reservation
-                        context.Saga.InventoryStatus = "Pending";
-                    })
-                    .Send(context => new ReserveInventoryCommand(
-                        context.Message.OrderId,
-                        context.Message.CustomerId,
-                        context.Message.Items.Select(item => new OrderItemRequest(
-                            item.ProductId,
-                            item.ProductName,
-                            item.Quantity,
-                            item.UnitPrice
+                            item.UnitPrice,
+                            item.Currency
                         )).ToList()
                     ))
                     .TransitionTo(ReservingInventory)

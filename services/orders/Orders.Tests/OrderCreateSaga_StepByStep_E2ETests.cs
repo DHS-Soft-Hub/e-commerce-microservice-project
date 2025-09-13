@@ -11,10 +11,12 @@ using Orders.Infrastructure;
 using Orders.Application;
 using Shared.Infrastructure.Persistence.Interceptors;
 using Shared.Contracts.Orders.Events;
-using Shared.Contracts.Orders.Models;
 using Shared.Contracts.Inventory.Events;
 using Shared.Contracts.Payments.Events;
 using Shared.Contracts.Shipment.Events;
+using Shared.Contracts.ShoppingCart.Events;
+using System.Collections.Immutable;
+using Shared.Contracts.Orders.Commands;
 
 namespace Orders.Tests;
 
@@ -46,15 +48,15 @@ public class OrderCreateSaga_StepByStep_E2ETests
             // Start the saga by publishing OrderCreatedIntegrationEvent
             var items = new[]
             {
-                new OrderItemCheckedOutDto
-                {
-                    Id = NewId.NextGuid(),
-                    ProductId = NewId.NextGuid(),
-                    ProductName = "Test Product 1",
-                    Quantity = 2,
-                    UnitPrice = 50.00m,
-                    Currency = "USD"
-                }
+                new OrderItemResponseDto
+                (
+                    NewId.NextGuid(),
+                    NewId.NextGuid(),
+                    "Test Product 1",
+                    1,
+                    100.00m,
+                    "USD"
+                )
             }.ToList();
 
             await busControl.Publish(new OrderCreatedIntegrationEvent(
@@ -99,15 +101,15 @@ public class OrderCreateSaga_StepByStep_E2ETests
             // Step 1: Create order
             var items = new[]
             {
-                new OrderItemCheckedOutDto
-                {
-                    Id = NewId.NextGuid(),
-                    ProductId = NewId.NextGuid(),
-                    ProductName = "Test Product 1",
-                    Quantity = 1,
-                    UnitPrice = 100.00m,
-                    Currency = "USD"
-                }
+                new OrderItemResponseDto
+                (
+                    NewId.NextGuid(),
+                    NewId.NextGuid(),
+                    "Test Product 1",
+                    1,
+                    100.00m,
+                    "USD"
+                )
             }.ToList();
 
             await busControl.Publish(new OrderCreatedIntegrationEvent(
@@ -160,15 +162,15 @@ public class OrderCreateSaga_StepByStep_E2ETests
             // Steps 1-2: Create order and reserve inventory
             var items = new[]
             {
-                new OrderItemCheckedOutDto
-                {
-                    Id = NewId.NextGuid(),
-                    ProductId = NewId.NextGuid(),
-                    ProductName = "Test Product 1",
-                    Quantity = 1,
-                    UnitPrice = 100.00m,
-                    Currency = "USD"
-                }
+                new OrderItemResponseDto
+                (
+                    NewId.NextGuid(),
+                    NewId.NextGuid(),
+                    "Test Product 1",
+                    1,
+                    100.00m,
+                    "USD"
+                )
             }.ToList();
 
             await busControl.Publish(new OrderCreatedIntegrationEvent(
@@ -227,15 +229,15 @@ public class OrderCreateSaga_StepByStep_E2ETests
             // Steps 1-3: Create order, reserve inventory, process payment
             var items = new[]
             {
-                new OrderItemCheckedOutDto
-                {
-                    Id = NewId.NextGuid(),
-                    ProductId = NewId.NextGuid(),
-                    ProductName = "Test Product 1",
-                    Quantity = 1,
-                    UnitPrice = 100.00m,
-                    Currency = "USD"
-                }
+                new OrderItemResponseDto
+                (
+                    NewId.NextGuid(),
+                    NewId.NextGuid(),
+                    "Test Product 1",
+                    1,
+                    100.00m,
+                    "USD"
+                )
             }.ToList();
 
             await busControl.Publish(new OrderCreatedIntegrationEvent(
@@ -295,15 +297,15 @@ public class OrderCreateSaga_StepByStep_E2ETests
             // Steps 1-4: Complete workflow up to shipped
             var items = new[]
             {
-                new OrderItemCheckedOutDto
-                {
-                    Id = NewId.NextGuid(),
-                    ProductId = NewId.NextGuid(),
-                    ProductName = "Test Product 1",
-                    Quantity = 1,
-                    UnitPrice = 100.00m,
-                    Currency = "USD"
-                }
+                new OrderItemResponseDto
+                (
+                    NewId.NextGuid(),
+                    NewId.NextGuid(),
+                    "Test Product 1",
+                    1,
+                    100.00m,
+                    "USD"
+                )
             }.ToList();
 
             await busControl.Publish(new OrderCreatedIntegrationEvent(
@@ -366,15 +368,15 @@ public class OrderCreateSaga_StepByStep_E2ETests
             // Complete workflow with validation at each step
             var items = new[]
             {
-                new OrderItemCheckedOutDto
-                {
-                    Id = NewId.NextGuid(),
-                    ProductId = NewId.NextGuid(),
-                    ProductName = "Complete Test Product",
-                    Quantity = 2,
-                    UnitPrice = 65.00m,
-                    Currency = "USD"
-                }
+                new OrderItemResponseDto
+                (
+                    NewId.NextGuid(),
+                    NewId.NextGuid(),
+                    "Test Product 1",
+                    2,
+                    65.00m,
+                    "USD"
+                )
             }.ToList();
 
             // Step 1: Order Created
@@ -436,6 +438,97 @@ public class OrderCreateSaga_StepByStep_E2ETests
             logger.LogInformation("🎉 Complete workflow test completed successfully!");
             logger.LogInformation("Final state: {State} | Inventory: {Inventory} | Payment: {Payment} | Shipping: {Shipping}", 
                 finalState.CurrentState, finalState.InventoryStatus, finalState.PaymentStatus, finalState.ShippingStatus);
+        }
+        finally
+        {
+            await busControl.StopAsync(TimeSpan.FromSeconds(30));
+        }
+    }
+
+    [Fact]
+    public async Task OrderSaga_AlternativeEntryPoint_CartCheckoutVsOrderCreated()
+    {
+        // This test demonstrates the two different ways to start the OrderCreateSaga:
+        // 1. CartCheckedOutIntegrationEvent (generates new correlation ID)
+        // 2. OrderCreatedIntegrationEvent (uses OrderId as correlation ID)
+        
+        // Arrange
+        var (provider, busControl, logger) = await SetupTestEnvironment();
+        
+        try
+        {
+            var userId = NewId.NextGuid();
+            
+            logger.LogInformation("Testing Alternative Entry Points for Saga");
+            await Task.Delay(2000);
+            
+            // Entry Point 1: Cart Checkout (generates its own correlation ID)
+            var cartItems = new[]
+            {
+                new CartItemCheckedOutDto
+                (
+                    NewId.NextGuid(),
+                    NewId.NextGuid(),
+                    "Cart Product",
+                    1,
+                    50.00m,
+                    "USD"
+                )
+            }.ToList();
+
+            await busControl.Publish(new CartCheckedOutIntegrationEvent(
+                NewId.NextGuid(), // Dummy OrderId - will be replaced by saga
+                userId,
+                "session-123",
+                cartItems,
+                50.00m,
+                "USD",
+                DateTime.UtcNow
+            ));
+            
+            await Task.Delay(3000);
+            
+            // Check that saga was created in CreatingOrder state
+            var allSagas = await GetAllSagaStates(provider);
+            var cartSaga = allSagas.FirstOrDefault(s => s.CurrentState == "CreatingOrder");
+            Assert.NotNull(cartSaga);
+            logger.LogInformation("✅ Cart Checkout saga created: State={State}, OrderId={OrderId}", 
+                cartSaga.CurrentState, cartSaga.OrderId);
+            
+            // Entry Point 2: Order Created directly (uses OrderId as correlation)
+            var directOrderId = NewId.NextGuid();
+            var orderItems = new[]
+            {
+                new OrderItemResponseDto
+                (
+                    NewId.NextGuid(),
+                    NewId.NextGuid(),
+                    "Direct Order Product",
+                    2,
+                    30.00m,
+                    "USD"
+                )
+            }.ToList();
+
+            await busControl.Publish(new OrderCreatedIntegrationEvent(
+                directOrderId,
+                userId,
+                60.00m,
+                "USD",
+                orderItems
+            ));
+            
+            await Task.Delay(3000);
+            
+            // Check that saga was created in ReservingInventory state
+            var directSaga = await GetSagaState(provider, directOrderId);
+            Assert.NotNull(directSaga);
+            Assert.Equal("ReservingInventory", directSaga.CurrentState);
+            logger.LogInformation("✅ Direct Order saga created: State={State}, OrderId={OrderId}", 
+                directSaga.CurrentState, directOrderId);
+            
+            logger.LogInformation("🎉 Both entry points working correctly!");
+            logger.LogInformation("Cart Checkout -> CreatingOrder | Direct Order -> ReservingInventory");
         }
         finally
         {
@@ -516,8 +609,44 @@ public class OrderCreateSaga_StepByStep_E2ETests
         return null;
     }
 
+    private async Task<List<SagaStateInfoWithOrderId>> GetAllSagaStates(ServiceProvider provider)
+    {
+        using var scope = provider.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<OrdersDbContext>();
+        using var connection = dbContext.Database.GetDbConnection();
+        await connection.OpenAsync();
+        
+        using var command = connection.CreateCommand();
+        command.CommandText = "SELECT \"OrderId\", \"CurrentState\", \"InventoryStatus\", \"PaymentStatus\", \"ShippingStatus\" FROM \"OrderCreateSagaStates\"";
+        using var reader = await command.ExecuteReaderAsync();
+        
+        var sagas = new List<SagaStateInfoWithOrderId>();
+        while (await reader.ReadAsync())
+        {
+            sagas.Add(new SagaStateInfoWithOrderId
+            {
+                OrderId = reader[0] != DBNull.Value ? (Guid)reader[0] : Guid.Empty,
+                CurrentState = reader[1]?.ToString(),
+                InventoryStatus = reader[2]?.ToString(),
+                PaymentStatus = reader[3]?.ToString(),
+                ShippingStatus = reader[4]?.ToString()
+            });
+        }
+        
+        return sagas;
+    }
+
     private class SagaStateInfo
     {
+        public string? CurrentState { get; set; }
+        public string? InventoryStatus { get; set; }
+        public string? PaymentStatus { get; set; }
+        public string? ShippingStatus { get; set; }
+    }
+
+    private class SagaStateInfoWithOrderId
+    {
+        public Guid OrderId { get; set; }
         public string? CurrentState { get; set; }
         public string? InventoryStatus { get; set; }
         public string? PaymentStatus { get; set; }

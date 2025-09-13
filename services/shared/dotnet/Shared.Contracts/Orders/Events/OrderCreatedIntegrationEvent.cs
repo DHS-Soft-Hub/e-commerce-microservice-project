@@ -1,11 +1,18 @@
-using Shared.Contracts.Orders.Models;
 using Shared.Domain.Events;
 
 namespace Shared.Contracts.Orders.Events;
 
 public record OrderCreatedIntegrationEvent (
-    Guid OrderId,
+    Guid Id,
     Guid CustomerId,
     decimal TotalPrice,
     string Currency,
-    List<OrderItemCheckedOutDto> Items) : BaseIntegrationEvent;
+    List<OrderItemResponseDto> Items) : BaseIntegrationEvent;
+
+public record OrderItemResponseDto(
+    Guid Id,
+    Guid ProductId,
+    string ProductName,
+    int Quantity,
+    decimal UnitPrice,
+    string Currency);

@@ -13,12 +13,12 @@ using Shared.Contracts.Payments.Events;
 using Shared.Contracts.Shipment.Events;
 using Shared.Contracts.Orders.Events;
 using Shared.Contracts.ShoppingCart.Events;
-using Shared.Contracts.Orders.Models;
 using Shared.Logging;
 using Microsoft.Extensions.Logging;
 using Orders.Application.Sagas;
 using Orders.Infrastructure.Persistence;
 using Shared.Infrastructure.Persistence.Interceptors;
+using Orders.Application.Grpc;
 
 public class OrderCreateSaga_E2ETests
 {
@@ -108,15 +108,14 @@ public class OrderCreateSaga_E2ETests
             
             var items = new[]
             {
-                new OrderItemCheckedOutDto
-                {
-                    Id = NewId.NextGuid(),
-                    ProductId = NewId.NextGuid(),
-                    ProductName = "E2E Test Product",
-                    Quantity = 1,
-                    UnitPrice = 99.99m,
-                    Currency = "USD"
-                }
+                new OrderItemResponseDto(
+                    NewId.NextGuid(),
+                    NewId.NextGuid(),
+                    "Demo Product",
+                    2,
+                    25m,
+                    "USD"
+                )
             }.ToList();
 
             await busControl.Publish(new OrderCreatedIntegrationEvent(

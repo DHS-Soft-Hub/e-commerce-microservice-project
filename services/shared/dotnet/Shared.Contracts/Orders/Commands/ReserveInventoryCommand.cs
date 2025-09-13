@@ -7,8 +7,4 @@ public record ReserveInventoryCommand(
     Guid CustomerId,
     List<OrderItemRequest> Items) : BaseIntegrationEvent;
 
-public record OrderItemRequest(
-    Guid ProductId,
-    string ProductName,
-    int Quantity,
-    decimal UnitPrice);
+

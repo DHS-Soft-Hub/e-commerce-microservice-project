@@ -10,7 +10,6 @@ using Shared.Contracts.Inventory.Events;
 using Shared.Contracts.Payments.Events;
 using Shared.Contracts.Shipment.Events;
 using Shared.Contracts.Orders.Events;
-using Shared.Contracts.Orders.Models;
 using Xunit;
 
 namespace Orders.Application.Tests
@@ -113,14 +112,14 @@ namespace Orders.Application.Tests
                 // Kick off the saga with a concrete event instance
                 var items = new[]
                 {
-                    new OrderItemCheckedOutDto
-                    {
-                        ProductId = NewId.NextGuid(),
-                        ProductName = "Demo Product",
-                        Quantity = 1,
-                        UnitPrice = 149.99m,
-                        Currency = "USD"
-                    }
+                    new OrderItemResponseDto(
+                        NewId.NextGuid(),
+                        NewId.NextGuid(),
+                        "Demo Product",
+                        2,
+                        25m,
+                        "USD"
+                    )
                 }.ToList();
 
                 await harness.Bus.Publish(new OrderCreatedIntegrationEvent(
@@ -225,14 +224,14 @@ namespace Orders.Application.Tests
 
                 var items2 = new[]
                 {
-                    new OrderItemCheckedOutDto
-                    {
-                        ProductId = NewId.NextGuid(),
-                        ProductName = "Item",
-                        Quantity = 1,
-                        UnitPrice = 50m,
-                        Currency = "USD"
-                    }
+                    new OrderItemResponseDto(
+                        NewId.NextGuid(),
+                        NewId.NextGuid(),
+                        "Demo Product 2",
+                        2,
+                        25m,
+                        "USD"
+                    )
                 }.ToList();
 
                 await harness.Bus.Publish(new OrderCreatedIntegrationEvent(

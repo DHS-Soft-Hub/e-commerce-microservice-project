@@ -6,7 +6,7 @@ public record CartCheckedOutIntegrationEvent(
     Guid CartId,
     Guid UserId,
     string SessionId,
-    IReadOnlyList<CartItemCheckedOutDto> Items,
+    List<CartItemCheckedOutDto> Items,
     decimal Total,
     string Currency,
     DateTime OccurredAt
