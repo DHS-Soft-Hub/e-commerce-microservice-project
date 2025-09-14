@@ -5,15 +5,12 @@ This directory contains the complete documentation for the Shopping Cart gRPC se
 
 ## Files Structure
 
-### Service Definition
-- [`grpc-service-definition.md`](./grpc-service-definition.md) - Complete service definition and common message types
-
 ### Individual Endpoints
-- [`grpc-get-cart.md`](./grpc-get-cart.md) - Get Cart endpoint documentation
-- [`grpc-add-to-cart.md`](./grpc-add-to-cart.md) - Add to Cart endpoint documentation
-- [`grpc-remove-from-cart.md`](./grpc-remove-from-cart.md) - Remove from Cart endpoint documentation
-- [`grpc-update-item-quantity.md`](./grpc-update-item-quantity.md) - Update Item Quantity endpoint documentation
-- [`grpc-checkout.md`](./grpc-checkout.md) - Checkout endpoint documentation
+- [`grpc-get-cart.md`](./GetCart.md) - Get Cart endpoint documentation
+- [`grpc-add-to-cart.md`](./AddToCart.md) - Add to Cart endpoint documentation
+- [`grpc-remove-from-cart.md`](./RemoveFromCart.md) - Remove from Cart endpoint documentation
+- [`grpc-update-item-quantity.md`](./UpdateItemQuantity.md) - Update Item Quantity endpoint documentation
+- [`grpc-checkout.md`](./Checkout.md) - Checkout endpoint documentation
 
 ## Service Methods Summary
 
