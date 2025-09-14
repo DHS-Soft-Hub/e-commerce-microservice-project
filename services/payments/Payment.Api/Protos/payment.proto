@@ -77,11 +77,18 @@ message PaymentListResponse {
     repeated Payment payments = 1;
 }
 
+message PaymentListCustomerRequest {
+    string customer_id = 1;
+    int32 page_number = 2;
+    int32 page_size = 3;
+}
+
 // The payment service definition
 service PaymentService {
     rpc CreatePayment (PaymentCreateRequest) returns (PaymentCreateResponse);
-    rpc GetPayment (PaymentGetRequest) returns (PaymentGetResponse);
+    rpc GetPaymentById (PaymentGetRequest) returns (PaymentGetResponse);
     rpc UpdatePayment (PaymentUpdateRequest) returns (PaymentUpdateResponse);
     rpc DeletePayment (PaymentDeleteRequest) returns (PaymentDeleteResponse);
     rpc ListPayments (PaymentListRequest) returns (stream PaymentListResponse);
+    rpc ListCustomerPayments (PaymentListCustomerRequest) returns (stream PaymentListResponse);
 }
