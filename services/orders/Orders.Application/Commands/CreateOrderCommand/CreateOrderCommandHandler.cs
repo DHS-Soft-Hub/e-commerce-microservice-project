@@ -53,7 +53,6 @@ namespace Orders.Application.Commands
                     foreach (var item in request.Items)
                     {
                         var orderItem = OrderItem.Create(
-                            orderId,
                             new ProductId(item.ProductId),
                             item.ProductName,
                             item.Quantity,

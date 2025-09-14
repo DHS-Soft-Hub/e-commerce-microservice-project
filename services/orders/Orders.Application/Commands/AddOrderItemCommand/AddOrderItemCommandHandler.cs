@@ -37,7 +37,6 @@ public class AddOrderItemCommandHandler : IRequestHandler<AddOrderItemCommand, O
             }
     
             var orderItemResult = OrderItem.Create(
-                order.Id,
                 new ProductId(request.Item.ProductId),
                 request.Item.ProductName,
                 request.Item.Quantity,

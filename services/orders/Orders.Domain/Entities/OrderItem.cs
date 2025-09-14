@@ -37,14 +37,12 @@ namespace Orders.Domain.Entities
         /// <summary>
         /// Factory method to create a new OrderItem instance.
         /// </summary>
-        /// <param name="orderId"></param>
         /// <param name="productId"></param>
         /// <param name="productName"></param>
         /// <param name="quantity"></param>
         /// <param name="unitPrice"></param>
         /// <returns></returns>
         public static Result<OrderItem> Create(
-            OrderId orderId,
             ProductId productId,
             string productName,
             int quantity,
