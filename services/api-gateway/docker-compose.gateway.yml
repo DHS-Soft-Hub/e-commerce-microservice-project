@@ -7,6 +7,9 @@ services:
       dockerfile: Dockerfile
     environment:
       - ReverseProxy__Clusters__authCluster__Destinations__destination1__Address=http://authservice:8080/
+      - GrpcServices__Orders=http://orderservice:8080
+      - GrpcServices__Payments=http://paymentservice:8080
+      - GrpcServices__ShoppingCart=http://shoppingcartservice:8080
       - Jwt__Issuer=http://authservice
       - Jwt__Audience=api-clients
       - Jwt__Key=12382198398#*@&*$*#$&#*$#$AKSJDLKSADDAKDOPADI&^&^%$#@!@#$
