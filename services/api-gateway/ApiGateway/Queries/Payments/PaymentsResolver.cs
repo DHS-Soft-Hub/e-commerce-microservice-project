@@ -1,5 +1,6 @@
 using ApiGateway.Queries.Payments;
 using ApiGateway.Services;
+using HotChocolate;
 
 namespace ApiGateway.Queries.Payments;
 
@@ -9,6 +10,7 @@ public class PaymentsQuery
     /// <summary>
     /// Get a payment by its ID
     /// </summary>
+    [GraphQLName("getPayment")]
     public async Task<PaymentType> GetPaymentAsync(
         [Service] IPaymentsGrpcService paymentsService,
         string paymentId) =>
@@ -17,6 +19,7 @@ public class PaymentsQuery
     /// <summary>
     /// Get paginated list of payments
     /// </summary>
+    [GraphQLName("getPayments")]
     public async Task<List<PaymentType>> GetPaymentsAsync(
         [Service] IPaymentsGrpcService paymentsService,
         int pageNumber = 1,
@@ -26,6 +29,7 @@ public class PaymentsQuery
     /// <summary>
     /// Get payments for a specific customer
     /// </summary>
+    [GraphQLName("getCustomerPayments")]
     public async Task<List<PaymentType>> GetCustomerPaymentsAsync(
         [Service] IPaymentsGrpcService paymentsService,
         string customerId,
@@ -40,6 +44,7 @@ public class PaymentsMutation
     /// <summary>
     /// Create a new payment
     /// </summary>
+    [GraphQLName("createPayment")]
     public async Task<PaymentType> CreatePaymentAsync(
         [Service] IPaymentsGrpcService paymentsService,
         CreatePaymentInput input) =>
@@ -48,6 +53,7 @@ public class PaymentsMutation
     /// <summary>
     /// Update an existing payment
     /// </summary>
+    [GraphQLName("updatePayment")]
     public async Task<PaymentType> UpdatePaymentAsync(
         [Service] IPaymentsGrpcService paymentsService,
         UpdatePaymentInput input) =>
@@ -56,6 +62,7 @@ public class PaymentsMutation
     /// <summary>
     /// Delete a payment
     /// </summary>
+    [GraphQLName("deletePayment")]
     public async Task<string> DeletePaymentAsync(
         [Service] IPaymentsGrpcService paymentsService,
         string paymentId) =>

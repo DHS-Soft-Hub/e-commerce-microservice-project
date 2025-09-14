@@ -1,5 +1,6 @@
 using ApiGateway.Queries.Orders;
 using ApiGateway.Services;
+using HotChocolate;
 
 namespace ApiGateway.Queries.Orders;
 
@@ -9,6 +10,7 @@ public class OrdersQuery
     /// <summary>
     /// Get an order by its ID
     /// </summary>
+    [GraphQLName("getOrder")]
     public async Task<OrderType> GetOrderAsync(
         [Service] IOrdersGrpcService ordersService,
         string orderId) =>
@@ -17,6 +19,7 @@ public class OrdersQuery
     /// <summary>
     /// Get paginated list of orders
     /// </summary>
+    [GraphQLName("getOrders")]
     public async Task<PaginatedOrdersType> GetOrdersAsync(
         [Service] IOrdersGrpcService ordersService,
         int pageNumber = 1,
@@ -26,6 +29,7 @@ public class OrdersQuery
     /// <summary>
     /// Get orders for a specific customer
     /// </summary>
+    [GraphQLName("getOrdersByCustomer")]
     public async Task<PaginatedOrdersType> GetOrdersByCustomerAsync(
         [Service] IOrdersGrpcService ordersService,
         string customerId,
@@ -40,6 +44,7 @@ public class OrdersMutation
     /// <summary>
     /// Create a new order
     /// </summary>
+    [GraphQLName("createOrder")]
     public async Task<OrderType> CreateOrderAsync(
         [Service] IOrdersGrpcService ordersService,
         CreateOrderInput input) =>
@@ -47,7 +52,8 @@ public class OrdersMutation
 
     /// <summary>
     /// Add an item to an existing order
-    /// </summary>
+    /// </summary> 
+    [GraphQLName("addItemToOrder")]
     public async Task<OrderType> AddItemToOrderAsync(
         [Service] IOrdersGrpcService ordersService,
         AddItemToOrderInput input) =>
@@ -56,6 +62,7 @@ public class OrdersMutation
     /// <summary>
     /// Remove an item from an order
     /// </summary>
+    [GraphQLName("removeItemFromOrder")]
     public async Task<OrderType> RemoveItemFromOrderAsync(
         [Service] IOrdersGrpcService ordersService,
         RemoveItemFromOrderInput input) =>
@@ -64,6 +71,7 @@ public class OrdersMutation
     /// <summary>
     /// Update the quantity of an item in an order
     /// </summary>
+    [GraphQLName("updateOrderItemQuantity")]
     public async Task<OrderType> UpdateOrderItemQuantityAsync(
         [Service] IOrdersGrpcService ordersService,
         UpdateOrderItemQuantityInput input) =>
@@ -72,6 +80,7 @@ public class OrdersMutation
     /// <summary>
     /// Update the status of an order
     /// </summary>
+    [GraphQLName("updateOrderStatus")]
     public async Task<bool> UpdateOrderStatusAsync(
         [Service] IOrdersGrpcService ordersService,
         UpdateOrderStatusInput input) =>

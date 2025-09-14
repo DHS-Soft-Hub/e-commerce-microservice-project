@@ -4,6 +4,7 @@ using Shared.Infrastructure.Messaging;
 using Orders.Domain.Repositories;
 using Orders.Domain.Aggregates;
 using Orders.Domain.Entities;
+using Orders.Domain.ValueObjects;
 using Shared.Contracts.Orders.Events;
 using Shared.Contracts.ShoppingCart.Events;
 using Shared.Contracts.ShoppingCart.Responses;
@@ -27,31 +28,53 @@ public class CartCheckedOutIntegrationEventConsumer : IConsumer<CartCheckedOutIn
 
         try
         {
+            // Validate required data
+            if (@event.UserId == null)
+            {
+                await context.RespondAsync(new OrderCreatedResponse(
+                    Guid.Empty,
+                    false,
+                    "User ID is required for order creation"
+                ));
+                return;
+            }
+
             // Create the order
-            var order = Order.Create(
-                @event.UserId,
+            var orderResult = Order.Create(
+                new CustomerId(@event.UserId.Value),
                 @event.Currency
             );
+
+            if (orderResult.IsFailure)
+            {
+                await context.RespondAsync(new OrderCreatedResponse(
+                    Guid.Empty,
+                    false,
+                    orderResult.Errors.ToString()
+                ));
+                return;
+            }
+
+            var order = orderResult.Value;
 
             foreach (var item in @event.Items)
             {
                 var itemResult = OrderItem.Create(
-                    order.Value.Id,
-                    item.ProductId,
+                    new ProductId(item.ProductId),
                     item.ProductName,
                     item.Quantity,
                     new Shared.Domain.ValueObjects.Money(item.UnitPrice, item.Currency)
                 );
 
-                if (!itemResult.IsFailure)
+                if (itemResult.IsFailure)
                 {
                     // Handle failure (e.g., log, throw, etc.)
                     throw new InvalidOperationException(itemResult.Errors.ToString());
                 }
 
-                var orderItemResults = order.Value.AddItem(itemResult.Value);
+                var orderItemResults = order.AddItem(itemResult.Value);
 
-                if (!orderItemResults.IsSuccess)
+                if (orderItemResults.IsFailure)
                 {
                     // Handle failure (e.g., log, throw, etc.)
                     await context.RespondAsync(new OrderCreatedResponse(
@@ -64,24 +87,24 @@ public class CartCheckedOutIntegrationEventConsumer : IConsumer<CartCheckedOutIn
             }
 
             // Save the order to the repository
-            await _orderRepository.AddAsync(order.Value);
+            await _orderRepository.AddAsync(order);
 
             // Respond with the generated OrderId
             await context.RespondAsync(new OrderCreatedResponse(
-                order.Value.Id, // This is the database-generated ID
+                order.Id.Value, 
                 true,
                 string.Empty
             ));
 
             // Publish OrderCreatedIntegrationEvent
             var orderCreatedIntegrationEvent = new OrderCreatedIntegrationEvent(
-                order.Value.Id,
-                order.Value.CustomerId,
-                order.Value.TotalPrice.Amount,
-                order.Value.TotalPrice.Currency,
-                order.Value.Items.Select(item => new OrderItemResponseDto(
-                    item.Id,
-                    item.ProductId,
+                order.Id.Value, 
+                order.CustomerId.Value, 
+                order.TotalPrice.Amount,
+                order.TotalPrice.Currency,
+                order.Items.Select(item => new OrderItemResponseDto(
+                    item.Id.Value, 
+                    item.ProductId.Value, 
                     item.ProductName,
                     item.Quantity,
                     item.UnitPrice.Amount,
