@@ -6,11 +6,11 @@ using Payment.Api.Services.Interfaces;
 
 namespace Payment.Api.Services.Implementations;
 
-public class PaymentGrpcService : Protos.PaymentService.PaymentServiceBase
+public class PaymentGrpcController : Protos.PaymentService.PaymentServiceBase
 {
     private readonly IPaymentService _paymentService;
 
-    public PaymentGrpcService(IPaymentService paymentService)
+    public PaymentGrpcController(IPaymentService paymentService)
     {
         _paymentService = paymentService;
     }

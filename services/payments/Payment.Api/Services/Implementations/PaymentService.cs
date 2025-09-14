@@ -5,7 +5,6 @@ using Shared.Contracts.Payments.Events;
 using Payment.Api.DTOs.Responses;
 using Payment.Api.DTOs.Requests;
 using Payment.Api.Enums;
-using Grpc.Core;
 using MassTransit.Initializers;
 
 namespace Payment.Api.Services.Implementations
@@ -42,6 +41,8 @@ namespace Payment.Api.Services.Implementations
             };
             await _repository.AddPaymentAsync(newPayment);
 
+            // TODO: Move this to a Domain Event Handler
+            // Publish an event indicating that the payment has been processed
             await _publishEndpoint.Publish(new PaymentProcessedIntegrationEvent(
                 OrderId: newPayment.OrderId,
                 PaymentId: newPayment.Id,
