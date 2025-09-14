@@ -1,9 +1,13 @@
 @page "/products"
-@using Web.DTOs
-@using Web.Services
+@using Web.Services.Products.DTOs
+@using Web.Services.Products
+@using Web.Services.Cart.DTOs
+@using Web.Services.Cart
+@using Microsoft.AspNetCore.Components.Authorization
 @inject ProductService ProductService
 @inject CartService CartService
 @inject IJSRuntime JSRuntime
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @rendermode InteractiveServer
 @attribute [AllowAnonymous]
 
@@ -75,9 +79,21 @@
     private List<ProductDto> products = new();
     private bool isLoading = true;
     private bool isAddingToCart = false;
+    private string userId = string.Empty;
+    private string sessionId = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
+        // Get user info from authentication state
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        if (authState.User.Identity?.IsAuthenticated == true)
+        {
+            userId = authState.User.FindFirst("sub")?.Value ?? string.Empty;
+        }
+        
+        // Generate or get session ID
+        sessionId = Guid.NewGuid().ToString();
+        
         await LoadProducts();
     }
 
@@ -86,11 +102,12 @@
         isLoading = true;
         try
         {
-            products = await ProductService.GetProductsAsync();
+            products = await ProductService.GetProductsAsync() ?? new List<ProductDto>();
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error loading products: {ex.Message}");
+            products = new List<ProductDto>();
         }
         finally
         {
@@ -103,8 +120,29 @@
         isAddingToCart = true;
         try
         {
-            await CartService.AddToCartAsync(product.Id, product.Name, product.Price);
-            await JSRuntime.InvokeVoidAsync("alert", $"{product.Name} added to cart!");
+            var input = new AddToCartInput
+            {
+                UserId = userId,
+                SessionId = sessionId,
+                Item = new CartItemInput
+                {
+                    ProductId = product.Id,
+                    ProductName = product.Name,
+                    Quantity = 1,
+                    Price = product.Price,
+                    Currency = product.Currency
+                }
+            };
+            
+            var result = await CartService.AddToCartAsync(input);
+            if (result != null)
+            {
+                await JSRuntime.InvokeVoidAsync("alert", $"{product.Name} added to cart!");
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("alert", "Failed to add product to cart");
+            }
         }
         catch (Exception ex)
         {

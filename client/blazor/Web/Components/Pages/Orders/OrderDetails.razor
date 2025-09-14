@@ -1,6 +1,6 @@
 @page "/orders/{OrderId}"
-@using Web.DTOs
-@using Web.Services
+@using Web.Services.Orders.DTOs
+@using Web.Services.Orders
 @inject OrderService OrderService
 @inject NavigationManager Navigation
 @rendermode InteractiveServer
@@ -48,7 +48,7 @@
                 <div class="order-details-container">
                     <div class="order-header">
                         <div class="order-info">
-                            <h2>Order #@order.Id.ToString("N")[..8].ToUpper()</h2>
+                            <h2>Order #@OrderId</h2>
                             <div class="order-meta">
                                 <span class="order-date">Placed on @order.CreatedAt.ToString("MMMM dd, yyyy 'at' HH:mm")</span>
                                 <span class="order-status status-@order.Status.ToLower()">@order.Status</span>
@@ -88,19 +88,15 @@
                                 <div class="summary-details">
                                     <div class="summary-row">
                                         <span>Customer ID</span>
-                                        <span>@order.CustomerId.ToString("N")[..8].ToUpper()</span>
+                                        <span>@order.CustomerId</span>
                                     </div>
                                     <div class="summary-row">
                                         <span>Items (@order.Items.Count)</span>
-                                        <span>@order.TotalPrice.ToString("C") @order.Currency</span>
-                                    </div>
-                                    <div class="summary-row">
-                                        <span>Tax</span>
-                                        <span>@((order.TotalPrice * 0.1m).ToString("C"))</span>
+                                        <span>@order.TotalAmount.ToString("C") @order.Currency</span>
                                     </div>
                                     <div class="summary-row total">
                                         <span>Total Paid</span>
-                                        <span>@((order.TotalPrice * 1.1m).ToString("C")) @order.Currency</span>
+                                        <span>@order.TotalAmount.ToString("C") @order.Currency</span>
                                     </div>
                                 </div>
 
@@ -136,28 +132,14 @@
         isLoading = true;
         try
         {
-            if (Guid.TryParse(OrderId, out var orderId))
+            if (!string.IsNullOrEmpty(OrderId))
             {
-                order = await OrderService.GetOrderAsync(orderId);
+                order = await OrderService.GetOrderAsync(OrderId);
                 
-                // If order doesn't exist from API, create a mock successful order
+                // If order doesn't exist from API, show error
                 if (order == null)
                 {
-                    // Create a mock successful order for demo purposes
-                    var mockItems = new List<OrderItemDto>
-                    {
-                        new OrderItemDto(Guid.NewGuid(), Guid.NewGuid(), "Demo Product", 99.99m, "USD", 1)
-                    };
-                    
-                    order = new OrderDto(
-                        orderId,
-                        Guid.Parse("00000000-0000-0000-0000-000000000000"),
-                        mockItems,
-                        99.99m,
-                        "USD",
-                        "Completed",
-                        DateTime.UtcNow
-                    );
+                    Console.WriteLine($"Order {OrderId} not found");
                 }
             }
         }

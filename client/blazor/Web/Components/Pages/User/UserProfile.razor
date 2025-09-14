@@ -1,12 +1,12 @@
 @page "/profile"
 @rendermode InteractiveServer
-@inject Services.AuthService AuthService
+@inject AuthService AuthService
 @inject NavigationManager Navigation
 
 @inject IJSRuntime JSRuntime
 @using Microsoft.AspNetCore.Authorization
-@using Web.Services
-@using Web.DTOs
+@using Web.Services.Auth
+@using Web.Services.Auth.DTOs
 
 <div class="profile-container">
     <div class="profile-header">

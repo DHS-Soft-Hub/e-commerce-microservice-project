@@ -1,4 +1,4 @@
-﻿namespace Web.DTOs
+namespace Web.Services.Auth.DTOs
 {
     public class TokenResponseDto
     {

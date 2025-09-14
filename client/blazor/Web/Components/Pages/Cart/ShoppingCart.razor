@@ -1,9 +1,11 @@
 @page "/cart"
-@using Web.DTOs
-@using Web.Services
+@using Web.Services.Cart.DTOs
+@using Web.Services.Cart
+@using Microsoft.AspNetCore.Components.Authorization
 @inject CartService CartService
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @rendermode InteractiveServer
 @attribute [AllowAnonymous]
 
@@ -56,7 +58,9 @@
                                     <div class="item-price">@item.Price.ToString("C") @item.Currency</div>
                                 </div>
                                 <div class="item-quantity">
-                                    <span>Qty: @item.Quantity</span>
+                                    <button class="quantity-btn" @onclick="() => UpdateQuantity(item.ProductId, item.Quantity - 1)" disabled="@(item.Quantity <= 1 || isUpdating)">-</button>
+                                    <span class="quantity">@item.Quantity</span>
+                                    <button class="quantity-btn" @onclick="() => UpdateQuantity(item.ProductId, item.Quantity + 1)" disabled="@isUpdating">+</button>
                                 </div>
                                 <div class="item-total">
                                     @((item.Price * item.Quantity).ToString("C"))
@@ -102,13 +106,26 @@
 </div>
 
 @code {
-    private CartDto cart = new(new List<CartItemDto>(), 0, "USD");
+    private CartDto cart = new();
     private bool isLoading = true;
     private bool isRemoving = false;
+    private bool isUpdating = false;
     private bool isProcessing = false;
+    private string userId = string.Empty;
+    private string sessionId = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
+        // Get user info from authentication state
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        if (authState.User.Identity?.IsAuthenticated == true)
+        {
+            userId = authState.User.FindFirst("sub")?.Value ?? string.Empty;
+        }
+        
+        // Generate or get session ID
+        sessionId = Guid.NewGuid().ToString();
+        
         await LoadCart();
     }
 
@@ -117,11 +134,12 @@
         isLoading = true;
         try
         {
-            cart = await CartService.GetCartAsync();
+            cart = await CartService.GetCartAsync(userId, sessionId) ?? new CartDto();
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error loading cart: {ex.Message}");
+            cart = new CartDto();
         }
         finally
         {
@@ -129,13 +147,54 @@
         }
     }
 
-    private async Task RemoveItem(Guid productId)
+    private async Task UpdateQuantity(string productId, int newQuantity)
+    {
+        if (newQuantity < 1) return;
+        
+        isUpdating = true;
+        try
+        {
+            var input = new UpdateItemQuantityInput
+            {
+                UserId = userId,
+                SessionId = sessionId,
+                ItemId = productId,
+                Quantity = newQuantity
+            };
+            
+            var updatedCart = await CartService.UpdateItemQuantityAsync(input);
+            if (updatedCart != null)
+            {
+                cart = updatedCart;
+            }
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", $"Error updating quantity: {ex.Message}");
+        }
+        finally
+        {
+            isUpdating = false;
+        }
+    }
+
+    private async Task RemoveItem(string productId)
     {
         isRemoving = true;
         try
         {
-            await CartService.RemoveFromCartAsync(productId);
-            await LoadCart(); // Reload cart after removal
+            var input = new RemoveFromCartInput
+            {
+                UserId = userId,
+                SessionId = sessionId,
+                ItemId = productId
+            };
+            
+            var updatedCart = await CartService.RemoveFromCartAsync(input);
+            if (updatedCart != null)
+            {
+                cart = updatedCart;
+            }
         }
         catch (Exception ex)
         {
@@ -152,12 +211,30 @@
         Navigation.NavigateTo("/products");
     }
 
-    private void ProceedToCheckout()
+    private async Task ProceedToCheckout()
     {
         isProcessing = true;
         try
         {
-            Navigation.NavigateTo("/payment");
+            var input = new CheckoutInput
+            {
+                UserId = userId,
+                SessionId = sessionId
+            };
+            
+            var result = await CartService.CheckoutAsync(input);
+            if (result?.Success == true && !string.IsNullOrEmpty(result.OrderId))
+            {
+                Navigation.NavigateTo($"/payment/{result.OrderId}");
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("alert", result?.Message ?? "Checkout failed");
+            }
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", $"Error during checkout: {ex.Message}");
         }
         finally
         {

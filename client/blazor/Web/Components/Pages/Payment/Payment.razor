@@ -1,11 +1,14 @@
-@page "/payment"
-@using Web.DTOs
-@using Web.Services
-@inject CartService CartService
-@inject PaymentService PaymentService
+@page "/payment/{orderId}"
+@using Web.Services.Orders.DTOs
+@using Web.Services.Orders
+@using Web.Services.Payment.DTOs
+@using Web.Services.Payment
+@using Microsoft.AspNetCore.Components.Authorization
 @inject OrderService OrderService
+@inject PaymentService PaymentService
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @rendermode InteractiveServer
 @attribute [AllowAnonymous]
 
@@ -46,28 +49,19 @@
                             <div class="form-group">
                                 <label for="price">Total Amount</label>
                                 <div class="price-display">
-                                    <span class="amount">@cart.TotalPrice.ToString("C")</span>
-                                    <span class="currency">@cart.Currency</span>
+                                    <span class="amount">@order.TotalAmount.ToString("C")</span>
+                                    <span class="currency">@order.Currency</span>
                                 </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="currency">Currency</label>
-                                <select @bind="selectedCurrency" class="form-control" id="currency">
-                                    <option value="USD">USD - US Dollar</option>
-                                    <option value="EUR">EUR - Euro</option>
-                                    <option value="GBP">GBP - British Pound</option>
-                                </select>
                             </div>
 
                             <div class="form-group">
                                 <label for="paymentMethod">Payment Method</label>
                                 <select @bind="selectedPaymentMethod" class="form-control" id="paymentMethod">
                                     <option value="">Select payment method</option>
-                                    <option value="Credit Card">Credit Card</option>
-                                    <option value="Debit Card">Debit Card</option>
+                                    <option value="CreditCard">Credit Card</option>
+                                    <option value="DebitCard">Debit Card</option>
                                     <option value="PayPal">PayPal</option>
-                                    <option value="Bank Transfer">Bank Transfer</option>
+                                    <option value="BankTransfer">Bank Transfer</option>
                                 </select>
                             </div>
 
@@ -76,11 +70,11 @@
                                     disabled="@(isProcessing || string.IsNullOrEmpty(selectedPaymentMethod))">
                                 @if (isProcessing)
                                 {
-                                    <span>Creating Order...</span>
+                                    <span>Processing Payment...</span>
                                 }
                                 else
                                 {
-                                    <span>Place Order @cart.TotalPrice.ToString("C")</span>
+                                    <span>Pay @order.TotalAmount.ToString("C")</span>
                                 }
                             </button>
                         </div>
@@ -88,19 +82,26 @@
 
                     <div class="order-summary">
                         <div class="summary-card">
-                            <h3>Order Summary</h3>
-                            @foreach (var item in cart.Items)
+                            <h3>Order Details</h3>
+                            <div class="order-info">
+                                <p><strong>Order ID:</strong> @order.Id</p>
+                                <p><strong>Status:</strong> @order.Status</p>
+                                <p><strong>Created:</strong> @order.CreatedAt.ToString("MMM dd, yyyy")</p>
+                            </div>
+                            
+                            <h4>Items</h4>
+                            @foreach (var item in order.Items)
                             {
                                 <div class="summary-item">
                                     <div class="item-details">
                                         <span class="item-name">@item.ProductName</span>
                                         <span class="item-qty">Qty: @item.Quantity</span>
                                     </div>
-                                    <span class="item-price">@((item.Price * item.Quantity).ToString("C"))</span>
+                                    <span class="item-price">@((item.UnitPrice * item.Quantity).ToString("C"))</span>
                                 </div>
                             }
                             <div class="summary-total">
-                                <span>Total: @cart.TotalPrice.ToString("C") @cart.Currency</span>
+                                <span>Total: @order.TotalAmount.ToString("C") @order.Currency</span>
                             </div>
                         </div>
                     </div>
@@ -111,34 +112,48 @@
 </div>
 
 @code {
-    private CartDto cart = new(new List<CartItemDto>(), 0, "USD");
-    private string selectedCurrency = "USD";
+    [Parameter] public string OrderId { get; set; } = string.Empty;
+    
+    private OrderDto order = new();
     private string selectedPaymentMethod = "";
     private bool isLoading = true;
     private bool isProcessing = false;
+    private string userId = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadCart();
+        // Get user info from authentication state
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        if (authState.User.Identity?.IsAuthenticated == true)
+        {
+            userId = authState.User.FindFirst("sub")?.Value ?? string.Empty;
+        }
+        
+        await LoadOrder();
     }
 
-    private async Task LoadCart()
+    private async Task LoadOrder()
     {
         isLoading = true;
         try
         {
-            cart = await CartService.GetCartAsync();
-            if (cart.Items.Count == 0)
+            if (string.IsNullOrEmpty(OrderId))
             {
                 Navigation.NavigateTo("/cart");
                 return;
             }
-            // Ensure selectedCurrency is never null
-            selectedCurrency = !string.IsNullOrEmpty(cart.Currency) ? cart.Currency : "USD";
+
+            order = await OrderService.GetOrderAsync(OrderId) ?? new OrderDto();
+            if (string.IsNullOrEmpty(order.Id))
+            {
+                await JSRuntime.InvokeVoidAsync("alert", "Order not found");
+                Navigation.NavigateTo("/cart");
+                return;
+            }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error loading cart: {ex.Message}");
+            Console.WriteLine($"Error loading order: {ex.Message}");
             Navigation.NavigateTo("/cart");
         }
         finally
@@ -152,19 +167,32 @@
         isProcessing = true;
         try
         {
-            // Only create order - let the saga handle the rest
-            var customerId = Guid.NewGuid(); 
-            var order = await OrderService.CreateOrderAsync(cart.Items, customerId);
+            if (!Enum.TryParse<PaymentMethod>(selectedPaymentMethod, out var paymentMethod))
+            {
+                await JSRuntime.InvokeVoidAsync("alert", "Invalid payment method selected");
+                return;
+            }
 
-            // Clear cart after successful order creation
-            await CartService.ClearCartAsync();
+            var payment = await PaymentService.ProcessPaymentAsync(
+                OrderId, 
+                paymentMethod, 
+                order.TotalAmount, 
+                order.Currency
+            );
 
-            // Redirect to order tracking - saga will handle inventory, payment, and shipping
-            Navigation.NavigateTo($"/orders/{order.Id}/tracking");
+            if (payment != null)
+            {
+                await JSRuntime.InvokeVoidAsync("alert", "Payment processed successfully!");
+                Navigation.NavigateTo($"/orders/{OrderId}");
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("alert", "Payment processing failed. Please try again.");
+            }
         }
         catch (Exception ex)
         {
-            await JSRuntime.InvokeVoidAsync("alert", $"Order creation failed: {ex.Message}");
+            await JSRuntime.InvokeVoidAsync("alert", $"Payment processing failed: {ex.Message}");
         }
         finally
         {
