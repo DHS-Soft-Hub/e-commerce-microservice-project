@@ -1,6 +1,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using Payment.Api.Data.Contexts;
+using Shared.Domain.Common;
 
 namespace Payment.Api.Data.Repositories
 {
@@ -37,7 +38,41 @@ namespace Payment.Api.Data.Repositories
 
         public async Task<Entities.Payment> GetPaymentByIdAsync(Guid id)
         {
-            return await _context.Payments.FindAsync(id).AsTask();
+            var payment = await _context.Payments.FindAsync(id);
+            return payment ?? throw new KeyNotFoundException($"Payment with ID {id} not found.");
+        }
+
+        public async Task<PaginatedResult<Entities.Payment>> GetPaymentsWithPaginationAsync(PaginationQuery paginationQuery)
+        {
+            var totalCount = await _context.Payments.CountAsync();
+            var payments = await _context.Payments
+                .Skip(paginationQuery.Skip)
+                .Take(paginationQuery.Take)
+                .ToListAsync();
+
+            return new PaginatedResult<Entities.Payment>(payments, totalCount, paginationQuery.PageSize, paginationQuery.PageNumber);
+        }
+
+        public async Task<PaginatedResult<Entities.Payment>> GetCustomerPaymentsWithPaginationAsync(Guid customerId, PaginationQuery paginationQuery)
+        {
+            var totalCount = await _context.Payments.CountAsync(p => p.CustomerId == customerId);
+            var payments = await _context.Payments
+                .Where(p => p.CustomerId == customerId)
+                .Skip(paginationQuery.Skip)
+                .Take(paginationQuery.Take)
+                .ToListAsync();
+
+            return new PaginatedResult<Entities.Payment>(payments, totalCount, paginationQuery.PageSize, paginationQuery.PageNumber);
+        }
+
+        public async Task<int> GetTotalCountAsync()
+        {
+            return await _context.Payments.CountAsync();
+        }
+
+        public async Task<int> GetCustomerPaymentsCountAsync(Guid customerId)
+        {
+            return await _context.Payments.CountAsync(p => p.CustomerId == customerId);
         }
 
         public Task UpdatePaymentAsync(Entities.Payment payment)

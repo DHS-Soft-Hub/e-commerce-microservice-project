@@ -1,5 +1,6 @@
 using Payment.Api.DTOs.Requests;
 using Payment.Api.DTOs.Responses;
+using Shared.Domain.Common;
 
 namespace Payment.Api.Services.Interfaces
 {
@@ -7,6 +8,8 @@ namespace Payment.Api.Services.Interfaces
     {
         Task<PaymentResponseDto> GetPaymentByIdAsync(Guid id);
         Task<IEnumerable<PaymentResponseDto>> GetAllPaymentsAsync();
+        Task<PaginatedResult<PaymentResponseDto>> GetPaymentsWithPaginationAsync(PaginationQuery paginationQuery);
+        Task<PaginatedResult<PaymentResponseDto>> GetCustomerPaymentsWithPaginationAsync(Guid customerId, PaginationQuery paginationQuery);
         Task<PaymentResponseDto> AddPaymentAsync(PaymentCreateRequestDto payment);
         Task UpdatePaymentAsync(PaymentUpdateRequestDto payment);
         Task DeletePaymentAsync(Guid id);

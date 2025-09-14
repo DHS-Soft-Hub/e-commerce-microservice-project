@@ -6,6 +6,7 @@ using Payment.Api.DTOs.Responses;
 using Payment.Api.DTOs.Requests;
 using Payment.Api.Enums;
 using MassTransit.Initializers;
+using Shared.Domain.Common;
 
 namespace Payment.Api.Services.Implementations
 {
@@ -60,7 +61,9 @@ namespace Payment.Api.Services.Implementations
                 Status: newPayment.Status.ToString(),
                 Amount: newPayment.Price,
                 Currency: newPayment.Currency,
-                PaymentMethod: newPayment.PaymentMethod.ToString()
+                PaymentMethod: newPayment.PaymentMethod.ToString(),
+                CreatedAt: newPayment.CreatedAt,
+                UpdatedAt: newPayment.UpdatedAt
             );
         }
 
@@ -75,7 +78,9 @@ namespace Payment.Api.Services.Implementations
                 Status: payment.Status.ToString(),
                 Amount: payment.Price,
                 Currency: payment.Currency,
-                PaymentMethod: payment.PaymentMethod.ToString()
+                PaymentMethod: payment.PaymentMethod.ToString(),
+                CreatedAt: payment.CreatedAt,
+                UpdatedAt: payment.UpdatedAt
             );
         }
 
@@ -90,8 +95,58 @@ namespace Payment.Api.Services.Implementations
                 Status: payment.Status.ToString(),
                 Amount: payment.Price,
                 Currency: payment.Currency,
-                PaymentMethod: payment.PaymentMethod.ToString()
+                PaymentMethod: payment.PaymentMethod.ToString(),
+                CreatedAt: payment.CreatedAt,
+                UpdatedAt: payment.UpdatedAt
             ));
+        }
+
+        public async Task<PaginatedResult<PaymentResponseDto>> GetPaymentsWithPaginationAsync(PaginationQuery paginationQuery)
+        {
+            var paginatedPayments = await _repository.GetPaymentsWithPaginationAsync(paginationQuery);
+
+            var paymentDtos = paginatedPayments.Items.Select(payment => new PaymentResponseDto(
+                Id: payment.Id.ToString(),
+                OrderId: payment.OrderId.ToString(),
+                TransactionId: payment.TransactionId.ToString(),
+                Status: payment.Status.ToString(),
+                Amount: payment.Price,
+                Currency: payment.Currency,
+                PaymentMethod: payment.PaymentMethod.ToString(),
+                CreatedAt: payment.CreatedAt,
+                UpdatedAt: payment.UpdatedAt
+            )).ToList();
+
+            return new PaginatedResult<PaymentResponseDto>(
+                paymentDtos,
+                paginatedPayments.TotalCount,
+                paginatedPayments.PageSize,
+                paginatedPayments.PageNumber
+            );
+        }
+
+        public async Task<PaginatedResult<PaymentResponseDto>> GetCustomerPaymentsWithPaginationAsync(Guid customerId, PaginationQuery paginationQuery)
+        {
+            var paginatedPayments = await _repository.GetCustomerPaymentsWithPaginationAsync(customerId, paginationQuery);
+
+            var paymentDtos = paginatedPayments.Items.Select(payment => new PaymentResponseDto(
+                Id: payment.Id.ToString(),
+                OrderId: payment.OrderId.ToString(),
+                TransactionId: payment.TransactionId.ToString(),
+                Status: payment.Status.ToString(),
+                Amount: payment.Price,
+                Currency: payment.Currency,
+                PaymentMethod: payment.PaymentMethod.ToString(),
+                CreatedAt: payment.CreatedAt,
+                UpdatedAt: payment.UpdatedAt
+            )).ToList();
+
+            return new PaginatedResult<PaymentResponseDto>(
+                paymentDtos,
+                paginatedPayments.TotalCount,
+                paginatedPayments.PageSize,
+                paginatedPayments.PageNumber
+            );
         }
 
         public async Task UpdatePaymentAsync(PaymentUpdateRequestDto payment)

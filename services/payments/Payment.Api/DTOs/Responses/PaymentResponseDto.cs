@@ -7,4 +7,6 @@ public record PaymentResponseDto(
     decimal Amount,
     string Currency,
     string PaymentMethod,
-    string Status);
+    string Status,
+    DateTime CreatedAt,
+    DateTime? UpdatedAt);

@@ -6,6 +6,7 @@ public class Payment
 {
     public Guid Id { get; set; }
     public Guid OrderId { get; set; }
+    public Guid CustomerId { get; set; }
     public string TransactionId { get; set; } = null!;
     public PaymentStatus Status { get; set; }
     public decimal Price { get; set; }
