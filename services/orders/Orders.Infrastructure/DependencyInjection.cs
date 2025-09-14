@@ -22,20 +22,17 @@ public static class DependencyInjection
         services.AddDbContext<OrdersDbContext>(options =>
             options.UseNpgsql(configuration.GetConnectionString("postgresdb")));
 
-        // Add shared MassTransit configuration
-        services.AddMassTransitWithRabbitMq(
-            configuration,
-            Assembly.GetExecutingAssembly(),
-            x =>
-            {
-                // Configure saga with Entity Framework repository
-                x.AddSagaStateMachine<OrderCreateSaga, OrderCreateSagaStateData>()
-                    .EntityFrameworkRepository(r =>
-                    {
-                        r.ConcurrencyMode = ConcurrencyMode.Optimistic;
-                        r.ExistingDbContext<OrdersDbContext>();
-                    });
-            });
+        // Add Orders messaging with EF repository configuration for sagas
+        services.AddOrdersMessaging(configuration, x =>
+        {
+            // Configure saga with Entity Framework repository
+            x.AddSagaStateMachine<OrderCreateSaga, OrderCreateSagaStateData>()
+                .EntityFrameworkRepository(r =>
+                {
+                    r.ConcurrencyMode = ConcurrencyMode.Optimistic;
+                    r.ExistingDbContext<OrdersDbContext>();
+                });
+        });
 
         // Add repositories
         services.AddScoped<PublishDomainEventsInterceptor>();
