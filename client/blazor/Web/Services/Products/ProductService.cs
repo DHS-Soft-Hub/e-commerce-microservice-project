@@ -14,7 +14,7 @@ namespace Web.Services.Products
         {
             new ProductDto
             {
-                Id = "1",
+                Id = "00000000-0000-0000-0000-000000000001",
                 Name = "Wireless Bluetooth Headphones",
                 Description = "High-quality wireless headphones with noise cancellation and 30-hour battery life.",
                 Price = 99.99m,
@@ -23,7 +23,7 @@ namespace Web.Services.Products
             },
             new ProductDto
             {
-                Id = "2", 
+                Id = "00000000-0000-0000-0000-000000000002", 
                 Name = "Smart Watch Series 8",
                 Description = "Advanced smartwatch with fitness tracking, GPS, and cellular connectivity.",
                 Price = 399.99m,
@@ -32,7 +32,7 @@ namespace Web.Services.Products
             },
             new ProductDto
             {
-                Id = "3",
+                Id = "00000000-0000-0000-0000-000000000003",
                 Name = "4K Ultra HD Monitor",
                 Description = "27-inch 4K monitor with HDR support, perfect for gaming and professional work.",
                 Price = 299.99m,
@@ -41,7 +41,7 @@ namespace Web.Services.Products
             },
             new ProductDto
             {
-                Id = "4",
+                Id = "00000000-0000-0000-0000-000000000004",
                 Name = "Mechanical Gaming Keyboard",
                 Description = "RGB backlit mechanical keyboard with Cherry MX switches and programmable keys.",
                 Price = 149.99m,
@@ -50,7 +50,7 @@ namespace Web.Services.Products
             },
             new ProductDto
             {
-                Id = "5",
+                Id = "00000000-0000-0000-0000-000000000005",
                 Name = "Wireless Gaming Mouse",
                 Description = "Precision gaming mouse with 16,000 DPI sensor and customizable buttons.",
                 Price = 79.99m,
@@ -59,7 +59,7 @@ namespace Web.Services.Products
             },
             new ProductDto
             {
-                Id = "6",
+                Id = "00000000-0000-0000-0000-000000000006",
                 Name = "USB-C Charging Station",
                 Description = "Multi-port charging station with fast charging for all your devices.",
                 Price = 49.99m,
@@ -68,7 +68,7 @@ namespace Web.Services.Products
             },
             new ProductDto
             {
-                Id = "7",
+                Id = "00000000-0000-0000-0000-000000000007",
                 Name = "Portable Bluetooth Speaker",
                 Description = "Waterproof portable speaker with 360-degree sound and 12-hour battery.",
                 Price = 59.99m,
@@ -77,7 +77,7 @@ namespace Web.Services.Products
             },
             new ProductDto
             {
-                Id = "8",
+                Id = "00000000-0000-0000-0000-000000000008",
                 Name = "Laptop Stand with Cooling",
                 Description = "Adjustable laptop stand with built-in cooling fans and ergonomic design.",
                 Price = 34.99m,

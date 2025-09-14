@@ -88,11 +88,15 @@
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         if (authState.User.Identity?.IsAuthenticated == true)
         {
-            userId = authState.User.FindFirst("sub")?.Value ?? string.Empty;
+            userId = authState.User.FindFirst("sub")?.Value ?? "00000000-0000-0000-0000-000000000001";
         }
-        
+        else
+        {
+            userId = "00000000-0000-0000-0000-000000000001"; // Placeholder for anonymous user
+        }
+
         // Generate or get session ID
-        sessionId = Guid.NewGuid().ToString();
+        sessionId = "00000000-0000-0000-0000-000000000002"; // For demo purposes, use a fixed GUID
         
         await LoadProducts();
     }

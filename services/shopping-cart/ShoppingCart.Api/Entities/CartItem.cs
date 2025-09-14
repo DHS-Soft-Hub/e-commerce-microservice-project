@@ -1,16 +1,18 @@
 using Shared.Domain.Entities;
+using System.Text.Json.Serialization;
 
 namespace ShoppingCart.Api.Entities;
 
 public class CartItem : BaseEntity<Guid>
 {
     public Guid ProductId { get; private set; }
-    public string ProductName { get; private set; }
+    public string ProductName { get; private set; } = string.Empty;
     public decimal Price { get; private set; }
-    public string Currency { get; private set; }
+    public string Currency { get; private set; } = string.Empty;
     public int Quantity { get; private set; }
     public DateTime AddedAt { get; private set; }
 
+    [JsonConstructor]
     private CartItem() { } // EF Core
 
     private CartItem(Guid productId, string productName, decimal price, string currency, int quantity)

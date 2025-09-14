@@ -1,5 +1,6 @@
 using Shared.Domain.Aggregates;
 using ShoppingCart.Api.Events;
+using System.Text.Json.Serialization;
 
 namespace ShoppingCart.Api.Entities;
 
@@ -18,6 +19,7 @@ public class Cart : AggregateRoot<Guid>
     // Calculate total price of the cart
     public decimal GetTotal() => _items.Sum(x => x.Price * x.Quantity);
 
+    [JsonConstructor]
     private Cart() { } // EF Core
 
     protected Cart(Guid? userId, string? sessionId)

@@ -29,26 +29,9 @@ public class CartRepository : ICartRepository
 
     public async Task<Cart?> GetByUserOrSessionAsync(Guid? userId, string? sessionId)
     {
-        var cacheKey = GetCacheKey(userId, sessionId);
-        var cachedCart = await _cache.GetStringAsync(cacheKey);
-
-        if (!string.IsNullOrEmpty(cachedCart))
-        {
-            var cart = JsonSerializer.Deserialize<Cart>(cachedCart, JsonOptions);
-            if (cart != null)
-            {
-                _context.Attach(cart);
-                if (cart.Items != null)
-                {
-                    foreach (var item in cart.Items)
-                    {
-                        _context.Attach(item);
-                    }
-                }
-            }
-            return cart;
-        }
-
+        // Temporarily disable caching to avoid JSON deserialization issues
+        // TODO: Implement proper caching strategy for domain entities
+        
         Cart? dbCart = null;
         
         if (userId.HasValue)
@@ -64,11 +47,6 @@ public class CartRepository : ICartRepository
                 .Include(c => c.Items)
                 .OrderByDescending(c => c.UpdatedAt)
                 .FirstOrDefaultAsync(c => c.SessionId == sessionId);
-        }
-
-        if (dbCart != null)
-        {
-            await CacheCartAsync(dbCart);
         }
 
         return dbCart;
@@ -93,7 +71,8 @@ public class CartRepository : ICartRepository
         }
 
         await _context.SaveChangesAsync();
-        await CacheCartAsync(cart);
+        // Temporarily disable caching
+        // await CacheCartAsync(cart);
     }
 
     private async Task CacheCartAsync(Cart cart)
@@ -111,6 +90,19 @@ public class CartRepository : ICartRepository
     private static string GetCacheKey(Guid? userId, string? sessionId)
     {
         return userId.HasValue ? $"cart:user:{userId}" : $"cart:session:{sessionId}";
+    }
+
+    private static bool IsCartValid(Cart cart)
+    {
+        return cart.Id != Guid.Empty;
+    }
+
+    private static bool IsCartItemValid(CartItem item)
+    {
+        return item.Id != Guid.Empty && 
+               !string.IsNullOrEmpty(item.ProductName) && 
+               !string.IsNullOrEmpty(item.Currency) &&
+               item.ProductId != Guid.Empty;
     }
 
     public Task DeleteAsync(Cart cart)

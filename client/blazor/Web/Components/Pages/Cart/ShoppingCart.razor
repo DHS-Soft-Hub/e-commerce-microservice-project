@@ -122,9 +122,13 @@
         {
             userId = authState.User.FindFirst("sub")?.Value ?? string.Empty;
         }
+        else
+        {
+            userId = "00000000-0000-0000-0000-000000000001"; // Placeholder for anonymous user
+        }
         
         // Generate or get session ID
-        sessionId = Guid.NewGuid().ToString();
+        sessionId = "00000000-0000-0000-0000-000000000002"; // Placeholder for session ID logic
         
         await LoadCart();
     }

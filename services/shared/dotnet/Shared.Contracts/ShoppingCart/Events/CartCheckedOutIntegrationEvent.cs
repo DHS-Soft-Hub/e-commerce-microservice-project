@@ -4,8 +4,8 @@ namespace Shared.Contracts.ShoppingCart.Events;
 
 public record CartCheckedOutIntegrationEvent(
     Guid CartId,
-    Guid UserId,
-    string SessionId,
+    Guid? UserId,
+    string? SessionId,
     List<CartItemCheckedOutDto> Items,
     decimal Total,
     string Currency,
