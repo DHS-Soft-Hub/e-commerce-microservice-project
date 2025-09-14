@@ -17,7 +17,6 @@ public class CartItem : BaseEntity<Guid>
 
     private CartItem(Guid productId, string productName, decimal price, string currency, int quantity)
     {
-        Id = Guid.NewGuid();
         ProductId = productId;
         ProductName = productName;
         Price = price;

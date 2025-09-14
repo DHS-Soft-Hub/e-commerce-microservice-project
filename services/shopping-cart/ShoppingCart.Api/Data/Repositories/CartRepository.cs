@@ -67,7 +67,33 @@ public class CartRepository : ICartRepository
         }
         else
         {
+            // Update cart properties
             _context.Entry(existingCart).CurrentValues.SetValues(cart);
+            
+            // Handle the items collection manually
+            // Remove items that are no longer in the cart
+            var currentItemIds = cart.Items.Select(i => i.Id).ToHashSet();
+            var itemsToRemove = existingCart.Items.Where(i => !currentItemIds.Contains(i.Id)).ToList();
+            foreach (var item in itemsToRemove)
+            {
+                existingCart.Items.Remove(item);
+            }
+            
+            // Add new items and update existing ones
+            foreach (var newItem in cart.Items)
+            {
+                var existingItem = existingCart.Items.FirstOrDefault(i => i.Id == newItem.Id);
+                if (existingItem == null)
+                {
+                    // Add new item
+                    existingCart.Items.Add(newItem);
+                }
+                else
+                {
+                    // Update existing item
+                    _context.Entry(existingItem).CurrentValues.SetValues(newItem);
+                }
+            }
         }
 
         await _context.SaveChangesAsync();
