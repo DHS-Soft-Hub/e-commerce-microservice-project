@@ -1,19 +1,25 @@
 using MediatR;
 using ShoppingCart.Api.Data.Repositories;
 using ShoppingCart.Api.Contracts.Responses;
+using Shared.Contracts.ShoppingCart.Events;
+using Shared.Contracts.ShoppingCart.Responses;
+using MassTransit;
+using MassTransit.Testing;
 
 namespace ShoppingCart.Api.Commands.PrepareCheckoutCommand;
 
-public class PrepareCheckoutCommandHandler : IRequestHandler<PrepareCheckoutCommand, CheckoutDataResponse>
+public class PrepareCheckoutCommandHandler : IRequestHandler<PrepareCheckoutCommand, CheckoutResultResponse>
 {
     private readonly ICartRepository _cartRepository;
+    private readonly IRequestClient<CartCheckedOutIntegrationEvent> _requestClient;
 
-    public PrepareCheckoutCommandHandler(ICartRepository cartRepository)
+    public PrepareCheckoutCommandHandler(ICartRepository cartRepository, IRequestClient<CartCheckedOutIntegrationEvent> requestClient)
     {
         _cartRepository = cartRepository;
+        _requestClient = requestClient;
     }
 
-    public async Task<CheckoutDataResponse> Handle(PrepareCheckoutCommand request, CancellationToken cancellationToken)
+    public async Task<CheckoutResultResponse> Handle(PrepareCheckoutCommand request, CancellationToken cancellationToken)
     {
         var cart = await _cartRepository.GetByUserOrSessionAsync(request.UserId, request.SessionId);
         if (cart == null)
@@ -26,26 +32,67 @@ public class PrepareCheckoutCommandHandler : IRequestHandler<PrepareCheckoutComm
             throw new InvalidOperationException("Cannot checkout with empty cart");
         }
 
-        // Prepare checkout data
-        var cartData = cart.CheckoutCart();
-        var totalAmount = cartData.GetTotal();
+        // Create checkout event
+        var checkoutEvent = new CartCheckedOutIntegrationEvent(
+            cart.Id,
+            request.UserId,
+            request.SessionId,
+            cart.Items.Select(i => new CartItemCheckedOutDto(
+                i.Id,
+                i.ProductId,
+                i.ProductName,
+                i.Quantity,
+                i.Price,
+                i.Currency)).ToList(),
+            cart.GetTotal(),
+            cart.Items.FirstOrDefault()?.Currency ?? "EUR", // Default to EUR if no items
+            DateTime.UtcNow
+        );
 
-        var checkoutData = new CheckoutDataResponse
+        try
         {
-            Items = cart.Items.Select(i => new CheckoutItemResponse
+            // Send request and wait for response from Orders service
+            var response = await _requestClient.GetResponse<OrderCreatedResponse>(
+                checkoutEvent,
+                cancellationToken,
+                timeout: TimeSpan.FromSeconds(30));
+
+            if (response.Message.Success)
             {
-                ProductId = i.ProductId,
-                ProductName = i.ProductName,
-                Price = i.Price,
-                Currency = i.Currency,
-                Quantity = i.Quantity
-            }).ToList(),
-            TotalAmount = totalAmount,
-            Currency = cart.Items.First().Currency // Assuming all items have the same currency
-        };
-
-        // TODO: Here you could add more logic, like applying discounts, calculating taxes, etc.
-
-        return checkoutData;
+                return new CheckoutResultResponse
+                (
+                    Success: true,
+                    Message: "Checkout successful",
+                    OrderId: response.Message.OrderId
+                );
+            }
+            else
+            {
+                return new CheckoutResultResponse
+                (
+                    Success: false,
+                    Message: response.Message.Message ?? "Order creation failed",
+                    OrderId: null
+                );
+            }
+        }
+        catch (RequestTimeoutException)
+        {
+            return new CheckoutResultResponse
+            (
+                Success: false,
+                Message: "Checkout timeout. Please try again.",
+                OrderId: null
+            );
+        }
+        catch (Exception ex)
+        {
+            return new CheckoutResultResponse
+            (
+                Success: false,
+                Message: $"Checkout failed: {ex.Message}",
+                OrderId: null
+            );
+        }
     }
 }

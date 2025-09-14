@@ -37,8 +37,6 @@ public static class DependencyInjection
                     });
             });
 
-
-
         // Add repositories
         services.AddScoped<PublishDomainEventsInterceptor>();
         services.AddScoped<IOrderRepository, OrderRepository>();

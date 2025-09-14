@@ -61,11 +61,17 @@ public class ShoppingCartGrpcController : Protos.ShoppingCart.ShoppingCartBase
 
     public override async Task<CheckoutResponse> Checkout(CheckoutRequest request, ServerCallContext context)
     {
-        var cart = await _shoppingCartService.CheckoutAsync(new PrepareCheckoutCommand(
+        var result = await _shoppingCartService.CheckoutAsync(new PrepareCheckoutCommand(
             Guid.Parse(request.UserId),
             request.SessionId
         ), context.CancellationToken);
-        return new CheckoutResponse { Cart = ToProtoCart(cart, request.UserId, request.SessionId) };
+        
+        return new CheckoutResponse 
+        { 
+            OrderId = result.OrderId?.ToString() ?? string.Empty,
+            Success = result.Success,
+            Message = result.Message ?? string.Empty
+        };
     }
 
     private static Cart ToProtoCart(DTOs.CartDto item, string userId, string sessionId)

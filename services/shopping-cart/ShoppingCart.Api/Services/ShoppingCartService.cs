@@ -3,6 +3,7 @@ using ShoppingCart.Api.Commands.AddItemToCartCommand;
 using ShoppingCart.Api.Commands.PrepareCheckoutCommand;
 using ShoppingCart.Api.Commands.RemoveItemFromCartCommand;
 using ShoppingCart.Api.Commands.UpdateItemQuantityCommand;
+using ShoppingCart.Api.Contracts.Responses;
 using ShoppingCart.Api.DTOs;
 using ShoppingCart.Api.Queries;
 
@@ -41,10 +42,10 @@ public class ShoppingCartService : IShoppingCartService
         await _mediator.Send(command, cancellationToken);
         return await GetCartAsync(new GetCartQuery(command.UserId, command.SessionId), cancellationToken);
     }
-    
-    public async Task<CartDto> CheckoutAsync(PrepareCheckoutCommand command, CancellationToken cancellationToken = default)
+
+    public async Task<CheckoutResultResponse> CheckoutAsync(PrepareCheckoutCommand command, CancellationToken cancellationToken = default)
     {
-        await _mediator.Send(command, cancellationToken);
-        return await GetCartAsync(new GetCartQuery(command.UserId, command.SessionId), cancellationToken);
+        // Get the result of the checkout process
+        return await _mediator.Send(command, cancellationToken);
     }
 }

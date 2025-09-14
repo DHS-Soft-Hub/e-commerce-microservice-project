@@ -51,7 +51,11 @@ builder.Services.AddGrpcReflection();
 // Add shared MassTransit configuration for events
 builder.Services.AddMassTransitWithRabbitMq(
     builder.Configuration,
-    System.Reflection.Assembly.GetExecutingAssembly()
+    System.Reflection.Assembly.GetExecutingAssembly(),
+    cfg =>
+    {
+        cfg.AddRequestClient<Shared.Contracts.ShoppingCart.Events.CartCheckedOutIntegrationEvent>();
+    }
 );
 
 // Add Services

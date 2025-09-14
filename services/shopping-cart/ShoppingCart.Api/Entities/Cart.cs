@@ -83,36 +83,6 @@ public class Cart : AggregateRoot<Guid>
         }
     }
 
-    public Cart CheckoutCart()
-    {
-        // Create a copy of the cart for checkout
-        var checkoutCart = new Cart(UserId, SessionId)
-        {
-            Items = new List<CartItem>(_items),
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
-        };
-
-        // Raise checkout event or perform additional logic if needed
-        var checkoutEvent = new CartCheckedOutDomainEvent(
-            checkoutCart.Id,
-            UserId,
-            SessionId,
-            checkoutCart.Items.Select(i => new CheckedOutCartItem(
-                i.Id,
-                i.ProductId,
-                i.ProductName,
-                i.Quantity,
-                i.Price,
-                i.Currency)).ToList(),
-            checkoutCart.GetTotal(),
-            checkoutCart.Items.FirstOrDefault()?.Currency ?? "USD" // Default to USD if no items
-        );
-        this.AddDomainEvent(checkoutEvent);
-
-        return checkoutCart;
-    }
-
     public void Clear()
     {
         _items.Clear();

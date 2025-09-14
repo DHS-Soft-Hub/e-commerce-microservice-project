@@ -79,7 +79,9 @@ message CheckoutRequest {
 }
 
 message CheckoutResponse {
-  Cart cart = 1;
+  string order_id = 1;
+  bool success = 2;
+  string message = 3;
 }
 
 // The ShoppingCart service definition.
