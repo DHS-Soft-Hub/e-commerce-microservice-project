@@ -1,0 +1,94 @@
+syntax = "proto3";
+
+option csharp_namespace = "ShoppingCart.Api.Protos";
+
+import "google/protobuf/timestamp.proto";
+
+package shoppingcart;
+
+// The shopping cart message.
+message Cart {
+  string user_id = 1;
+  string session_id = 2;
+  repeated CartItem items = 3;
+  float total_price = 4;
+  string currency = 5;
+}
+
+// The shopping cart item message.
+message CartItem {
+  string product_id = 1;
+  string product_name = 2;
+  int32 quantity = 3;
+  float price = 4;
+  string currency = 5;
+}
+
+// The request message for the GetCart RPC.
+message GetCartRequest {
+  string user_id = 1;
+  string session_id = 2;
+}
+
+// The response message for the GetCart RPC.
+message GetCartResponse {
+  Cart cart = 1;
+}
+
+// The request message for the AddToCart RPC.
+message AddToCartRequest {
+  string user_id = 1;
+  string session_id = 2;
+  CartItem item = 3;
+}
+
+// The response message for the AddToCart RPC.
+message AddToCartResponse {
+  Cart cart = 1;
+}
+
+// The request message for the RemoveFromCart RPC.
+message RemoveFromCartRequest {
+  string user_id = 1;
+  string session_id = 2;
+  string item_id = 3;
+}
+
+// The response message for the RemoveFromCart RPC.
+message RemoveFromCartResponse {
+  Cart cart = 1;
+}
+
+// The request message for the UpdateItemQuantity RPC.
+message UpdateItemQuantityRequest {
+  string user_id = 1;
+  string session_id = 2;
+  string item_id = 3;
+  int32 quantity = 4;
+}
+
+// The response message for the UpdateItemQuantity RPC.
+message UpdateItemQuantityResponse {
+  Cart cart = 1;
+}
+
+// The request message for the Checkout RPC.
+message CheckoutRequest {
+  string user_id = 1;
+  string session_id = 2;
+}
+
+message CheckoutResponse {
+  string order_id = 1;
+  bool success = 2;
+  string message = 3;
+}
+
+// The ShoppingCart service definition.
+service ShoppingCart {
+  rpc GetCart (GetCartRequest) returns (GetCartResponse);
+  rpc AddToCart (AddToCartRequest) returns (AddToCartResponse);
+  rpc RemoveFromCart (RemoveFromCartRequest) returns (RemoveFromCartResponse);
+  rpc UpdateItemQuantity (UpdateItemQuantityRequest) returns (UpdateItemQuantityResponse);
+  rpc Checkout (CheckoutRequest) returns (CheckoutResponse);
+}

@@ -8,9 +8,19 @@
 
   <ItemGroup>
     <PackageReference Include="HotChocolate.AspNetCore" Version="15.1.10" />
+    <PackageReference Include="HotChocolate.Data" Version="15.1.10" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.8" />
     <PackageReference Include="Yarp.ReverseProxy" Version="2.3.0" />
+    <PackageReference Include="Grpc.Net.Client" Version="2.71.0" />
+    <PackageReference Include="Grpc.Tools" Version="2.72.0" PrivateAssets="All" />
+    <PackageReference Include="Google.Protobuf" Version="3.29.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="Protos/orders.proto" GrpcServices="Client" />
+    <Protobuf Include="Protos/payment.proto" GrpcServices="Client" />
+    <Protobuf Include="Protos/shoppingcart.proto" GrpcServices="Client" />
   </ItemGroup>
 
 </Project>
