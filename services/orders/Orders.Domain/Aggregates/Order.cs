@@ -102,8 +102,9 @@ namespace Orders.Domain.Aggregates
         /// Validates that the new status is a valid enum value.
         /// </summary>
         /// <param name="newStatus"></param>
+        /// <param name="raiseEvent">Whether to raise domain event (default: true)</param>
         /// <returns></returns>
-        public Result UpdateStatus(string newStatus)
+        public Result UpdateStatus(string newStatus, bool raiseEvent = true)
         {
             if (!Enum.IsDefined(typeof(OrderStatus), newStatus))
             {
@@ -112,11 +113,13 @@ namespace Orders.Domain.Aggregates
 
             Status = (OrderStatus)Enum.Parse(typeof(OrderStatus), newStatus);
 
-            // Raise domain event
-            var statusChangedEvent = new OrderStatusChangedDomainEvent(Id, newStatus, "Status updated");
-            AddDomainEvent(statusChangedEvent);
+            // Raise domain event only if requested
+            if (raiseEvent)
+            {
+                var statusChangedEvent = new OrderStatusChangedDomainEvent(Id, newStatus, "Status updated");
+                AddDomainEvent(statusChangedEvent);
+            }
 
-            
             return Result.Success();
         }
     
