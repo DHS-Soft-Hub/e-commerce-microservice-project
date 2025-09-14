@@ -1,5 +1,6 @@
 using ApiGateway.Queries.ShoppingCart;
 using ApiGateway.Services;
+using HotChocolate;
 
 namespace ApiGateway.Queries.ShoppingCart;
 
@@ -9,6 +10,7 @@ public class ShoppingCartQuery
     /// <summary>
     /// Get shopping cart for a user
     /// </summary>
+    [GraphQLName("getCart")]
     public async Task<CartType> GetCartAsync(
         [Service] IShoppingCartGrpcService shoppingCartService,
         string userId,
@@ -22,6 +24,7 @@ public class ShoppingCartMutation
     /// <summary>
     /// Add an item to the shopping cart
     /// </summary>
+    [GraphQLName("addToCart")]
     public async Task<CartType> AddToCartAsync(
         [Service] IShoppingCartGrpcService shoppingCartService,
         AddToCartInput input) =>
@@ -30,6 +33,7 @@ public class ShoppingCartMutation
     /// <summary>
     /// Remove an item from the shopping cart
     /// </summary>
+    [GraphQLName("removeFromCart")]
     public async Task<CartType> RemoveFromCartAsync(
         [Service] IShoppingCartGrpcService shoppingCartService,
         RemoveFromCartInput input) =>
@@ -38,6 +42,7 @@ public class ShoppingCartMutation
     /// <summary>
     /// Update the quantity of an item in the shopping cart
     /// </summary>
+    [GraphQLName("updateItemQuantity")]
     public async Task<CartType> UpdateItemQuantityAsync(
         [Service] IShoppingCartGrpcService shoppingCartService,
         UpdateItemQuantityInput input) =>
@@ -46,6 +51,7 @@ public class ShoppingCartMutation
     /// <summary>
     /// Proceed to checkout with the shopping cart
     /// </summary>
+    [GraphQLName("checkout")]
     public async Task<CheckoutResultType> CheckoutAsync(
         [Service] IShoppingCartGrpcService shoppingCartService,
         CheckoutInput input) =>
