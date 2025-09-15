@@ -1,0 +1,19 @@
+@implements IDisposable
+@inject Web.Services.CustomAuthStateProvider AuthStateProvider
+@rendermode InteractiveServer
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Load authentication state from storage after the component is interactive
+            await AuthStateProvider.LoadUserFromStorageAsync();
+        }
+    }
+
+    public void Dispose()
+    {
+        // Clean up if needed
+    }
+}

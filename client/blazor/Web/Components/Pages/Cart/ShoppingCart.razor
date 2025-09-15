@@ -1,11 +1,11 @@
 @page "/cart"
 @using Web.Services.Cart.DTOs
 @using Web.Services.Cart
-@using Microsoft.AspNetCore.Components.Authorization
+@using Web.Services.Shared
 @inject CartService CartService
+@inject UserContextService UserContextService
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
-@inject AuthenticationStateProvider AuthenticationStateProvider
 @rendermode InteractiveServer
 @attribute [AllowAnonymous]
 
@@ -131,19 +131,10 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // Get user info from authentication state
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        if (authState.User.Identity?.IsAuthenticated == true)
-        {
-            userId = authState.User.FindFirst("sub")?.Value ?? string.Empty;
-        }
-        else
-        {
-            userId = "00000000-0000-0000-0000-000000000001"; // Placeholder for anonymous user
-        }
-        
-        // Generate or get session ID
-        sessionId = "00000000-0000-0000-0000-000000000002"; // Placeholder for session ID logic
+        // Get user context from UserContextService
+        var userContext = await UserContextService.GetUserContextAsync();
+        userId = userContext.UserId;
+        sessionId = userContext.SessionId;
         
         await LoadCart();
     }

@@ -1,10 +1,10 @@
 @page "/orders"
 @using Web.Services.Orders.DTOs
 @using Web.Services.Orders
-@using Microsoft.AspNetCore.Components.Authorization
+@using Web.Services.Shared
 @inject OrderService OrderService
+@inject UserContextService UserContextService
 @inject NavigationManager Navigation
-@inject AuthenticationStateProvider AuthenticationStateProvider
 @rendermode InteractiveServer
 
 <header class="topbar">
@@ -129,18 +129,12 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // Get user info from authentication state
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        if (authState.User.Identity?.IsAuthenticated == true)
-        {
-            userId = authState.User.FindFirst("sub")?.Value ?? string.Empty;
-        }
-        else
-        {
-            //Navigation.NavigateTo("/login");
-            //return;
-            userId = "00000000-0000-0000-0000-000000000001"; // Temporary for testing
-        }
+        // Get user context from UserContextService
+        var userContext = await UserContextService.GetUserContextAsync();
+        userId = userContext.UserId;
+        
+        // If user is not authenticated, they can still view with empty userId
+        // The backend should handle this appropriately
         
         await LoadOrders();
     }

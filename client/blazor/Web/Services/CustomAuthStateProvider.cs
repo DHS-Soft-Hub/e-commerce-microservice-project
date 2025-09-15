@@ -5,64 +5,79 @@ using Blazored.LocalStorage;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text.Json;
 using Web.Services.Auth.DTOs;
+using Microsoft.JSInterop;
 
 namespace Web.Services;
 public class CustomAuthStateProvider : AuthenticationStateProvider
 {
     private readonly ILocalStorageService _localStorage;
+    private readonly IJSRuntime _jsRuntime;
+    private ClaimsPrincipal _currentUser = new(new ClaimsIdentity());
 
-    public CustomAuthStateProvider(ILocalStorageService localStorage)
+    public CustomAuthStateProvider(ILocalStorageService localStorage, IJSRuntime jsRuntime)
     {
         _localStorage = localStorage;
+        _jsRuntime = jsRuntime;
     }
 
-    public override async Task<AuthenticationState> GetAuthenticationStateAsync()
+    public override Task<AuthenticationState> GetAuthenticationStateAsync()
+    {
+        return Task.FromResult(new AuthenticationState(_currentUser));
+    }
+
+    public async Task LoadUserFromStorageAsync()
     {
         try
         {
-            var tokenData = await _localStorage.GetItemAsync<dynamic>("authToken");
+            var tokenData = await _localStorage.GetItemAsync<TokenInfo>("authToken");
             if (tokenData == null)
             {
-                return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
+                Console.WriteLine("No token data found in localStorage");
+                _currentUser = new ClaimsPrincipal(new ClaimsIdentity());
+                NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(_currentUser)));
+                return;
             }
 
-            // Parse the token data
-            var tokenJson = JsonSerializer.Serialize(tokenData);
-            var tokenInfo = JsonSerializer.Deserialize<TokenInfo>(tokenJson);
-            
-            if (tokenInfo == null)
+            Console.WriteLine($"Token found - AccessToken: {!string.IsNullOrEmpty(tokenData.AccessToken)}, Expiry: {tokenData.AccessTokenExpiry}");
+
+            if (string.IsNullOrEmpty(tokenData.AccessToken) || tokenData.AccessTokenExpiry < DateTime.UtcNow)
             {
-                return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
+                Console.WriteLine("Token is empty or expired");
+                _currentUser = new ClaimsPrincipal(new ClaimsIdentity());
             }
-
-            if (string.IsNullOrEmpty(tokenInfo.AccessToken) || tokenInfo.AccessTokenExpiry < DateTime.UtcNow)
+            else
             {
-                return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
+                var claims = ParseClaimsFromJwt(tokenData.AccessToken);
+                var identity = new ClaimsIdentity(claims, "jwt");
+                _currentUser = new ClaimsPrincipal(identity);
+                
+                Console.WriteLine($"User authenticated - IsAuthenticated: {_currentUser.Identity?.IsAuthenticated}, Claims count: {claims.Count()}");
+                Console.WriteLine($"Sub claim: {_currentUser.FindFirst("sub")?.Value}");
+                Console.WriteLine($"Name claim: {_currentUser.FindFirst(ClaimTypes.Name)?.Value}");
             }
 
-            var identity = new ClaimsIdentity(ParseClaimsFromJwt(tokenInfo.AccessToken), "jwt");
-            var user = new ClaimsPrincipal(identity);
-
-            return new AuthenticationState(user);
+            NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(_currentUser)));
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
+            Console.WriteLine($"Error loading user from storage: {ex.Message}");
+            _currentUser = new ClaimsPrincipal(new ClaimsIdentity());
+            NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(_currentUser)));
         }
     }
 
     public void NotifyUserAuthentication(TokenResponseDto token)
     {
         var identity = new ClaimsIdentity(ParseClaimsFromJwt(token.AccessToken), "jwt");
-        var user = new ClaimsPrincipal(identity);
+        _currentUser = new ClaimsPrincipal(identity);
 
-        NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(user)));
+        NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(_currentUser)));
     }
 
     public void NotifyUserLogout()
     {
-        var user = new ClaimsPrincipal(new ClaimsIdentity());
-        NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(user)));
+        _currentUser = new ClaimsPrincipal(new ClaimsIdentity());
+        NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(_currentUser)));
     }
 
     private IEnumerable<Claim> ParseClaimsFromJwt(string jwt)
@@ -78,10 +93,10 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
             return new List<Claim>();
         }
     }
+}
 
-    private class TokenInfo
-    {
-        public string AccessToken { get; set; } = string.Empty;
-        public DateTime AccessTokenExpiry { get; set; }
-    }
+public class TokenInfo
+{
+    public string AccessToken { get; set; } = string.Empty;
+    public DateTime AccessTokenExpiry { get; set; }
 }

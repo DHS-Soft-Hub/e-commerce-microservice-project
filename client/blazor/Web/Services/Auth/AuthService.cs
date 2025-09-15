@@ -67,11 +67,7 @@ namespace Web.Services.Auth
                 var authUser = await authResponse.Content.ReadFromJsonAsync<AuthUserDto>();
                 if (authUser == null) return false;
 
-                // Create user in user service
-                using var userHttpClient = _httpClientFactory.CreateClient("APIGateway");
-                var userResponse = await userHttpClient.PostAsJsonAsync("/api/users", authUser);
-                
-                return userResponse.IsSuccessStatusCode;
+                return true;
             }
             catch (Exception ex)
             {

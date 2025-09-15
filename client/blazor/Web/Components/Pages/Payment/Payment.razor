@@ -3,12 +3,12 @@
 @using Web.Services.Orders
 @using Web.Services.Payment.DTOs
 @using Web.Services.Payment
-@using Microsoft.AspNetCore.Components.Authorization
+@using Web.Services.Shared
 @inject OrderService OrderService
 @inject PaymentService PaymentService
+@inject UserContextService UserContextService
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
-@inject AuthenticationStateProvider AuthenticationStateProvider
 @rendermode InteractiveServer
 @attribute [AllowAnonymous]
 
@@ -193,12 +193,9 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // Get user info from authentication state
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        if (authState.User.Identity?.IsAuthenticated == true)
-        {
-            userId = authState.User.FindFirst("sub")?.Value ?? string.Empty;
-        }
+        // Get user context from UserContextService
+        var userContext = await UserContextService.GetUserContextAsync();
+        userId = userContext.UserId;
         
         await LoadOrderAndPayment();
     }

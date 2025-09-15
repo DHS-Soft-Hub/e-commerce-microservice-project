@@ -62,6 +62,9 @@ builder.Services.AddScoped<CartService>();
 builder.Services.AddScoped<PaymentService>();
 builder.Services.AddScoped<OrderService>();
 
+// Register User Context Service
+builder.Services.AddScoped<Web.Services.Shared.UserContextService>();
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
