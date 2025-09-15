@@ -1,11 +1,14 @@
 using MediatR;
 using Orders.Application.Commands;
 using Orders.Application.DTOs;
+using Orders.Application.DTOs.Requests;
+using Orders.Application.DTOs.Responses;
 using Orders.Application.Queries;
+using Shared.Domain.Common;
 
 namespace Orders.Application.Services
 {
-    public class OrderService
+    public class OrderService : IOrderService
     {
         private readonly IMediator _mediator;
 
@@ -14,14 +17,19 @@ namespace Orders.Application.Services
             _mediator = mediator;
         }
 
-        public async Task<OrderDto> CreateOrderAsync(
-            CreateOrderCommand order,
+        public async Task<CreateOrderResponseDto> CreateOrderAsync(
+            CreateOrderRequestDto order,
             CancellationToken cancellationToken = default)
         {
-            return await _mediator.Send(order, cancellationToken);
+            var orderCommand = new CreateOrderCommand(
+                order.CustomerId,
+                order.Items,
+                order.Currency
+            );
+            return await _mediator.Send(orderCommand, cancellationToken);
         }
 
-        public async Task<OrderDto> GetOrderAsync(
+        public async Task<OrderDto> GetOrderByIdAsync(
             Guid orderId,
             CancellationToken cancellationToken = default)
         {
@@ -29,18 +37,67 @@ namespace Orders.Application.Services
             return await _mediator.Send(query, cancellationToken);
         }
 
-        public async Task<List<OrderDto>> GetOrdersAsync(
+        public async Task<PaginatedResult<OrderDto>> GetOrdersAsync(
+            int pageNumber, int pageSize,
             CancellationToken cancellationToken = default)
         {
-            var query = new GetOrdersQuery();
+            var query = new GetOrdersQuery
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
             return await _mediator.Send(query, cancellationToken);
         }
 
-        public async Task<OrderDto> UpdateOrderAsync(
-            UpdateOrderCommand order,
+        public async Task<PaginatedResult<OrderDto>> GetOrdersByCustomerIdAsync(
+            Guid customerId,
+            int pageNumber, int pageSize,
             CancellationToken cancellationToken = default)
         {
-            return await _mediator.Send(order, cancellationToken);
+            var query = new GetOrdersByCustomerIdQuery
+            {
+                CustomerId = customerId,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
+            return await _mediator.Send(query, cancellationToken);
+        }
+
+        public async Task<OrderDto> AddItemToOrderAsync(
+            Guid orderId,
+            CreateOrderItemRequestDto item,
+            CancellationToken cancellationToken = default)
+        {
+            var command = new AddOrderItemCommand(orderId, item);
+            return await _mediator.Send(command, cancellationToken);
+        }
+
+        public async Task<OrderDto> RemoveItemFromOrderAsync(
+            Guid orderId,
+            Guid itemId,
+            CancellationToken cancellationToken = default)
+        {
+            var command = new RemoveOrderItemCommand(orderId, itemId);
+            return await _mediator.Send(command, cancellationToken);
+        }
+
+        public async Task<OrderDto> UpdateOrderItemQuantityAsync(
+            Guid orderId,
+            Guid itemId,
+            int quantity,
+            CancellationToken cancellationToken = default)
+        {
+            var command = new UpdateOrderItemQuantityCommand(orderId, itemId, quantity);
+            return await _mediator.Send(command, cancellationToken);
+        }
+
+        public async Task<Unit> UpdateOrderStatusAsync(
+            Guid orderId,
+            string status,
+            CancellationToken cancellationToken = default)
+        {
+            var command = new UpdateOrderStatusCommand(orderId, status);
+            return await _mediator.Send(command, cancellationToken);
         }
     }
 }

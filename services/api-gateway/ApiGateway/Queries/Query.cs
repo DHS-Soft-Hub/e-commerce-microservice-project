@@ -1,15 +1,9 @@
-using HotChocolate;
-using HotChocolate.Types;
+namespace ApiGateway.Queries;
 
-namespace ApiGateway.Queries
+public class Query
 {
-    public class Query
-    {
-        [GraphQLName("order")]
-        public Order GetOrder([ID][GraphQLNonNullType] string orderId)
-        {
-            var orderQuery = new OrderQuery();
-            return orderQuery.GetOrder(orderId);
-        }
-    }
+    /// <summary>
+    /// Health check endpoint
+    /// </summary>
+    public string Health() => "API Gateway is running";
 }

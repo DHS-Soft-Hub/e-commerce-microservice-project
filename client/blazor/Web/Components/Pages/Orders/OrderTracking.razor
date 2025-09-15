@@ -1,6 +1,6 @@
 @page "/orders/{OrderId}/tracking"
-@using Web.DTOs
-@using Web.Services
+@using Web.Services.Orders.DTOs
+@using Web.Services.Orders
 @inject OrderService OrderService
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
@@ -103,7 +103,7 @@
                             </div>
                             <div class="summary-row">
                                 <span>Total Amount:</span>
-                                <span>@order.TotalPrice.ToString("C") @order.Currency</span>
+                                <span>@order.TotalAmount.ToString("C") @order.Currency</span>
                             </div>
                             <div class="summary-row">
                                 <span>Status:</span>
@@ -474,9 +474,9 @@
         isLoading = true;
         try
         {
-            if (Guid.TryParse(OrderId, out var orderId))
+            if (!string.IsNullOrEmpty(OrderId))
             {
-                order = await OrderService.GetOrderAsync(orderId);
+                order = await OrderService.GetOrderAsync(OrderId);
             }
         }
         catch (Exception ex)

@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Payment.Api.Enums;
 
 namespace Payment.Api.Data.Contexts
 {
@@ -18,12 +19,16 @@ namespace Payment.Api.Data.Contexts
 
             modelBuilder.Entity<Entities.Payment>()
                 .Property(p => p.Status)
-                .HasConversion<string>()
+                .HasConversion(
+                    status => status.ToString(),
+                    value => Enum.Parse<PaymentStatus>(value))
                 .HasMaxLength(50);
 
             modelBuilder.Entity<Entities.Payment>()
                 .Property(p => p.PaymentMethod)
-                .HasConversion<string>()
+                .HasConversion(
+                    status => status.ToString(),
+                    value => Enum.Parse<PaymentMethods>(value))
                 .HasMaxLength(50);
         }
     }

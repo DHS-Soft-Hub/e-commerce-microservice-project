@@ -3,6 +3,7 @@ using ShoppingCart.Api.Data.Contexts;
 using ShoppingCart.Api.Data.Repositories;
 using ShoppingCart.Api.Services;
 using Shared.Infrastructure.Messaging;
+using Shared.Infrastructure.Persistence.Interceptors;
 using Microsoft.Extensions.Caching.Distributed;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -50,8 +51,15 @@ builder.Services.AddGrpcReflection();
 // Add shared MassTransit configuration for events
 builder.Services.AddMassTransitWithRabbitMq(
     builder.Configuration,
-    System.Reflection.Assembly.GetExecutingAssembly()
+    System.Reflection.Assembly.GetExecutingAssembly(),
+    cfg =>
+    {
+        cfg.AddRequestClient<Shared.Contracts.ShoppingCart.Events.CartCheckedOutIntegrationEvent>();
+    }
 );
+
+// Add Services
+builder.Services.AddScoped<PublishDomainEventsInterceptor>();
 
 var app = builder.Build();
 
@@ -68,7 +76,7 @@ if (app.Environment.IsDevelopment())
 }
 
 // Map gRPC service
-app.MapGrpcService<ShoppingCartGrpcService>();
+app.MapGrpcService<ShoppingCartGrpcController>();
 
 app.MapControllers();
 app.Run();

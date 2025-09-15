@@ -1,18 +1,11 @@
 ﻿@inherits LayoutComponentBase
+@using Web.Components.Pages
 
-<BlazorBootstrapLayout StickyHeader="true">
-    <HeaderSection>
-        <ThemeSwitcher Class="ps-3 ps-lg-2" />
-    </HeaderSection>
-
-    <SidebarSection>
-    </SidebarSection>
-
-    <ContentSection>
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <NavMenu />
+    </aside>
+    <main class="main-content">
         @Body
-    </ContentSection>
-
-    <FooterSection>
-        Footer links...
-    </FooterSection>
-</BlazorBootstrapLayout>
+    </main>
+</div>

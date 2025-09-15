@@ -19,7 +19,7 @@ public class GetCartQueryHandler : IRequestHandler<GetCartQuery, CartDto?>
         
         if (cart == null)
         {
-            return new CartDto(new List<CartItemDto>(), 0, "USD");
+            return null;
         }
 
         var cartItems = cart.Items.Select(item => new CartItemDto(
@@ -31,6 +31,7 @@ public class GetCartQueryHandler : IRequestHandler<GetCartQuery, CartDto?>
         )).ToList();
 
         return new CartDto(
+            cart.Id,
             cartItems,
             cart.GetTotal(),
             "USD" // Default currency

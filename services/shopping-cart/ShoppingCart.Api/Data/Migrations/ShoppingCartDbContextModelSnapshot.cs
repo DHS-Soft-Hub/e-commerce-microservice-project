@@ -22,7 +22,7 @@ namespace ShoppingCart.Api.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("ShoppingCart.Api.Models.Entities.Cart", b =>
+            modelBuilder.Entity("ShoppingCart.Api.Entities.Cart", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -45,7 +45,7 @@ namespace ShoppingCart.Api.Migrations
                     b.ToTable("Carts", (string)null);
                 });
 
-            modelBuilder.Entity("ShoppingCart.Api.Models.Entities.CartItem", b =>
+            modelBuilder.Entity("ShoppingCart.Api.Entities.CartItem", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -56,6 +56,10 @@ namespace ShoppingCart.Api.Migrations
 
                     b.Property<Guid?>("CartId")
                         .HasColumnType("uuid");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("numeric");
@@ -77,14 +81,14 @@ namespace ShoppingCart.Api.Migrations
                     b.ToTable("CartItems", (string)null);
                 });
 
-            modelBuilder.Entity("ShoppingCart.Api.Models.Entities.CartItem", b =>
+            modelBuilder.Entity("ShoppingCart.Api.Entities.CartItem", b =>
                 {
-                    b.HasOne("ShoppingCart.Api.Models.Entities.Cart", null)
+                    b.HasOne("ShoppingCart.Api.Entities.Cart", null)
                         .WithMany("Items")
                         .HasForeignKey("CartId");
                 });
 
-            modelBuilder.Entity("ShoppingCart.Api.Models.Entities.Cart", b =>
+            modelBuilder.Entity("ShoppingCart.Api.Entities.Cart", b =>
                 {
                     b.Navigation("Items");
                 });

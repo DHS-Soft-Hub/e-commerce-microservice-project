@@ -2,52 +2,44 @@
 @rendermode InteractiveServer
 @attribute [AllowAnonymous]
 
-
-<div class="dashboard-container">
-    <aside class="sidebar">
-        <NavMenu />
-    </aside>
-    <main class="main-content">
-        <header class="topbar">
-            <div class="brand">
-                <span class="dot"></span>
-                <span>Microservice Template</span>
+<header class="topbar">
+    <div class="brand">
+        <span class="dot"></span>
+        <span>Microservice Template</span>
+    </div>
+    <div class="topbar-actions">
+        <input class="search" placeholder="Search…" />
+        <div class="avatar" title="Account"></div>
+    </div>
+</header>
+<div class="content-wrapper">
+    <section class="greeting">
+        <h1>Dashboard</h1>
+        <p>Welcome to the Microservice Template</p>
+    </section>
+    <section class="cards">
+        <div class="card">
+            <h3>Services</h3>
+            <p>Quick links to your microservices.</p>
+            <div class="actions">
+                <a href="/" class="btn">View</a>
             </div>
-            <div class="topbar-actions">
-                <input class="search" placeholder="Search…" />
-                <div class="avatar" title="Account"></div>
-            </div>
-        </header>
-        <div class="content-wrapper">
-            <section class="greeting">
-                <h1>Dashboard</h1>
-                <p>Welcome to the Microservice Template</p>
-            </section>
-            <section class="cards">
-                <div class="card">
-                    <h3>Services</h3>
-                    <p>Quick links to your microservices.</p>
-                    <div class="actions">
-                        <a href="/" class="btn">View</a>
-                    </div>
-                </div>
-                <div class="card">
-                    <h3>Gateway</h3>
-                    <p>Inspect routes and health.</p>
-                    <div class="actions">
-                        <a href="/" class="btn">Open</a>
-                    </div>
-                </div>
-                <div class="card">
-                    <h3>Docs</h3>
-                    <p>Architecture and guides.</p>
-                    <div class="actions">
-                        <a href="/" class="btn">Read</a>
-                    </div>
-                </div>
-            </section>
         </div>
-    </main>
+        <div class="card">
+            <h3>Gateway</h3>
+            <p>Inspect routes and health.</p>
+            <div class="actions">
+                <a href="/" class="btn">Open</a>
+            </div>
+        </div>
+        <div class="card">
+            <h3>Docs</h3>
+            <p>Architecture and guides.</p>
+            <div class="actions">
+                <a href="/" class="btn">Read</a>
+            </div>
+        </div>
+    </section>
 </div>
 
 @code {

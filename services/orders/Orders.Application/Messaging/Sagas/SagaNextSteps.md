@@ -12,20 +12,26 @@ stateDiagram-v2
   state "Reserving Inventory" as ReservingInventory
   state "Processing Payment" as ProcessingPayment
   state "Creating Shipment" as CreatingShipment
+  state "Waiting For Delivery" as WaitingForDelivery
   state Shipped
   state Cancelled
   state Completed
+  state Failed
 
-  ReservingInventory --> ProcessingPayment: InventoryReserved\n/ Send ProcessPaymentCommand
+  ReservingInventory --> ProcessingPayment: InventoryReserved\n/ Publish OrderStatusChanged(InventoryReserved)\nSend ProcessPaymentCommand
   ReservingInventory --> Cancelled: InventoryReservationFailed\n/ Publish OrderStatusChanged(Cancelled)\nFinalize
 
-  ProcessingPayment --> CreatingShipment: PaymentProcessed\n/ Send CreateShipmentCommand
+  ProcessingPayment --> CreatingShipment: PaymentProcessed\n/ Publish OrderStatusChanged(Paid)\nPublish OrderStatusChanged(CreatingShipment)\nSend CreateShipmentCommand
   ProcessingPayment --> Cancelled: PaymentFailed\n/ Send ReleaseInventoryCommand\nPublish OrderStatusChanged(Cancelled)\nFinalize
 
   CreatingShipment --> Shipped: ShipmentCreated\n/ Publish OrderStatusChanged(Shipped)
   CreatingShipment --> Cancelled: ShipmentFailed\n/ Send RefundPaymentCommand\nSend ReleaseInventoryCommand\nPublish OrderStatusChanged(Cancelled)\nFinalize
+  CreatingShipment --> Completed: OrderDelivered\n/ Publish OrderStatusChanged(Completed)\nFinalize
 
+  Shipped --> WaitingForDelivery: OrderShipped
   Shipped --> Completed: OrderDelivered\n/ Publish OrderStatusChanged(Completed)\nFinalize
+
+  WaitingForDelivery --> Completed: OrderDelivered\n/ Publish OrderStatusChanged(Completed)\nFinalize
 
   Cancelled --> [*]
   Completed --> [*]

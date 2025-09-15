@@ -1,5 +1,9 @@
 using System.Text;
 using ApiGateway.Queries;
+using ApiGateway.Queries.Orders;
+using ApiGateway.Queries.Payments;
+using ApiGateway.Queries.ShoppingCart;
+using ApiGateway.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -24,7 +28,19 @@ builder.Services.AddCors(options =>
 
 builder.Services
     .AddGraphQLServer()
-    .AddQueryType<Query>();
+    .AddQueryType<Query>()
+    .AddMutationType<Mutation>()
+    .AddTypeExtension<OrdersQuery>()
+    .AddTypeExtension<OrdersMutation>()
+    .AddTypeExtension<PaymentsQuery>()
+    .AddTypeExtension<PaymentsMutation>()
+    .AddTypeExtension<ShoppingCartQuery>()
+    .AddTypeExtension<ShoppingCartMutation>();
+
+// Register gRPC services
+builder.Services.AddScoped<IOrdersGrpcService, OrdersGrpcService>();
+builder.Services.AddScoped<IPaymentsGrpcService, PaymentsGrpcService>();
+builder.Services.AddScoped<IShoppingCartGrpcService, ShoppingCartGrpcService>();
 
 // Add Authentication and JWT Bearer
 builder.Services.AddAuthentication(options =>
@@ -47,16 +63,18 @@ builder.Services.AddAuthentication(options =>
 
     options.Events = new JwtBearerEvents
     {
-        OnTokenValidated = async context =>
+        OnTokenValidated = context =>
         {
             // Add any additional token validation logic here
             // For example, checking custom claims or roles
             Console.WriteLine("validated");
+            return Task.CompletedTask;
         },
-        OnAuthenticationFailed = async context =>
+        OnAuthenticationFailed = context =>
         {
             // Add logging or custom handling for authentication failures
             Console.WriteLine(context.Exception);
+            return Task.CompletedTask;
         }
     };
 

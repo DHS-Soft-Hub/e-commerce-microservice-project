@@ -1,0 +1,132 @@
+syntax = "proto3";
+
+option csharp_namespace = "Orders.Api.Grpc";
+package orders;
+
+message CreateOrderItem {
+  string productId = 1;
+  string productName = 2;
+  int32 quantity = 3;
+  double unitPrice = 4;
+  string currency = 5;
+}
+
+message CreateOrderRequest {
+  string customerId = 1;
+  string currency = 2;
+  repeated CreateOrderItem items = 3;
+}
+
+message OrderItem {
+  string id = 1;
+  string productId = 2;
+  string productName = 3;
+  int32 quantity = 4;
+  double unitPrice = 5;
+  string currency = 6;
+}
+
+message Order {
+  string id = 1;
+  string customerId = 2;
+  repeated OrderItem items = 3;
+  string currency = 4;
+  string status = 5;
+  int64 createdAt = 6;
+  int64 updatedAt = 7;
+  double totalAmount = 8;
+}
+
+message OrderUpdate {
+  string id = 1;
+  string customerId = 2;
+  repeated OrderItem items = 3;
+  string currency = 4;
+  string status = 5;
+}
+
+message CreateOrderResponse {
+  Order order = 1;
+}
+
+message UpdateOrderRequest {
+  OrderUpdate update = 2;
+}
+message UpdateOrderResponse {
+  OrderUpdate order = 1;
+}
+
+message PaginatedOrdersResponse {
+  repeated Order orders = 1;
+  int32 totalCount = 2;
+  int32 pageNumber = 3;
+  int32 pageSize = 4;
+  int32 totalPages = 5;
+}
+
+message GetOrdersRequest { 
+  int32 pageNumber = 1;
+  int32 pageSize = 2;
+}
+
+message GetOrderRequest {
+  string orderId = 1;
+}
+message GetOrderResponse {
+  Order order = 1;
+}
+
+message AddItemToOrderRequest {
+  string orderId = 1;
+  CreateOrderItem item = 2;
+}
+
+message AddItemToOrderResponse {
+  Order order = 1;
+}
+
+message RemoveItemFromOrderRequest {
+  string orderId = 1;
+  string itemId = 2;
+}
+
+message RemoveItemFromOrderResponse {
+  Order order = 1;
+}
+
+message UpdateOrderItemQuantityRequest {
+  string orderId = 1;
+  string itemId = 2;
+  int32 quantity = 3;
+}
+
+message UpdateOrderItemQuantityResponse {
+  Order order = 1;
+}
+
+message UpdateOrderStatusRequest {
+  string orderId = 1;
+  string status = 2;
+}
+
+message UpdateOrderStatusResponse {
+  bool success = 1;
+}
+
+message GetOrdersByCustomerIdRequest {
+  string customerId = 1;
+  int32 pageNumber = 2;
+  int32 pageSize = 3;
+}
+
+service Orders {
+  rpc CreateOrder(CreateOrderRequest) returns (CreateOrderResponse);
+  rpc UpdateOrder(UpdateOrderRequest) returns (UpdateOrderResponse);
+  rpc GetOrderById(GetOrderRequest) returns (GetOrderResponse);
+  rpc GetOrders(GetOrdersRequest) returns (PaginatedOrdersResponse);
+  rpc AddItemToOrder(AddItemToOrderRequest) returns (AddItemToOrderResponse);
+  rpc RemoveItemFromOrder(RemoveItemFromOrderRequest) returns (RemoveItemFromOrderResponse);
+  rpc UpdateOrderItemQuantity(UpdateOrderItemQuantityRequest) returns (UpdateOrderItemQuantityResponse);
+  rpc UpdateOrderStatus(UpdateOrderStatusRequest) returns (UpdateOrderStatusResponse);
+  rpc GetOrdersByCustomerId(GetOrdersByCustomerIdRequest) returns (PaginatedOrdersResponse);
+}

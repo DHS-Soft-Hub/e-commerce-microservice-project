@@ -1,0 +1,185 @@
+@page "/orders"
+@using Web.Services.Orders.DTOs
+@using Web.Services.Orders
+@using Microsoft.AspNetCore.Components.Authorization
+@inject OrderService OrderService
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@rendermode InteractiveServer
+
+<header class="topbar">
+    <div class="brand">
+        <span class="dot"></span>
+        <span>My Orders</span>
+    </div>
+    <div class="topbar-actions">
+        <input class="search" placeholder="Search orders…" />
+        <div class="avatar" title="Account"></div>
+    </div>
+</header>
+<div class="content-wrapper">
+    <section class="greeting">
+        <h1>My Orders</h1>
+        <p>Track and manage your orders</p>
+    </section>
+    
+    @if (isLoading)
+    {
+        <div class="loading">
+            <p>Loading orders...</p>
+        </div>
+    }
+    else if (orders?.Orders.Count == 0)
+    {
+        <div class="empty-orders">
+            <h3>No orders found</h3>
+            <p>You haven't placed any orders yet</p>
+            <button class="btn btn-primary" @onclick="GoToProducts">
+                Start Shopping
+            </button>
+        </div>
+    }
+    else
+    {
+        <div class="orders-container">
+            @foreach (var order in orders?.Orders ?? new List<OrderDto>())
+            {
+                <div class="order-card">
+                    <div class="order-header">
+                        <div class="order-info">
+                            <h4>Order #@order.Id</h4>
+                            <p class="order-date">@order.CreatedAt.ToString("MMM dd, yyyy")</p>
+                        </div>
+                        <div class="order-status status-@order.Status.ToLower()">
+                            @order.Status
+                        </div>
+                    </div>
+                    
+                    <div class="order-items">
+                        @foreach (var item in order.Items)
+                        {
+                            <div class="order-item">
+                                <div class="item-info">
+                                    <span class="item-name">@item.ProductName</span>
+                                    <span class="item-quantity">Quantity: @item.Quantity</span>
+                                </div>
+                                <div class="item-price">
+                                    @((item.UnitPrice * item.Quantity).ToString("C"))
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    
+                    <div class="order-footer">
+                        <div class="order-total">
+                            Total: @order.TotalAmount.ToString("C") @order.Currency
+                        </div>
+                        <div class="order-actions">
+                            <button class="btn btn-secondary" 
+                                    @onclick="() => ViewOrderDetails(order.Id)">
+                                View Details
+                            </button>
+                            @if (order.Status.ToLower() == "pending")
+                            {
+                                <button class="btn btn-primary" 
+                                        @onclick="() => GoToPayment(order.Id)">
+                                    Pay Now
+                                </button>
+                            }
+                            else if (order.Status.ToLower() == "completed")
+                            {
+                                <button class="btn btn-success" disabled>
+                                    Paid
+                                </button>
+                            }
+                            else
+                            {
+                                <button class="btn btn-warning" 
+                                        @onclick="() => GoToPayment(order.Id)">
+                                    Make Payment
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+            
+            @if (orders != null && orders.TotalPages > 1)
+            {
+                <div class="pagination">
+                    @for (int i = 1; i <= orders.TotalPages; i++)
+                    {
+                        <button class="page-btn @(i == currentPage ? "active" : "")" 
+                                @onclick="() => LoadPage(i)">
+                            @i
+                        </button>
+                    }
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private PaginatedOrdersDto? orders;
+    private bool isLoading = true;
+    private string userId = string.Empty;
+    private int currentPage = 1;
+    private int pageSize = 10;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Get user info from authentication state
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        if (authState.User.Identity?.IsAuthenticated == true)
+        {
+            userId = authState.User.FindFirst("sub")?.Value ?? string.Empty;
+        }
+        else
+        {
+            //Navigation.NavigateTo("/login");
+            //return;
+            userId = "00000000-0000-0000-0000-000000000001"; // Temporary for testing
+        }
+        
+        await LoadOrders();
+    }
+
+    private async Task LoadOrders()
+    {
+        isLoading = true;
+        try
+        {
+            orders = await OrderService.GetOrdersByCustomerAsync(userId, currentPage, pageSize);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading orders: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task LoadPage(int page)
+    {
+        currentPage = page;
+        await LoadOrders();
+    }
+
+    private void ViewOrderDetails(string orderId)
+    {
+        Navigation.NavigateTo($"/orders/{orderId}");
+    }
+
+    private void GoToPayment(string orderId)
+    {
+        Navigation.NavigateTo($"/payment/{orderId}");
+    }
+
+    private void GoToProducts()
+    {
+        Navigation.NavigateTo("/products");
+    }
+}

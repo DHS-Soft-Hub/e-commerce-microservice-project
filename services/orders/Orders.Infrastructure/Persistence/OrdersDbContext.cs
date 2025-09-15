@@ -3,7 +3,7 @@ using Orders.Application.Sagas;
 using Orders.Domain.Aggregates;
 using Orders.Domain.Entities;
 using Orders.Infrastructure.Configurations;
-using Orders.Infrastructure.Persistence.Interceptors;
+using Shared.Infrastructure.Persistence.Interceptors;
 using Shared.Domain.Events;
 
 namespace Orders.Infrastructure.Persistence

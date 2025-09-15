@@ -42,7 +42,7 @@ var app = builder.Build();
     }
 
     // Map gRPC service
-    app.MapGrpcService<PaymentGrpcService>();
+    app.MapGrpcService<PaymentGrpcController>();
 
     app.MapControllers();
 }

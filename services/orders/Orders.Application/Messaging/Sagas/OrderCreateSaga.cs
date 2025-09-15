@@ -37,9 +37,9 @@ namespace Orders.Application.Sagas
             // Configure event correlations
             Event(() => OrderCreated, x =>
             {
-                // Correlate all saga messages by OrderId and create the saga instance using OrderId as CorrelationId
-                x.CorrelateById(m => m.Message.OrderId);
-                x.SelectId(m => m.Message.OrderId);
+                // Correlate by OrderId for backward compatibility
+                x.CorrelateById(context => context.Message.Id);
+                x.SelectId(context => context.Message.Id);
             });
 
             Event(() => InventoryReserved, x => x.CorrelateById(m => m.Message.OrderId));
@@ -61,10 +61,12 @@ namespace Orders.Application.Sagas
 
             // Initial state: Order Created -> Reserve Inventory
             Initially(
+                // Wait for Order Created event to proceed
                 When(OrderCreated)
                     .Then(context =>
                     {
-                        context.Saga.OrderId = context.Message.OrderId;
+                        // Initialize saga state from the order created event
+                        context.Saga.OrderId = context.Message.Id;
                         context.Saga.CustomerId = context.Message.CustomerId;
                         context.Saga.TotalPrice = context.Message.TotalPrice;
                         context.Saga.Currency = context.Message.Currency;
@@ -72,17 +74,26 @@ namespace Orders.Application.Sagas
                         context.Saga.InventoryStatus = "Pending";
                         context.Saga.RetryCount = 0;
                     })
-                    .Send(context => new ReserveInventoryCommand(
-                        context.Message.OrderId,
+                    .Publish(context => new ReserveInventoryCommand(
+                        context.Message.Id,
                         context.Message.CustomerId,
-                        context.Message.Items.Select(item => new OrderItemRequest(
+                        context.Message.Items.Select(item => new InventoryItemRequest(
                             item.ProductId,
-                            item.ProductName,
-                            item.Quantity,
-                            item.UnitPrice
+                            item.Quantity
                         )).ToList()
                     ))
                     .TransitionTo(ReservingInventory)
+            );
+
+            // Handle duplicate OrderCreated events in any non-initial state (ignore them)
+            DuringAny(
+                When(OrderCreated)
+                    .Then(context =>
+                    {
+                        // Log that we received a duplicate OrderCreated event and ignore it
+                        Console.WriteLine($"Ignoring duplicate OrderCreated event for Order {context.Message.Id} in state {context.Saga.CurrentState}");
+                    })
+                    // Stay in current state, don't transition
             );
 
             // Inventory Reserved -> Process Payment
@@ -94,7 +105,13 @@ namespace Orders.Application.Sagas
                         context.Saga.InventoryReservationId = context.Message.ReservationId;
                         context.Saga.PaymentStatus = "InventoryReserved";
                     })
-                    .Send(context => new ProcessPaymentCommand(
+                    .Publish(context => new OrderStatusChangedIntegrationEvent(
+                        context.Saga.OrderId,
+                        "InventoryReserved",
+                        "Inventory successfully reserved",
+                        DateTime.UtcNow
+                    ))
+                    .Publish(context => new ProcessPaymentCommand(
                         context.Saga.OrderId,
                         context.Saga.CustomerId,
                         context.Saga.TotalPrice,
@@ -113,7 +130,8 @@ namespace Orders.Application.Sagas
                     .Publish(context => new OrderStatusChangedIntegrationEvent(
                         context.Saga.OrderId,
                         "Cancelled",
-                        "Inventory not available"
+                        $"Inventory reservation failed: {context.Message.Reason}",
+                        DateTime.UtcNow
                     ))
                     .TransitionTo(Cancelled)
                     .Finalize()
@@ -129,7 +147,13 @@ namespace Orders.Application.Sagas
                         context.Saga.PaymentProcessedAt = DateTime.UtcNow;
                         context.Saga.ShippingStatus = "Paid";
                     })
-                    .Send(context => new CreateShipmentCommand(
+                    .Publish(context => new OrderStatusChangedIntegrationEvent(
+                        context.Saga.OrderId,
+                        "Paid",
+                        "Payment successfully processed",
+                        DateTime.UtcNow
+                    ))
+                    .Publish(context => new CreateShipmentCommand(
                         context.Saga.OrderId,
                         context.Saga.CustomerId,
                         new ShippingAddress(
@@ -139,7 +163,7 @@ namespace Orders.Application.Sagas
                             "12345",
                             "USA"
                         ),
-                        new List<OrderItemRequest>()
+                        new List<ShipmentItemRequest>()
                     ))
                     .TransitionTo(CreatingShipment),
 
@@ -150,14 +174,15 @@ namespace Orders.Application.Sagas
                         context.Saga.PaymentStatus = "Failed";
                         context.Saga.LastError = context.Message.Reason;
                     })
-                    .Send(context => new ReleaseInventoryCommand(
+                    .Publish(context => new ReleaseInventoryCommand(
                         context.Saga.OrderId,
                         context.Saga.InventoryReservationId!
                     ))
                     .Publish(context => new OrderStatusChangedIntegrationEvent(
                         context.Saga.OrderId,
                         "Cancelled",
-                        "Payment failed"
+                        $"Payment failed: {context.Message.Reason}",
+                        DateTime.UtcNow
                     ))
                     .TransitionTo(Cancelled)
                     .Finalize()
@@ -174,8 +199,9 @@ namespace Orders.Application.Sagas
                     })
                     .Publish(context => new OrderStatusChangedIntegrationEvent(
                         context.Saga.OrderId,
-                        "CreatingShipment",
-                        "Order shipment created"
+                        "Shipped",
+                        "Shipment created and ready for delivery",
+                        DateTime.UtcNow
                     ))
                     .TransitionTo(Shipped),
 
@@ -186,20 +212,21 @@ namespace Orders.Application.Sagas
                         context.Saga.ShippingStatus = "Failed";
                         context.Saga.LastError = context.Message.Reason;
                     })
-                    .Send(context => new RefundPaymentCommand(
+                    .Publish(context => new RefundPaymentCommand(
                         context.Saga.OrderId,
                         context.Saga.PaymentId!.Value,
                         context.Saga.TotalPrice,
                         "Shipping failed"
                     ))
-                    .Send(context => new ReleaseInventoryCommand(
+                    .Publish(context => new ReleaseInventoryCommand(
                         context.Saga.OrderId,
                         context.Saga.InventoryReservationId!
                     ))
                     .Publish(context => new OrderStatusChangedIntegrationEvent(
                         context.Saga.OrderId,
                         "Cancelled",
-                        "Shipping failed"
+                        $"Shipment failed: {context.Message.Reason}",
+                        DateTime.UtcNow
                     ))
                     .TransitionTo(Cancelled)
                     .Finalize(),
@@ -215,7 +242,8 @@ namespace Orders.Application.Sagas
                     .Publish(context => new OrderStatusChangedIntegrationEvent(
                         context.Saga.OrderId,
                         "Completed",
-                        "Order delivered successfully"
+                        "Order delivered successfully",
+                        DateTime.UtcNow
                     ))
                     .TransitionTo(Completed)
                     .Finalize()
@@ -240,7 +268,8 @@ namespace Orders.Application.Sagas
                     .Publish(context => new OrderStatusChangedIntegrationEvent(
                         context.Saga.OrderId,
                         "Completed",
-                        "Order delivered successfully"
+                        "Order delivered successfully",
+                        DateTime.UtcNow
                     ))
                     .TransitionTo(Completed)
                     .Finalize()
@@ -257,7 +286,8 @@ namespace Orders.Application.Sagas
                     .Publish(context => new OrderStatusChangedIntegrationEvent(
                         context.Saga.OrderId,
                         "Completed",
-                        "Order delivered successfully"
+                        "Order delivered successfully",
+                        DateTime.UtcNow
                     ))
                     .TransitionTo(Completed)
                     .Finalize()

@@ -1,8 +1,11 @@
+using Shared.Domain.Aggregates;
+using ShoppingCart.Api.Events;
+using System.Text.Json.Serialization;
+
 namespace ShoppingCart.Api.Entities;
 
-public class Cart
+public class Cart : AggregateRoot<Guid>
 {
-    public Guid Id { get; private set; }
     public Guid? UserId { get; private set; } // Null for anonymous sessions
     public string? SessionId { get; private set; } // For anonymous users
     private List<CartItem> _items = new();
@@ -10,9 +13,16 @@ public class Cart
     public DateTime CreatedAt { get; private set; }
     public DateTime UpdatedAt { get; private set; }
 
+    // Helper method to check if cart is empty
+    public bool IsEmpty() => !_items.Any();
+
+    // Calculate total price of the cart
+    public decimal GetTotal() => _items.Sum(x => x.Price * x.Quantity);
+
+    [JsonConstructor]
     private Cart() { } // EF Core
 
-    public Cart(Guid? userId, string? sessionId)
+    protected Cart(Guid? userId, string? sessionId)
     {
         Id = Guid.NewGuid();
         UserId = userId;
@@ -21,19 +31,29 @@ public class Cart
         UpdatedAt = DateTime.UtcNow;
     }
 
-    public void AddItem(Guid productId, string productName, decimal price, int quantity)
+    public static Cart CreateAnonymousCart(string sessionId)
+    {
+        return new Cart(null, sessionId);
+    }
+
+    public static Cart CreateUserCart(Guid userId)
+    {
+        return new Cart(userId, null);
+    }
+
+    public void AddItem(Guid productId, string productName, decimal price, string currency, int quantity)
     {
         var existingItem = _items.FirstOrDefault(x => x.ProductId == productId);
-        
+
         if (existingItem != null)
         {
             existingItem.UpdateQuantity(existingItem.Quantity + quantity);
         }
         else
         {
-            _items.Add(new CartItem(productId, productName, price, quantity));
+            _items.Add(CartItem.Create(productId, productName, price, currency, quantity));
         }
-        
+
         UpdatedAt = DateTime.UtcNow;
     }
 
@@ -57,19 +77,18 @@ public class Cart
         }
     }
 
+    public void MergeWith(Cart otherCart)
+    {
+        foreach (var item in otherCart.Items)
+        {
+            AddItem(item.ProductId, item.ProductName, item.Price, item.Currency, item.Quantity);
+        }
+    }
+
     public void Clear()
     {
         _items.Clear();
         UpdatedAt = DateTime.UtcNow;
     }
 
-    public decimal GetTotal() => _items.Sum(x => x.Price * x.Quantity);
-
-    public void MergeWith(Cart otherCart)
-    {
-        foreach (var item in otherCart.Items)
-        {
-            AddItem(item.ProductId, item.ProductName, item.Price, item.Quantity);
-        }
-    }
 }

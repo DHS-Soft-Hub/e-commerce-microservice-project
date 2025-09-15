@@ -30,25 +30,22 @@ public class ProcessPaymentCommandConsumer : IConsumer<ProcessPaymentCommand>
                 Price = msg.Amount,
                 Currency = msg.Currency,
                 PaymentMethod = Enum.Parse<PaymentMethods>(msg.PaymentMethod, true),
-                Status = PaymentStatus.Completed,
+                Status = PaymentStatus.Pending, // Keep as Pending - require manual approval
                 CreatedAt = DateTime.UtcNow
             };
 
             await _repository.AddPaymentAsync(payment);
 
-            await context.Publish(new PaymentProcessedIntegrationEvent(
-                OrderId: payment.OrderId,
-                PaymentId: payment.Id,
-                Amount: payment.Price,
-                Currency: payment.Currency,
-                PaymentMethod: payment.PaymentMethod.ToString(),
-                Status: payment.Status.ToString(),
-                ProcessedAt: payment.CreatedAt
-            ));
+            _logger.LogInformation("💳 Payment created and waiting for approval - Order: {OrderId}, Payment: {PaymentId}, Amount: {Amount}", 
+                payment.OrderId, payment.Id, payment.Price);
+
+            // Do NOT publish PaymentProcessedIntegrationEvent here
+            // Payment should remain pending until manually approved
+            // The PaymentProcessedIntegrationEvent will be published when payment is manually approved via API
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Payment processing failed for Order {OrderId}", msg.OrderId);
+            _logger.LogError(ex, "Payment creation failed for Order {OrderId}", msg.OrderId);
             await context.Publish(new PaymentFailedIntegrationEvent(
                 OrderId: msg.OrderId,
                 PaymentId: null,

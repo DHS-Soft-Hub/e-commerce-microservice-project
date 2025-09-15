@@ -35,6 +35,9 @@ namespace Payment.Api.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("OrderId")
                         .HasColumnType("uuid");
 

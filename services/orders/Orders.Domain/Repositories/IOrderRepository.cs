@@ -6,9 +6,12 @@ namespace Orders.Domain.Repositories
 {
     public interface IOrderRepository
     {
-        Task AddAsync(Order order);
-        Task UpdateAsync(Order order);
-        Task<Order?> GetByIdAsync(ValueObjects.OrderId id);
-        Task<List<Order>> GetAllAsync();
+        Task AddAsync(Order order, CancellationToken cancellationToken = default);
+        Task UpdateAsync(Order order, CancellationToken cancellationToken = default);
+        Task<Order?> GetByIdAsync(ValueObjects.OrderId id, CancellationToken cancellationToken = default);
+        Task<int> GetCountAsync(CancellationToken cancellationToken = default);
+        Task<List<Order>> GetAllAsync(CancellationToken cancellationToken = default);
+        Task<int> GetCountByCustomerIdAsync(Guid customerId, CancellationToken cancellationToken = default);
+        Task<List<Order>> GetByCustomerIdAsync(Guid customerId, int skip, int take, CancellationToken cancellationToken = default);
     }
 }

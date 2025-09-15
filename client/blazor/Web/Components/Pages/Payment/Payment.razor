@@ -1,29 +1,58 @@
-@page "/payment"
-@using Web.DTOs
-@using Web.Services
-@inject CartService CartService
-@inject PaymentService PaymentService
+@page "/payment/{orderId}"
+@using Web.Services.Orders.DTOs
+@using Web.Services.Orders
+@using Web.Services.Payment.DTOs
+@using Web.Services.Payment
+@using Microsoft.AspNetCore.Components.Authorization
 @inject OrderService OrderService
+@inject PaymentService PaymentService
 @inject NavigationManager Navigation
 @inject IJSRuntime JSRuntime
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @rendermode InteractiveServer
 @attribute [AllowAnonymous]
 
-<div class="dashboard-container">
-    <aside class="sidebar">
-        <NavMenu />
-    </aside>
-    <main class="main-content">
-        <header class="topbar">
-            <div class="brand">
-                <span class="dot"></span>
-                <span>Payment</span>
-            </div>
-            <div class="topbar-actions">
-                <input class="search" placeholder="Search…" />
-                <div class="avatar" title="Account"></div>
-            </div>
-        </header>
+<style>
+    .progress-bar {
+        width: 100%;
+        height: 8px;
+        background-color: #f0f0f0;
+        border-radius: 4px;
+        margin-top: 10px;
+        overflow: hidden;
+    }
+    
+    .progress-fill {
+        height: 100%;
+        background-color: #007bff;
+        border-radius: 4px;
+        transition: width 0.3s ease;
+    }
+    
+    .loading {
+        text-align: center;
+        padding: 40px;
+    }
+    
+    .loading p {
+        margin-bottom: 10px;
+    }
+    
+    .loading small {
+        color: #666;
+    }
+</style>
+
+<header class="topbar">
+    <div class="brand">
+        <span class="dot"></span>
+        <span>Payment</span>
+    </div>
+    <div class="topbar-actions">
+        <input class="search" placeholder="Search…" />
+        <div class="avatar" title="Account"></div>
+    </div>
+</header>
         <div class="content-wrapper">
             <section class="greeting">
                 <h1>Checkout</h1>
@@ -33,7 +62,14 @@
             @if (isLoading)
             {
                 <div class="loading">
-                    <p>Loading payment details...</p>
+                    <p>@loadingMessage</p>
+                    @if (retryAttempt > 0)
+                    {
+                        <p><small>Waiting for saga to process order... (Attempt @retryAttempt/@MaxRetryAttempts)</small></p>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: @((retryAttempt * 100) / MaxRetryAttempts)%"></div>
+                        </div>
+                    }
                 </div>
             }
             else
@@ -41,104 +77,227 @@
                 <div class="payment-container">
                     <div class="payment-form">
                         <div class="form-card">
-                            <h3>Order Summary</h3>
+                            <h3>Payment Details</h3>
+                            
+                            @if (payment != null)
+                            {
+                                <div class="payment-status">
+                                    <p><strong>Payment Status:</strong> 
+                                        <span class="status-@payment.Status.ToLower()">@payment.Status</span>
+                                    </p>
+                                    <p><strong>Payment ID:</strong> @payment.Id</p>
+                                    @if (!string.IsNullOrEmpty(payment.TransactionId))
+                                    {
+                                        <p><strong>Transaction ID:</strong> @payment.TransactionId</p>
+                                    }
+                                </div>
+                            }
                             
                             <div class="form-group">
                                 <label for="price">Total Amount</label>
                                 <div class="price-display">
-                                    <span class="amount">@cart.TotalPrice.ToString("C")</span>
-                                    <span class="currency">@cart.Currency</span>
+                                    <span class="amount">@order.TotalAmount.ToString("C")</span>
+                                    <span class="currency">@order.Currency</span>
                                 </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="currency">Currency</label>
-                                <select @bind="selectedCurrency" class="form-control" id="currency">
-                                    <option value="USD">USD - US Dollar</option>
-                                    <option value="EUR">EUR - Euro</option>
-                                    <option value="GBP">GBP - British Pound</option>
-                                </select>
                             </div>
 
                             <div class="form-group">
                                 <label for="paymentMethod">Payment Method</label>
                                 <select @bind="selectedPaymentMethod" class="form-control" id="paymentMethod">
                                     <option value="">Select payment method</option>
-                                    <option value="Credit Card">Credit Card</option>
-                                    <option value="Debit Card">Debit Card</option>
+                                    <option value="CreditCard">Credit Card</option>
+                                    <option value="DebitCard">Debit Card</option>
                                     <option value="PayPal">PayPal</option>
-                                    <option value="Bank Transfer">Bank Transfer</option>
+                                    <option value="BankTransfer">Bank Transfer</option>
                                 </select>
                             </div>
 
-                            <button class="btn btn-success pay-btn" 
-                                    @onclick="ProcessPayment"
-                                    disabled="@(isProcessing || string.IsNullOrEmpty(selectedPaymentMethod))">
-                                @if (isProcessing)
-                                {
-                                    <span>Creating Order...</span>
-                                }
-                                else
-                                {
-                                    <span>Place Order @cart.TotalPrice.ToString("C")</span>
-                                }
-                            </button>
+                            @if (payment?.Status == "Pending")
+                            {
+                                <button class="btn btn-success pay-btn" 
+                                        @onclick="ProcessPayment"
+                                        disabled="@(isProcessing || string.IsNullOrEmpty(selectedPaymentMethod))">
+                                    @if (isProcessing)
+                                    {
+                                        <span>Approving Payment...</span>
+                                    }
+                                    else
+                                    {
+                                        <span>Approve Payment @order.TotalAmount.ToString("C")</span>
+                                    }
+                                </button>
+                            }
+                            else if (payment?.Status == "Completed")
+                            {
+                                <div class="payment-completed">
+                                    <p class="success-message">✅ Payment has been completed!</p>
+                                    <button class="btn btn-primary" @onclick="@(() => Navigation.NavigateTo($"/orders/{OrderId}"))">
+                                        View Order Details
+                                    </button>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="payment-error">
+                                    <p class="error-message">⚠️ Payment status: @(payment?.Status ?? "Unknown")</p>
+                                    <p>Please contact support if you need assistance.</p>
+                                </div>
+                            }
                         </div>
                     </div>
 
                     <div class="order-summary">
                         <div class="summary-card">
-                            <h3>Order Summary</h3>
-                            @foreach (var item in cart.Items)
+                            <h3>Order Details</h3>
+                            <div class="order-info">
+                                <p><strong>Order ID:</strong> @order.Id</p>
+                                <p><strong>Status:</strong> @order.Status</p>
+                                <p><strong>Created:</strong> @order.CreatedAt.ToString("MMM dd, yyyy")</p>
+                            </div>
+                            
+                            <h4>Items</h4>
+                            @foreach (var item in order.Items)
                             {
                                 <div class="summary-item">
                                     <div class="item-details">
                                         <span class="item-name">@item.ProductName</span>
                                         <span class="item-qty">Qty: @item.Quantity</span>
                                     </div>
-                                    <span class="item-price">@((item.Price * item.Quantity).ToString("C"))</span>
+                                    <span class="item-price">@((item.UnitPrice * item.Quantity).ToString("C"))</span>
                                 </div>
                             }
                             <div class="summary-total">
-                                <span>Total: @cart.TotalPrice.ToString("C") @cart.Currency</span>
+                                <span>Total: @order.TotalAmount.ToString("C") @order.Currency</span>
                             </div>
                         </div>
                     </div>
                 </div>
             }
         </div>
-    </main>
-</div>
 
 @code {
-    private CartDto cart = new(new List<CartItemDto>(), 0, "USD");
-    private string selectedCurrency = "USD";
+    [Parameter] public string OrderId { get; set; } = string.Empty;
+    
+    private OrderDto order = new();
+    private PaymentDto? payment = null;
     private string selectedPaymentMethod = "";
     private bool isLoading = true;
     private bool isProcessing = false;
+    private string userId = string.Empty;
+    private int retryAttempt = 0;
+    private const int MaxRetryAttempts = 10;
+    private string loadingMessage = "Loading payment details...";
+    private bool hasRendered = false;
+    private string? pendingAlertMessage = null;
+    private string? pendingRedirectUrl = null;
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadCart();
+        // Get user info from authentication state
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        if (authState.User.Identity?.IsAuthenticated == true)
+        {
+            userId = authState.User.FindFirst("sub")?.Value ?? string.Empty;
+        }
+        
+        await LoadOrderAndPayment();
     }
 
-    private async Task LoadCart()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            hasRendered = true;
+            
+            // Process any pending alerts or redirects
+            if (!string.IsNullOrEmpty(pendingAlertMessage))
+            {
+                await JSRuntime.InvokeVoidAsync("alert", pendingAlertMessage);
+                pendingAlertMessage = null;
+            }
+            
+            if (!string.IsNullOrEmpty(pendingRedirectUrl))
+            {
+                Navigation.NavigateTo(pendingRedirectUrl);
+                pendingRedirectUrl = null;
+            }
+        }
+    }
+
+    private async Task ShowAlertAsync(string message)
+    {
+        if (hasRendered)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", message);
+        }
+        else
+        {
+            pendingAlertMessage = message;
+        }
+    }
+
+    private void NavigateToUrl(string url)
+    {
+        if (hasRendered)
+        {
+            Navigation.NavigateTo(url);
+        }
+        else
+        {
+            pendingRedirectUrl = url;
+        }
+    }
+
+    private async Task LoadOrderAndPayment()
     {
         isLoading = true;
+        retryAttempt = 0;
+        loadingMessage = "Loading order details...";
+        
         try
         {
-            cart = await CartService.GetCartAsync();
-            if (cart.Items.Count == 0)
+            if (string.IsNullOrEmpty(OrderId))
             {
                 Navigation.NavigateTo("/cart");
                 return;
             }
-            // Ensure selectedCurrency is never null
-            selectedCurrency = !string.IsNullOrEmpty(cart.Currency) ? cart.Currency : "USD";
+
+            // Load order details first
+            order = await OrderService.GetOrderAsync(OrderId) ?? new OrderDto();
+            if (string.IsNullOrEmpty(order.Id))
+            {
+                await ShowAlertAsync("Order not found");
+                NavigateToUrl("/cart");
+                return;
+            }
+
+            // Wait for payment to be created by saga with retry logic
+            payment = await WaitForPaymentWithRetry(OrderId);
+            
+            if (payment != null)
+            {
+                // If payment already completed, redirect to order details
+                if (payment.Status == "Completed")
+                {
+                    await ShowAlertAsync("Payment has already been completed for this order.");
+                    NavigateToUrl($"/orders/{OrderId}");
+                    return;
+                }
+                
+                // Pre-select the payment method if it exists
+                selectedPaymentMethod = payment.PaymentMethod;
+            }
+            else
+            {
+                await ShowAlertAsync("Payment could not be found for this order after waiting. The saga may still be processing. Please try again in a moment or contact support.");
+                NavigateToUrl("/cart");
+                return;
+            }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error loading cart: {ex.Message}");
+            Console.WriteLine($"Error loading order and payment: {ex.Message}");
+            await JSRuntime.InvokeVoidAsync("alert", $"Error loading payment details: {ex.Message}");
             Navigation.NavigateTo("/cart");
         }
         finally
@@ -147,24 +306,85 @@
         }
     }
 
+    private async Task<PaymentDto?> WaitForPaymentWithRetry(string orderId)
+    {
+        for (retryAttempt = 1; retryAttempt <= MaxRetryAttempts; retryAttempt++)
+        {
+            loadingMessage = $"Looking for payment... (Attempt {retryAttempt}/{MaxRetryAttempts})";
+            StateHasChanged(); // Update UI to show progress
+            
+            try
+            {
+                var payment = await PaymentService.GetPaymentByOrderIdAsync(orderId);
+                if (payment != null)
+                {
+                    loadingMessage = "Payment found!";
+                    return payment;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error checking for payment (attempt {retryAttempt}): {ex.Message}");
+            }
+
+            if (retryAttempt < MaxRetryAttempts)
+            {
+                // Exponential backoff: 1s, 2s, 4s, 8s, etc. (max 30s)
+                var delaySeconds = Math.Min(Math.Pow(2, retryAttempt - 1), 30);
+                loadingMessage = $"Waiting {delaySeconds}s before retry...";
+                StateHasChanged();
+                
+                await Task.Delay(TimeSpan.FromSeconds(delaySeconds));
+            }
+        }
+
+        return null; // Payment not found after all retries
+    }
+
     private async Task ProcessPayment()
     {
         isProcessing = true;
         try
         {
-            // Only create order - let the saga handle the rest
-            var customerId = Guid.NewGuid(); 
-            var order = await OrderService.CreateOrderAsync(cart.Items, customerId);
+            if (payment == null)
+            {
+                await ShowAlertAsync("No payment found for this order");
+                return;
+            }
 
-            // Clear cart after successful order creation
-            await CartService.ClearCartAsync();
+            if (!Enum.TryParse<PaymentMethod>(selectedPaymentMethod, out var paymentMethod))
+            {
+                await ShowAlertAsync("Invalid payment method selected");
+                return;
+            }
 
-            // Redirect to order tracking - saga will handle inventory, payment, and shipping
-            Navigation.NavigateTo($"/orders/{order.Id}/tracking");
+            // Update the existing payment to Completed status
+            var updateInput = new UpdatePaymentInput
+            {
+                Id = payment.Id,
+                OrderId = payment.OrderId,
+                TransactionId = payment.TransactionId, // Keep the existing transaction ID
+                PaymentMethod = selectedPaymentMethod,
+                Amount = order.TotalAmount,
+                Currency = order.Currency,
+                Status = "Completed" // This will trigger the PaymentProcessedIntegrationEvent
+            };
+
+            var updatedPayment = await PaymentService.UpdatePaymentAsync(updateInput);
+
+            if (updatedPayment != null)
+            {
+                await ShowAlertAsync("Payment approved successfully! Your order will now be processed.");
+                Navigation.NavigateTo($"/orders/{OrderId}");
+            }
+            else
+            {
+                await ShowAlertAsync("Payment approval failed. Please try again.");
+            }
         }
         catch (Exception ex)
         {
-            await JSRuntime.InvokeVoidAsync("alert", $"Order creation failed: {ex.Message}");
+            await ShowAlertAsync($"Payment processing failed: {ex.Message}");
         }
         finally
         {

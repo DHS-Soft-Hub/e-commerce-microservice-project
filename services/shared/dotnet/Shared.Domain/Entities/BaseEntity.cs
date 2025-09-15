@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using Shared.Domain.Events;
 using Shared.Domain.Interfaces;
 
@@ -9,6 +10,7 @@ public abstract class BaseEntity<TId> : IEquatable<BaseEntity<TId>>, IHasDomainE
     where TId : notnull
 {
     // For EF Core
+    [JsonConstructor]
     protected BaseEntity() { }
 
     protected BaseEntity(TId id) => Id = id;

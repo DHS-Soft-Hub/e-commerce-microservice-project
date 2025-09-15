@@ -6,7 +6,7 @@ public record CreateShipmentCommand(
     Guid OrderId,
     Guid CustomerId,
     ShippingAddress Address,
-    List<OrderItemRequest> Items) : BaseIntegrationEvent;
+    List<ShipmentItemRequest> Items) : BaseIntegrationEvent;
 
 public record ShippingAddress(
     string Street,
@@ -14,3 +14,7 @@ public record ShippingAddress(
     string State,
     string ZipCode,
     string Country);
+
+public record ShipmentItemRequest(
+    Guid ProductId,
+    int Quantity);

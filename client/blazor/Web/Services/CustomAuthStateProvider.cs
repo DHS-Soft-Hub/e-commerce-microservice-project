@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Blazored.LocalStorage;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text.Json;
-using Web.DTOs;
+using Web.Services.Auth.DTOs;
 
 namespace Web.Services;
 public class CustomAuthStateProvider : AuthenticationStateProvider

@@ -1,33 +1,65 @@
 using Orders.Domain.ValueObjects;
 using Shared.Domain.Entities;
 using Shared.Domain.Common;
+using Shared.Domain.ValueObjects;
 
 namespace Orders.Domain.Entities
 {
     public sealed class OrderItem : BaseEntity<OrderItemId>
     {
-        public OrderId OrderId { get; private set; }
         public ProductId ProductId { get; private set; }
         public string ProductName { get; private set; } = string.Empty;
         public int Quantity { get; private set; }
-        public decimal UnitPrice { get; private set; }
-        public string Currency { get; private set; } = string.Empty;
+        public Money UnitPrice { get; private set; } = null!;
 
-        public OrderItem(
-            OrderItemId id,
-            OrderId orderId,
+        private OrderItem(
             ProductId productId,
             string productName,
             int quantity,
-            decimal unitPrice,
-            string currency) : base(id)
+            Money unitPrice) 
+            : base(new OrderItemId())
         {
-            OrderId = orderId;
             ProductId = productId;
             ProductName = productName;
             Quantity = quantity;
             UnitPrice = unitPrice;
-            Currency = currency;
+        }
+
+        // parameterless constructor for EF Core
+        private OrderItem() : base(new OrderItemId())
+        {
+            ProductId = new ProductId();
+            ProductName = string.Empty;
+            Quantity = 0;
+            UnitPrice = Money.Zero("EUR");
+        }
+
+        /// <summary>
+        /// Factory method to create a new OrderItem instance.
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <param name="productName"></param>
+        /// <param name="quantity"></param>
+        /// <param name="unitPrice"></param>
+        /// <returns></returns>
+        public static Result<OrderItem> Create(
+            ProductId productId,
+            string productName,
+            int quantity,
+            Money unitPrice)
+        {
+            if (quantity <= 0)
+            {
+                return Result<OrderItem>.Failure("Quantity must be greater than zero.");
+            }
+
+            if (unitPrice.Amount < 0)
+            {
+                return Result<OrderItem>.Failure("Unit price cannot be negative.");
+            }
+
+            var orderItem = new OrderItem(productId, productName, quantity, unitPrice);
+            return Result<OrderItem>.Success(orderItem);
         }
 
         /// <summary>
@@ -35,20 +67,20 @@ namespace Orders.Domain.Entities
         /// Validates that quantity is greater than zero and unit price is non-negative.
         /// </summary>
         /// <returns></returns>
-        public Result<decimal> GetTotal()
+        public Result<Money> GetTotal()
         {
             if (Quantity <= 0)
             {
-                return Result<decimal>.Failure("Quantity must be greater than zero.");
+                return Result<Money>.Failure("Quantity must be greater than zero.");
             }
 
-            if (UnitPrice < 0)
+            if (UnitPrice.Amount < 0)
             {
-                return Result<decimal>.Failure("Unit price cannot be negative.");
+                return Result<Money>.Failure("Unit price cannot be negative.");
             }
 
-            decimal total = Quantity * UnitPrice;
-            return Result<decimal>.Success(total);
+            Money total = UnitPrice.Multiply(Quantity);
+            return Result<Money>.Success(total);
         }
 
         /// <summary>
