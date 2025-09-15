@@ -44,7 +44,21 @@
                 <div class="payment-container">
                     <div class="payment-form">
                         <div class="form-card">
-                            <h3>Order Summary</h3>
+                            <h3>Payment Details</h3>
+                            
+                            @if (payment != null)
+                            {
+                                <div class="payment-status">
+                                    <p><strong>Payment Status:</strong> 
+                                        <span class="status-@payment.Status.ToLower()">@payment.Status</span>
+                                    </p>
+                                    <p><strong>Payment ID:</strong> @payment.Id</p>
+                                    @if (!string.IsNullOrEmpty(payment.TransactionId))
+                                    {
+                                        <p><strong>Transaction ID:</strong> @payment.TransactionId</p>
+                                    }
+                                </div>
+                            }
                             
                             <div class="form-group">
                                 <label for="price">Total Amount</label>
@@ -65,18 +79,37 @@
                                 </select>
                             </div>
 
-                            <button class="btn btn-success pay-btn" 
-                                    @onclick="ProcessPayment"
-                                    disabled="@(isProcessing || string.IsNullOrEmpty(selectedPaymentMethod))">
-                                @if (isProcessing)
-                                {
-                                    <span>Processing Payment...</span>
-                                }
-                                else
-                                {
-                                    <span>Pay @order.TotalAmount.ToString("C")</span>
-                                }
-                            </button>
+                            @if (payment?.Status == "Pending")
+                            {
+                                <button class="btn btn-success pay-btn" 
+                                        @onclick="ProcessPayment"
+                                        disabled="@(isProcessing || string.IsNullOrEmpty(selectedPaymentMethod))">
+                                    @if (isProcessing)
+                                    {
+                                        <span>Approving Payment...</span>
+                                    }
+                                    else
+                                    {
+                                        <span>Approve Payment @order.TotalAmount.ToString("C")</span>
+                                    }
+                                </button>
+                            }
+                            else if (payment?.Status == "Completed")
+                            {
+                                <div class="payment-completed">
+                                    <p class="success-message">✅ Payment has been completed!</p>
+                                    <button class="btn btn-primary" @onclick="@(() => Navigation.NavigateTo($"/orders/{OrderId}"))">
+                                        View Order Details
+                                    </button>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="payment-error">
+                                    <p class="error-message">⚠️ Payment status: @(payment?.Status ?? "Unknown")</p>
+                                    <p>Please contact support if you need assistance.</p>
+                                </div>
+                            }
                         </div>
                     </div>
 
@@ -115,6 +148,7 @@
     [Parameter] public string OrderId { get; set; } = string.Empty;
     
     private OrderDto order = new();
+    private PaymentDto? payment = null;
     private string selectedPaymentMethod = "";
     private bool isLoading = true;
     private bool isProcessing = false;
@@ -129,10 +163,10 @@
             userId = authState.User.FindFirst("sub")?.Value ?? string.Empty;
         }
         
-        await LoadOrder();
+        await LoadOrderAndPayment();
     }
 
-    private async Task LoadOrder()
+    private async Task LoadOrderAndPayment()
     {
         isLoading = true;
         try
@@ -143,6 +177,7 @@
                 return;
             }
 
+            // Load order details
             order = await OrderService.GetOrderAsync(OrderId) ?? new OrderDto();
             if (string.IsNullOrEmpty(order.Id))
             {
@@ -150,10 +185,33 @@
                 Navigation.NavigateTo("/cart");
                 return;
             }
+
+            // Load existing payment for this order
+            payment = await PaymentService.GetPaymentByOrderIdAsync(OrderId);
+            
+            if (payment != null)
+            {
+                // If payment already completed, redirect to order details
+                if (payment.Status == "Completed")
+                {
+                    await JSRuntime.InvokeVoidAsync("alert", "Payment has already been completed for this order.");
+                    Navigation.NavigateTo($"/orders/{OrderId}");
+                    return;
+                }
+                
+                // Pre-select the payment method if it exists
+                selectedPaymentMethod = payment.PaymentMethod;
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("alert", "No payment found for this order. Please contact support.");
+                Navigation.NavigateTo("/cart");
+                return;
+            }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error loading order: {ex.Message}");
+            Console.WriteLine($"Error loading order and payment: {ex.Message}");
             Navigation.NavigateTo("/cart");
         }
         finally
@@ -167,27 +225,40 @@
         isProcessing = true;
         try
         {
+            if (payment == null)
+            {
+                await JSRuntime.InvokeVoidAsync("alert", "No payment found for this order");
+                return;
+            }
+
             if (!Enum.TryParse<PaymentMethod>(selectedPaymentMethod, out var paymentMethod))
             {
                 await JSRuntime.InvokeVoidAsync("alert", "Invalid payment method selected");
                 return;
             }
 
-            var payment = await PaymentService.ProcessPaymentAsync(
-                OrderId, 
-                paymentMethod, 
-                order.TotalAmount, 
-                order.Currency
-            );
-
-            if (payment != null)
+            // Update the existing payment to Completed status
+            var updateInput = new UpdatePaymentInput
             {
-                await JSRuntime.InvokeVoidAsync("alert", "Payment processed successfully!");
+                Id = payment.Id,
+                OrderId = payment.OrderId,
+                TransactionId = payment.TransactionId, // Keep the existing transaction ID
+                PaymentMethod = selectedPaymentMethod,
+                Amount = order.TotalAmount,
+                Currency = order.Currency,
+                Status = "Completed" // This will trigger the PaymentProcessedIntegrationEvent
+            };
+
+            var updatedPayment = await PaymentService.UpdatePaymentAsync(updateInput);
+
+            if (updatedPayment != null)
+            {
+                await JSRuntime.InvokeVoidAsync("alert", "Payment approved successfully! Your order will now be processed.");
                 Navigation.NavigateTo($"/orders/{OrderId}");
             }
             else
             {
-                await JSRuntime.InvokeVoidAsync("alert", "Payment processing failed. Please try again.");
+                await JSRuntime.InvokeVoidAsync("alert", "Payment approval failed. Please try again.");
             }
         }
         catch (Exception ex)
