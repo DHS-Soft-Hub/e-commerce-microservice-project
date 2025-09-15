@@ -38,7 +38,7 @@ namespace Web.Services.Auth
                         await _localStorage.SetItemAsync("authToken", new
                         {
                             AccessToken = tokenResponse.AccessToken,
-                            AccessTokenExpiry = tokenResponse.AccessTokenExpiry
+                            ExpiresAtUtc = tokenResponse.ExpiresAtUtc
                         });
                         
                         _authStateProvider.NotifyUserAuthentication(tokenResponse);
@@ -111,7 +111,7 @@ namespace Web.Services.Auth
                     return null;
 
                 // Check if token is expired (with 5 minute buffer)
-                if (tokenInfo.AccessTokenExpiry <= DateTime.UtcNow.AddMinutes(5))
+                if (tokenInfo.ExpiresAtUtc <= DateTime.UtcNow.AddMinutes(5))
                 {
                     // Try to refresh the token
                     var refreshed = await RefreshTokenAsync();
@@ -162,7 +162,7 @@ namespace Web.Services.Auth
                         await _localStorage.SetItemAsync("authToken", new
                         {
                             AccessToken = newTokenResponse.AccessToken,
-                            AccessTokenExpiry = newTokenResponse.AccessTokenExpiry
+                            ExpiresAtUtc = newTokenResponse.ExpiresAtUtc
                         });
                         
                         _authStateProvider.NotifyUserAuthentication(newTokenResponse);
@@ -181,7 +181,7 @@ namespace Web.Services.Auth
         private class TokenInfo
         {
             public string AccessToken { get; set; } = string.Empty;
-            public DateTime AccessTokenExpiry { get; set; }
+            public DateTime ExpiresAtUtc { get; set; }
         }
     }
 }

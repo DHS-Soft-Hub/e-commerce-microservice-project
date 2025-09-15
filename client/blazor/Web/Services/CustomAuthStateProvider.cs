@@ -38,9 +38,9 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
                 return;
             }
 
-            Console.WriteLine($"Token found - AccessToken: {!string.IsNullOrEmpty(tokenData.AccessToken)}, Expiry: {tokenData.AccessTokenExpiry}");
+            Console.WriteLine($"Token found - AccessToken: {!string.IsNullOrEmpty(tokenData.AccessToken)}, Expiry: {tokenData.ExpiresAtUtc}");
 
-            if (string.IsNullOrEmpty(tokenData.AccessToken) || tokenData.AccessTokenExpiry < DateTime.UtcNow)
+            if (string.IsNullOrEmpty(tokenData.AccessToken) || tokenData.ExpiresAtUtc < DateTime.UtcNow)
             {
                 Console.WriteLine("Token is empty or expired");
                 _currentUser = new ClaimsPrincipal(new ClaimsIdentity());
@@ -98,5 +98,5 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
 public class TokenInfo
 {
     public string AccessToken { get; set; } = string.Empty;
-    public DateTime AccessTokenExpiry { get; set; }
+    public DateTime ExpiresAtUtc { get; set; }
 }
