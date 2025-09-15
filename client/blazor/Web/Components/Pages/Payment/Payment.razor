@@ -12,6 +12,37 @@
 @rendermode InteractiveServer
 @attribute [AllowAnonymous]
 
+<style>
+    .progress-bar {
+        width: 100%;
+        height: 8px;
+        background-color: #f0f0f0;
+        border-radius: 4px;
+        margin-top: 10px;
+        overflow: hidden;
+    }
+    
+    .progress-fill {
+        height: 100%;
+        background-color: #007bff;
+        border-radius: 4px;
+        transition: width 0.3s ease;
+    }
+    
+    .loading {
+        text-align: center;
+        padding: 40px;
+    }
+    
+    .loading p {
+        margin-bottom: 10px;
+    }
+    
+    .loading small {
+        color: #666;
+    }
+</style>
+
 <div class="dashboard-container">
     <aside class="sidebar">
         <NavMenu />
@@ -36,7 +67,14 @@
             @if (isLoading)
             {
                 <div class="loading">
-                    <p>Loading payment details...</p>
+                    <p>@loadingMessage</p>
+                    @if (retryAttempt > 0)
+                    {
+                        <p><small>Waiting for saga to process order... (Attempt @retryAttempt/@MaxRetryAttempts)</small></p>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: @((retryAttempt * 100) / MaxRetryAttempts)%"></div>
+                        </div>
+                    }
                 </div>
             }
             else
@@ -153,6 +191,9 @@
     private bool isLoading = true;
     private bool isProcessing = false;
     private string userId = string.Empty;
+    private int retryAttempt = 0;
+    private const int MaxRetryAttempts = 10;
+    private string loadingMessage = "Loading payment details...";
 
     protected override async Task OnInitializedAsync()
     {
@@ -169,6 +210,9 @@
     private async Task LoadOrderAndPayment()
     {
         isLoading = true;
+        retryAttempt = 0;
+        loadingMessage = "Loading order details...";
+        
         try
         {
             if (string.IsNullOrEmpty(OrderId))
@@ -177,7 +221,7 @@
                 return;
             }
 
-            // Load order details
+            // Load order details first
             order = await OrderService.GetOrderAsync(OrderId) ?? new OrderDto();
             if (string.IsNullOrEmpty(order.Id))
             {
@@ -186,8 +230,8 @@
                 return;
             }
 
-            // Load existing payment for this order
-            payment = await PaymentService.GetPaymentByOrderIdAsync(OrderId);
+            // Wait for payment to be created by saga with retry logic
+            payment = await WaitForPaymentWithRetry(OrderId);
             
             if (payment != null)
             {
@@ -204,7 +248,7 @@
             }
             else
             {
-                await JSRuntime.InvokeVoidAsync("alert", "No payment found for this order. Please contact support.");
+                await JSRuntime.InvokeVoidAsync("alert", "Payment could not be found for this order after waiting. The saga may still be processing. Please try again in a moment or contact support.");
                 Navigation.NavigateTo("/cart");
                 return;
             }
@@ -212,12 +256,48 @@
         catch (Exception ex)
         {
             Console.WriteLine($"Error loading order and payment: {ex.Message}");
+            await JSRuntime.InvokeVoidAsync("alert", $"Error loading payment details: {ex.Message}");
             Navigation.NavigateTo("/cart");
         }
         finally
         {
             isLoading = false;
         }
+    }
+
+    private async Task<PaymentDto?> WaitForPaymentWithRetry(string orderId)
+    {
+        for (retryAttempt = 1; retryAttempt <= MaxRetryAttempts; retryAttempt++)
+        {
+            loadingMessage = $"Looking for payment... (Attempt {retryAttempt}/{MaxRetryAttempts})";
+            StateHasChanged(); // Update UI to show progress
+            
+            try
+            {
+                var payment = await PaymentService.GetPaymentByOrderIdAsync(orderId);
+                if (payment != null)
+                {
+                    loadingMessage = "Payment found!";
+                    return payment;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error checking for payment (attempt {retryAttempt}): {ex.Message}");
+            }
+
+            if (retryAttempt < MaxRetryAttempts)
+            {
+                // Exponential backoff: 1s, 2s, 4s, 8s, etc. (max 30s)
+                var delaySeconds = Math.Min(Math.Pow(2, retryAttempt - 1), 30);
+                loadingMessage = $"Waiting {delaySeconds}s before retry...";
+                StateHasChanged();
+                
+                await Task.Delay(TimeSpan.FromSeconds(delaySeconds));
+            }
+        }
+
+        return null; // Payment not found after all retries
     }
 
     private async Task ProcessPayment()

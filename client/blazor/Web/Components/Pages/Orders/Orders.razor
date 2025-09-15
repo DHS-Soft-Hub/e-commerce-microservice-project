@@ -144,6 +144,12 @@
         {
             userId = authState.User.FindFirst("sub")?.Value ?? string.Empty;
         }
+        else
+        {
+            //Navigation.NavigateTo("/login");
+            //return;
+            userId = "00000000-0000-0000-0000-000000000001"; // Temporary for testing
+        }
         
         await LoadOrders();
     }
