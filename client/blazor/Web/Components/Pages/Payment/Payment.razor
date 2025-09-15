@@ -187,6 +187,9 @@
     private int retryAttempt = 0;
     private const int MaxRetryAttempts = 10;
     private string loadingMessage = "Loading payment details...";
+    private bool hasRendered = false;
+    private string? pendingAlertMessage = null;
+    private string? pendingRedirectUrl = null;
 
     protected override async Task OnInitializedAsync()
     {
@@ -198,6 +201,51 @@
         }
         
         await LoadOrderAndPayment();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            hasRendered = true;
+            
+            // Process any pending alerts or redirects
+            if (!string.IsNullOrEmpty(pendingAlertMessage))
+            {
+                await JSRuntime.InvokeVoidAsync("alert", pendingAlertMessage);
+                pendingAlertMessage = null;
+            }
+            
+            if (!string.IsNullOrEmpty(pendingRedirectUrl))
+            {
+                Navigation.NavigateTo(pendingRedirectUrl);
+                pendingRedirectUrl = null;
+            }
+        }
+    }
+
+    private async Task ShowAlertAsync(string message)
+    {
+        if (hasRendered)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", message);
+        }
+        else
+        {
+            pendingAlertMessage = message;
+        }
+    }
+
+    private void NavigateToUrl(string url)
+    {
+        if (hasRendered)
+        {
+            Navigation.NavigateTo(url);
+        }
+        else
+        {
+            pendingRedirectUrl = url;
+        }
     }
 
     private async Task LoadOrderAndPayment()
@@ -218,8 +266,8 @@
             order = await OrderService.GetOrderAsync(OrderId) ?? new OrderDto();
             if (string.IsNullOrEmpty(order.Id))
             {
-                await JSRuntime.InvokeVoidAsync("alert", "Order not found");
-                Navigation.NavigateTo("/cart");
+                await ShowAlertAsync("Order not found");
+                NavigateToUrl("/cart");
                 return;
             }
 
@@ -231,8 +279,8 @@
                 // If payment already completed, redirect to order details
                 if (payment.Status == "Completed")
                 {
-                    await JSRuntime.InvokeVoidAsync("alert", "Payment has already been completed for this order.");
-                    Navigation.NavigateTo($"/orders/{OrderId}");
+                    await ShowAlertAsync("Payment has already been completed for this order.");
+                    NavigateToUrl($"/orders/{OrderId}");
                     return;
                 }
                 
@@ -241,8 +289,8 @@
             }
             else
             {
-                await JSRuntime.InvokeVoidAsync("alert", "Payment could not be found for this order after waiting. The saga may still be processing. Please try again in a moment or contact support.");
-                Navigation.NavigateTo("/cart");
+                await ShowAlertAsync("Payment could not be found for this order after waiting. The saga may still be processing. Please try again in a moment or contact support.");
+                NavigateToUrl("/cart");
                 return;
             }
         }
@@ -300,13 +348,13 @@
         {
             if (payment == null)
             {
-                await JSRuntime.InvokeVoidAsync("alert", "No payment found for this order");
+                await ShowAlertAsync("No payment found for this order");
                 return;
             }
 
             if (!Enum.TryParse<PaymentMethod>(selectedPaymentMethod, out var paymentMethod))
             {
-                await JSRuntime.InvokeVoidAsync("alert", "Invalid payment method selected");
+                await ShowAlertAsync("Invalid payment method selected");
                 return;
             }
 
@@ -326,17 +374,17 @@
 
             if (updatedPayment != null)
             {
-                await JSRuntime.InvokeVoidAsync("alert", "Payment approved successfully! Your order will now be processed.");
+                await ShowAlertAsync("Payment approved successfully! Your order will now be processed.");
                 Navigation.NavigateTo($"/orders/{OrderId}");
             }
             else
             {
-                await JSRuntime.InvokeVoidAsync("alert", "Payment approval failed. Please try again.");
+                await ShowAlertAsync("Payment approval failed. Please try again.");
             }
         }
         catch (Exception ex)
         {
-            await JSRuntime.InvokeVoidAsync("alert", $"Payment processing failed: {ex.Message}");
+            await ShowAlertAsync($"Payment processing failed: {ex.Message}");
         }
         finally
         {
