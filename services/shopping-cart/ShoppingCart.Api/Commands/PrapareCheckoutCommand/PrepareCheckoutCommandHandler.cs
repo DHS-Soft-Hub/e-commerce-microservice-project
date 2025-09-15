@@ -59,6 +59,10 @@ public class PrepareCheckoutCommandHandler : IRequestHandler<PrepareCheckoutComm
 
             if (response.Message.Success)
             {
+                // Clear cart after successful order creation
+                cart.Clear();
+                await _cartRepository.SaveAsync(cart);
+
                 return new CheckoutResultResponse
                 (
                     Success: true,
