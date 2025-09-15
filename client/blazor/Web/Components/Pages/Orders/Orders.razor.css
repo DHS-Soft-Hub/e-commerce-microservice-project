@@ -103,61 +103,10 @@
     margin: 0;
 }
 
-.item-controls {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
-}
-
-.quantity-btn {
-    background: rgba(255, 255, 255, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    color: #ffffff;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-weight: bold;
+.item-quantity {
+    color: rgba(255, 255, 255, 0.8);
     font-size: 0.9rem;
-}
-
-.quantity-btn:hover:not(:disabled) {
-    background: rgba(255, 255, 255, 0.3);
-    transform: scale(1.1);
-}
-
-.quantity-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.quantity {
-    min-width: 30px;
-    text-align: center;
-    font-weight: 600;
-    color: #ffffff;
-}
-
-.remove-btn {
-    background: linear-gradient(135deg, #e74c3c, #c0392b);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    color: #ffffff;
-    padding: 0.3rem 0.6rem;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    margin-left: 0.5rem;
-}
-
-.remove-btn:hover:not(:disabled) {
-    background: linear-gradient(135deg, #c0392b, #a93226);
-    transform: translateY(-1px);
+    font-weight: 500;
 }
 
 .item-price {
