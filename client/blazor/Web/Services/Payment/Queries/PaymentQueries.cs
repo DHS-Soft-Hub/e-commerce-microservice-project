@@ -17,6 +17,21 @@ namespace Web.Services.Payment.Queries
                 }
             }";
 
+        public const string GetPaymentByOrderId = @"
+            query GetPaymentByOrderId($orderId: String!) {
+                payment: getPaymentByOrderId(orderId: $orderId) {
+                    id
+                    orderId
+                    transactionId
+                    paymentMethod
+                    amount
+                    currency
+                    status
+                    createdAt
+                    updatedAt
+                }
+            }";
+
         public const string GetPayments = @"
             query GetPayments($pageNumber: Int!, $pageSize: Int!) {
                 payments: getPayments(pageNumber: $pageNumber, pageSize: $pageSize) {

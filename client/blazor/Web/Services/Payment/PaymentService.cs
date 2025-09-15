@@ -31,6 +31,21 @@ namespace Web.Services.Payment
             }
         }
 
+        public async Task<PaymentDto?> GetPaymentByOrderIdAsync(string orderId)
+        {
+            try
+            {
+                var variables = new { orderId };
+                var response = await _graphQLClient.QueryAsync<PaymentQueryResponse>(PaymentQueries.GetPaymentByOrderId, variables);
+                return response?.Payment;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting payment for order {OrderId}", orderId);
+                return null;
+            }
+        }
+
         public async Task<List<PaymentDto>?> GetPaymentsAsync(int pageNumber = 1, int pageSize = 10)
         {
             try

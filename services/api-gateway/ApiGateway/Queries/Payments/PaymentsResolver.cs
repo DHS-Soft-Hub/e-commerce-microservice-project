@@ -17,6 +17,15 @@ public class PaymentsQuery
         await paymentsService.GetPaymentByIdAsync(paymentId);
 
     /// <summary>
+    /// Get a payment by its order ID
+    /// </summary>
+    [GraphQLName("getPaymentByOrderId")]
+    public async Task<PaymentType> GetPaymentByOrderIdAsync(
+        [Service] IPaymentsGrpcService paymentsService,
+        string orderId) =>
+        await paymentsService.GetPaymentByOrderIdAsync(orderId);
+
+    /// <summary>
     /// Get paginated list of payments
     /// </summary>
     [GraphQLName("getPayments")]

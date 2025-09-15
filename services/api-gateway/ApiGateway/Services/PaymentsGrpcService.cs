@@ -8,6 +8,7 @@ public interface IPaymentsGrpcService
 {
     Task<PaymentType> CreatePaymentAsync(CreatePaymentInput input);
     Task<PaymentType> GetPaymentByIdAsync(string paymentId);
+    Task<PaymentType> GetPaymentByOrderIdAsync(string orderId);
     Task<PaymentType> UpdatePaymentAsync(UpdatePaymentInput input);
     Task<string> DeletePaymentAsync(string paymentId);
     Task<List<PaymentType>> GetPaymentsAsync(int pageNumber = 1, int pageSize = 10);
@@ -64,6 +65,21 @@ public class PaymentsGrpcService : IPaymentsGrpcService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error getting payment by id: {PaymentId}", paymentId);
+            throw;
+        }
+    }
+
+    public async Task<PaymentType> GetPaymentByOrderIdAsync(string orderId)
+    {
+        try
+        {
+            var request = new PaymentGetRequest { Id = orderId };
+            var response = await _client.GetPaymentByOrderIdAsync(request);
+            return MapToPaymentType(response.Payment);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting payment by order id: {OrderId}", orderId);
             throw;
         }
     }
