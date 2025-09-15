@@ -38,27 +38,17 @@ namespace Orders.Domain.Aggregates
 
         /// <summary>
         /// Creates a new order instance.
-        /// Raises an OrderCreatedDomainEvent upon successful creation.
+        /// Note: OrderCreatedDomainEvent will be raised when items are added and order is finalized.
         /// </summary>
-        /// <param name="id"></param>
         /// <param name="customerId"></param>
-        /// <param name="items"></param>
         /// <param name="currency"></param>
         /// <returns></returns>
         public static Result<Order> Create(CustomerId customerId, string currency)
         {
             var order = new Order(customerId, new List<OrderItem>(), currency);
 
-            // Raise domain event
-            OrderCreatedDomainEvent orderCreatedEvent = new OrderCreatedDomainEvent(
-                order.Id,
-                customerId,
-                order.Status,
-                order.TotalPrice.Amount,
-                order.TotalPrice.Currency,
-                order.Items
-            );
-            order.AddDomainEvent(orderCreatedEvent);
+            // Don't raise domain event here - wait until items are added
+            // Domain event will be raised in FinalizeOrder() method
 
             return Result<Order>.Success(order);
         }
@@ -197,6 +187,32 @@ namespace Orders.Domain.Aggregates
                 return Result.Failure("Shipment ID cannot be null.");
 
             ShipmentId = shipmentId;
+            return Result.Success();
+        }
+
+        /// <summary>
+        /// Finalizes the order and raises the OrderCreatedDomainEvent.
+        /// Should be called after all items have been added to the order.
+        /// </summary>
+        /// <returns></returns>
+        public Result FinalizeOrder()
+        {
+            if (!Items.Any())
+            {
+                return Result.Failure("Cannot finalize order with no items.");
+            }
+
+            // Raise domain event with final totals
+            var orderCreatedEvent = new OrderCreatedDomainEvent(
+                Id,
+                CustomerId,
+                Status,
+                TotalPrice.Amount,
+                TotalPrice.Currency,
+                Items
+            );
+            AddDomainEvent(orderCreatedEvent);
+
             return Result.Success();
         }
 

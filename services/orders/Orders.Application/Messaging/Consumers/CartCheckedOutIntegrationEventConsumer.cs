@@ -89,6 +89,21 @@ public class CartCheckedOutIntegrationEventConsumer : IConsumer<CartCheckedOutIn
             // Save the order to the repository
             await _orderRepository.AddAsync(order);
 
+            // Finalize the order - this will raise the OrderCreatedDomainEvent
+            var finalizeResult = order.FinalizeOrder();
+            if (finalizeResult.IsFailure)
+            {
+                await context.RespondAsync(new OrderCreatedResponse(
+                    Guid.Empty,
+                    false,
+                    finalizeResult.Errors.ToString()
+                ));
+                return;
+            }
+
+            // Save the order again to persist domain events
+            await _orderRepository.UpdateAsync(order);
+
             // Respond with the generated OrderId
             await context.RespondAsync(new OrderCreatedResponse(
                 order.Id.Value, 
@@ -96,23 +111,7 @@ public class CartCheckedOutIntegrationEventConsumer : IConsumer<CartCheckedOutIn
                 string.Empty
             ));
 
-            // Publish OrderCreatedIntegrationEvent
-            var orderCreatedIntegrationEvent = new OrderCreatedIntegrationEvent(
-                order.Id.Value, 
-                order.CustomerId.Value, 
-                order.TotalPrice.Amount,
-                order.TotalPrice.Currency,
-                order.Items.Select(item => new OrderItemResponseDto(
-                    item.Id.Value, 
-                    item.ProductId.Value, 
-                    item.ProductName,
-                    item.Quantity,
-                    item.UnitPrice.Amount,
-                    item.UnitPrice.Currency
-                )).ToList()
-            );
-
-            await _messagePublisher.PublishAsync(orderCreatedIntegrationEvent, context.CancellationToken);
+            // Note: OrderCreatedIntegrationEvent will be published by OrderCreatedDomainEventHandler
         }
         catch (Exception ex)
         {
