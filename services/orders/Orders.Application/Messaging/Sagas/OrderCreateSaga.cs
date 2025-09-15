@@ -153,12 +153,6 @@ namespace Orders.Application.Sagas
                         "Payment successfully processed",
                         DateTime.UtcNow
                     ))
-                    .Publish(context => new OrderStatusChangedIntegrationEvent(
-                        context.Saga.OrderId,
-                        "CreatingShipment",
-                        "Payment complete, creating shipment",
-                        DateTime.UtcNow
-                    ))
                     .Publish(context => new CreateShipmentCommand(
                         context.Saga.OrderId,
                         context.Saga.CustomerId,
