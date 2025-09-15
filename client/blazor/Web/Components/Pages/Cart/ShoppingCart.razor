@@ -9,6 +9,28 @@
 @rendermode InteractiveServer
 @attribute [AllowAnonymous]
 
+<style>
+    .spinner {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid #ffffff;
+        border-radius: 50%;
+        border-top-color: transparent;
+        animation: spin 1s ease-in-out infinite;
+        margin-right: 8px;
+    }
+    
+    @@keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    
+    .checkout-btn:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+</style>
+
 <div class="dashboard-container">
     <aside class="sidebar">
         <NavMenu />
@@ -90,7 +112,7 @@
                                     disabled="@isProcessing">
                                 @if (isProcessing)
                                 {
-                                    <span>Processing...</span>
+                                    <span><span class="spinner"></span>Creating Order...</span>
                                 }
                                 else
                                 {
@@ -230,6 +252,7 @@
             if (result?.Success == true && !string.IsNullOrEmpty(result.OrderId))
             {
                 Navigation.NavigateTo($"/payment/{result.OrderId}");
+                return;
             }
             else
             {
@@ -240,9 +263,8 @@
         {
             await JSRuntime.InvokeVoidAsync("alert", $"Error during checkout: {ex.Message}");
         }
-        finally
-        {
-            isProcessing = false;
-        }
+        
+        // Only reset processing state if checkout failed
+        isProcessing = false;
     }
 }
