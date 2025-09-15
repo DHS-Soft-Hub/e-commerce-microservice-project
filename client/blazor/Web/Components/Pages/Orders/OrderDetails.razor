@@ -6,29 +6,24 @@
 @rendermode InteractiveServer
 @attribute [AllowAnonymous]
 
-<div class="dashboard-container">
-    <aside class="sidebar">
-        <NavMenu />
-    </aside>
-    <main class="main-content">
-        <header class="topbar">
-            <div class="brand">
-                <span class="dot"></span>
-                <span>Order Details</span>
-            </div>
-            <div class="topbar-actions">
-                <input class="search" placeholder="Search…" />
-                <div class="avatar" title="Account"></div>
-            </div>
-        </header>
-        <div class="content-wrapper">
-            <section class="greeting">
-                <h1>Order Confirmation</h1>
-                <p>Thank you for your purchase!</p>
-            </section>
-            
-            @if (isLoading)
-            {
+<header class="topbar">
+    <div class="brand">
+        <span class="dot"></span>
+        <span>Order Details</span>
+    </div>
+    <div class="topbar-actions">
+        <input class="search" placeholder="Search…" />
+        <div class="avatar" title="Account"></div>
+    </div>
+</header>
+<div class="content-wrapper">
+    <section class="greeting">
+        <h1>Order Confirmation</h1>
+        <p>Thank you for your purchase!</p>
+    </section>
+    
+    @if (isLoading)
+    {
                 <div class="loading">
                     <p>Loading order details...</p>
                 </div>
@@ -113,8 +108,6 @@
                 </div>
             }
         </div>
-    </main>
-</div>
 
 @code {
     [Parameter] public string OrderId { get; set; } = "";

@@ -7,124 +7,117 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @rendermode InteractiveServer
 
-<div class="dashboard-container">
-    <aside class="sidebar">
-        <NavMenu />
-    </aside>
-    <main class="main-content">
-        <header class="topbar">
-            <div class="brand">
-                <span class="dot"></span>
-                <span>My Orders</span>
-            </div>
-            <div class="topbar-actions">
-                <input class="search" placeholder="Search orders…" />
-                <div class="avatar" title="Account"></div>
-            </div>
-        </header>
-        <div class="content-wrapper">
-            <section class="greeting">
-                <h1>My Orders</h1>
-                <p>Track and manage your orders</p>
-            </section>
-            
-            @if (isLoading)
+<header class="topbar">
+    <div class="brand">
+        <span class="dot"></span>
+        <span>My Orders</span>
+    </div>
+    <div class="topbar-actions">
+        <input class="search" placeholder="Search orders…" />
+        <div class="avatar" title="Account"></div>
+    </div>
+</header>
+<div class="content-wrapper">
+    <section class="greeting">
+        <h1>My Orders</h1>
+        <p>Track and manage your orders</p>
+    </section>
+    
+    @if (isLoading)
+    {
+        <div class="loading">
+            <p>Loading orders...</p>
+        </div>
+    }
+    else if (orders?.Orders.Count == 0)
+    {
+        <div class="empty-orders">
+            <h3>No orders found</h3>
+            <p>You haven't placed any orders yet</p>
+            <button class="btn btn-primary" @onclick="GoToProducts">
+                Start Shopping
+            </button>
+        </div>
+    }
+    else
+    {
+        <div class="orders-container">
+            @foreach (var order in orders?.Orders ?? new List<OrderDto>())
             {
-                <div class="loading">
-                    <p>Loading orders...</p>
-                </div>
-            }
-            else if (orders?.Orders.Count == 0)
-            {
-                <div class="empty-orders">
-                    <h3>No orders found</h3>
-                    <p>You haven't placed any orders yet</p>
-                    <button class="btn btn-primary" @onclick="GoToProducts">
-                        Start Shopping
-                    </button>
-                </div>
-            }
-            else
-            {
-                <div class="orders-container">
-                    @foreach (var order in orders?.Orders ?? new List<OrderDto>())
-                    {
-                        <div class="order-card">
-                            <div class="order-header">
-                                <div class="order-info">
-                                    <h4>Order #@order.Id</h4>
-                                    <p class="order-date">@order.CreatedAt.ToString("MMM dd, yyyy")</p>
-                                </div>
-                                <div class="order-status status-@order.Status.ToLower()">
-                                    @order.Status
-                                </div>
-                            </div>
-                            
-                            <div class="order-items">
-                                @foreach (var item in order.Items)
-                                {
-                                    <div class="order-item">
-                                        <div class="item-info">
-                                            <span class="item-name">@item.ProductName</span>
-                                            <div class="item-controls">
-                                                <button class="quantity-btn" 
-                                                        @onclick="() => UpdateItemQuantity(order.Id, item.Id, item.Quantity - 1)" 
-                                                        disabled="@(item.Quantity <= 1 || isUpdating)">-</button>
-                                                <span class="quantity">@item.Quantity</span>
-                                                <button class="quantity-btn" 
-                                                        @onclick="() => UpdateItemQuantity(order.Id, item.Id, item.Quantity + 1)" 
-                                                        disabled="@isUpdating">+</button>
-                                                <button class="btn btn-danger btn-sm remove-btn" 
-                                                        @onclick="() => RemoveOrderItem(order.Id, item.Id)"
-                                                        disabled="@isRemoving">
-                                                    Remove
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <div class="item-price">
-                                            @((item.UnitPrice * item.Quantity).ToString("C"))
-                                        </div>
-                                    </div>
-                                }
-                            </div>
-                            
-                            <div class="order-footer">
-                                <div class="order-total">
-                                    Total: @order.TotalAmount.ToString("C") @order.Currency
-                                </div>
-                                <div class="order-actions">
-                                    <button class="btn btn-secondary" 
-                                            @onclick="() => ViewOrderDetails(order.Id)">
-                                        View Details
-                                    </button>
-                                    @if (order.Status.ToLower() == "pending")
-                                    {
-                                        <button class="btn btn-primary" 
-                                                @onclick="() => GoToPayment(order.Id)">
-                                            Pay Now
-                                        </button>
-                                    }
-                                </div>
-                            </div>
+                <div class="order-card">
+                    <div class="order-header">
+                        <div class="order-info">
+                            <h4>Order #@order.Id</h4>
+                            <p class="order-date">@order.CreatedAt.ToString("MMM dd, yyyy")</p>
                         </div>
-                    }
+                        <div class="order-status status-@order.Status.ToLower()">
+                            @order.Status
+                        </div>
+                    </div>
                     
-                    @if (orders != null && orders.TotalPages > 1)
-                    {
-                        <div class="pagination">
-                            @for (int i = 1; i <= orders.TotalPages; i++)
+                    <div class="order-items">
+                        @foreach (var item in order.Items)
+                        {
+                            <div class="order-item">
+                                <div class="item-info">
+                                    <span class="item-name">@item.ProductName</span>
+                                    <div class="item-controls">
+                                        <button class="quantity-btn" 
+                                                @onclick="() => UpdateItemQuantity(order.Id, item.Id, item.Quantity - 1)" 
+                                                disabled="@(item.Quantity <= 1 || isUpdating)">-</button>
+                                        <span class="quantity">@item.Quantity</span>
+                                        <button class="quantity-btn" 
+                                                @onclick="() => UpdateItemQuantity(order.Id, item.Id, item.Quantity + 1)" 
+                                                disabled="@isUpdating">+</button>
+                                        <button class="btn btn-danger btn-sm remove-btn" 
+                                                @onclick="() => RemoveOrderItem(order.Id, item.Id)"
+                                                disabled="@isRemoving">
+                                            Remove
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="item-price">
+                                    @((item.UnitPrice * item.Quantity).ToString("C"))
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    
+                    <div class="order-footer">
+                        <div class="order-total">
+                            Total: @order.TotalAmount.ToString("C") @order.Currency
+                        </div>
+                        <div class="order-actions">
+                            <button class="btn btn-secondary" 
+                                    @onclick="() => ViewOrderDetails(order.Id)">
+                                View Details
+                            </button>
+                            @if (order.Status.ToLower() == "pending")
                             {
-                                <button class="page-btn @(i == currentPage ? "active" : "")" 
-                                        @onclick="() => LoadPage(i)">
-                                    @i
+                                <button class="btn btn-primary" 
+                                        @onclick="() => GoToPayment(order.Id)">
+                                    Pay Now
                                 </button>
                             }
                         </div>
+                    </div>
+                </div>
+            }
+            
+            @if (orders != null && orders.TotalPages > 1)
+            {
+                <div class="pagination">
+                    @for (int i = 1; i <= orders.TotalPages; i++)
+                    {
+                        <button class="page-btn @(i == currentPage ? "active" : "")" 
+                                @onclick="() => LoadPage(i)">
+                            @i
+                        </button>
                     }
                 </div>
             }
         </div>
-    </main>
+    }
 </div>
 
 @code {

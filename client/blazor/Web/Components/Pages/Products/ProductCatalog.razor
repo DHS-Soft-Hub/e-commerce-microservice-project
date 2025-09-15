@@ -11,24 +11,19 @@
 @rendermode InteractiveServer
 @attribute [AllowAnonymous]
 
-<div class="dashboard-container">
-    <aside class="sidebar">
-        <NavMenu />
-    </aside>
-    <main class="main-content">
-        <header class="topbar">
-            <div class="brand">
-                <span class="dot"></span>
-                <span>Product Catalog</span>
-            </div>
-            <div class="topbar-actions">
-                <input class="search" placeholder="Search products…" />
-                <div class="avatar" title="Account"></div>
-            </div>
-        </header>
-        <div class="content-wrapper">
-            <section class="greeting">
-                <h1>Product Catalog</h1>
+<header class="topbar">
+    <div class="brand">
+        <span class="dot"></span>
+        <span>Product Catalog</span>
+    </div>
+    <div class="topbar-actions">
+        <input class="search" placeholder="Search products…" />
+        <div class="avatar" title="Account"></div>
+    </div>
+</header>
+<div class="content-wrapper">
+    <section class="greeting">
+        <h1>Product Catalog</h1>
                 <p>Discover our amazing products</p>
             </section>
             
@@ -72,8 +67,6 @@
                 </section>
             }
         </div>
-    </main>
-</div>
 
 @code {
     private List<ProductDto> products = new();
