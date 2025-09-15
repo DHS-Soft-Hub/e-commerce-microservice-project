@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.JSInterop;
 using System.Security.Claims;
+using Web.Services;
 
 namespace Web.Services.Shared
 {
@@ -8,11 +9,13 @@ namespace Web.Services.Shared
     {
         private readonly AuthenticationStateProvider _authenticationStateProvider;
         private readonly IJSRuntime _jsRuntime;
+        private readonly CustomAuthStateProvider _customAuthStateProvider;
 
         public UserContextService(AuthenticationStateProvider authenticationStateProvider, IJSRuntime jsRuntime)
         {
             _authenticationStateProvider = authenticationStateProvider;
             _jsRuntime = jsRuntime;
+            _customAuthStateProvider = (CustomAuthStateProvider)authenticationStateProvider;
         }
 
         /// <summary>
@@ -24,6 +27,9 @@ namespace Web.Services.Shared
         {
             try
             {
+                // Ensure authentication state is loaded from storage
+                await EnsureAuthenticationLoadedAsync();
+                
                 var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
                 
                 Console.WriteLine($"UserContextService - IsAuthenticated: {authState.User.Identity?.IsAuthenticated}");
@@ -53,6 +59,25 @@ namespace Web.Services.Shared
         }
 
         /// <summary>
+        /// Ensures that authentication state has been loaded from storage if possible
+        /// </summary>
+        private async Task EnsureAuthenticationLoadedAsync()
+        {
+            try
+            {
+                // Only try to load if we're in interactive mode (not prerendering)
+                if (_jsRuntime is IJSInProcessRuntime)
+                {
+                    await _customAuthStateProvider.LoadUserFromStorageAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error ensuring authentication loaded: {ex.Message}");
+            }
+        }
+
+        /// <summary>
         /// Gets the current user name from the JWT token's name claim.
         /// Returns string.Empty if the user is not authenticated or the claim is not found.
         /// </summary>
@@ -61,6 +86,9 @@ namespace Web.Services.Shared
         {
             try
             {
+                // Ensure authentication state is loaded from storage
+                await EnsureAuthenticationLoadedAsync();
+                
                 var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
                 
                 if (authState.User.Identity?.IsAuthenticated == true)
@@ -92,6 +120,9 @@ namespace Web.Services.Shared
         {
             try
             {
+                // Ensure authentication state is loaded from storage
+                await EnsureAuthenticationLoadedAsync();
+                
                 var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
                 
                 if (authState.User.Identity?.IsAuthenticated == true)
@@ -122,6 +153,9 @@ namespace Web.Services.Shared
         {
             try
             {
+                // Ensure authentication state is loaded from storage
+                await EnsureAuthenticationLoadedAsync();
+                
                 var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
                 return authState.User.Identity?.IsAuthenticated == true;
             }
