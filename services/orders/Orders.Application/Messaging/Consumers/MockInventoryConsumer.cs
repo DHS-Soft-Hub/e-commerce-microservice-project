@@ -20,7 +20,7 @@ public class MockInventoryConsumer :
         await Task.Delay(1000);
         
         // Simulate success 90% of the time
-        var isSuccess = Random.Shared.Next(1, 11) <= 9;
+        var isSuccess = Random.Shared.Next(1, 51) <= 49;
         
         if (isSuccess)
         {

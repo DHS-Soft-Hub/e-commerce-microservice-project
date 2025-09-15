@@ -84,6 +84,28 @@ namespace Payment.Api.Services.Implementations
             );
         }
 
+        public async Task<PaymentResponseDto> GetPaymentByOrderIdAsync(Guid orderId)
+        {
+            var payment = await _repository.GetPaymentByOrderIdAsync(orderId);
+            if (payment == null)
+            {
+                _logger.LogWarning("Payment for Order ID {OrderId} not found.", orderId);
+                throw new KeyNotFoundException($"Payment for Order ID {orderId} not found.");
+            }
+
+            return new PaymentResponseDto(
+                Id: payment.Id.ToString(),
+                OrderId: payment.OrderId.ToString(),
+                TransactionId: payment.TransactionId.ToString(),
+                Status: payment.Status.ToString(),
+                Amount: payment.Price,
+                Currency: payment.Currency,
+                PaymentMethod: payment.PaymentMethod.ToString(),
+                CreatedAt: payment.CreatedAt,
+                UpdatedAt: payment.UpdatedAt
+            );
+        }
+
         public async Task<IEnumerable<PaymentResponseDto>> GetAllPaymentsAsync()
         {
             var payments = await _repository.GetAllPaymentsAsync();
@@ -158,6 +180,8 @@ namespace Payment.Api.Services.Implementations
                 throw new KeyNotFoundException($"Payment with ID {payment.Id} not found.");
             }
 
+            var oldStatus = existingPayment.Status;
+            
             existingPayment.OrderId = payment.OrderId;
             existingPayment.Price = payment.Price;
             existingPayment.Currency = payment.Currency;
@@ -166,6 +190,36 @@ namespace Payment.Api.Services.Implementations
             existingPayment.UpdatedAt = DateTime.UtcNow;
 
             await _repository.UpdatePaymentAsync(existingPayment);
+
+            // If payment status changed to Completed, publish integration event
+            if (oldStatus != PaymentStatus.Completed && existingPayment.Status == PaymentStatus.Completed)
+            {
+                _logger.LogInformation("✅ Payment approved and completed - Order: {OrderId}, Payment: {PaymentId}", 
+                    existingPayment.OrderId, existingPayment.Id);
+
+                await _publishEndpoint.Publish(new PaymentProcessedIntegrationEvent(
+                    OrderId: existingPayment.OrderId,
+                    PaymentId: existingPayment.Id,
+                    Amount: existingPayment.Price,
+                    Currency: existingPayment.Currency,
+                    PaymentMethod: existingPayment.PaymentMethod.ToString(),
+                    Status: existingPayment.Status.ToString(),
+                    ProcessedAt: existingPayment.UpdatedAt ?? DateTime.UtcNow
+                ));
+            }
+            // If payment status changed to Failed, publish failure event
+            else if (oldStatus != PaymentStatus.Failed && existingPayment.Status == PaymentStatus.Failed)
+            {
+                _logger.LogWarning("❌ Payment failed - Order: {OrderId}, Payment: {PaymentId}", 
+                    existingPayment.OrderId, existingPayment.Id);
+
+                await _publishEndpoint.Publish(new PaymentFailedIntegrationEvent(
+                    OrderId: existingPayment.OrderId,
+                    PaymentId: existingPayment.Id,
+                    Reason: "Payment manually marked as failed",
+                    FailedAt: existingPayment.UpdatedAt ?? DateTime.UtcNow
+                ));
+            }
         }
 
         public Task DeletePaymentAsync(Guid id)

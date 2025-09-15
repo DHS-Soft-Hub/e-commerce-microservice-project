@@ -42,6 +42,12 @@ namespace Payment.Api.Data.Repositories
             return payment ?? throw new KeyNotFoundException($"Payment with ID {id} not found.");
         }
 
+        public async Task<Entities.Payment> GetPaymentByOrderIdAsync(Guid orderId)
+        {
+            var payment = await _context.Payments.FirstOrDefaultAsync(p => p.OrderId == orderId);
+            return payment; // Return null if not found, caller will handle it
+        }
+
         public async Task<PaginatedResult<Entities.Payment>> GetPaymentsWithPaginationAsync(PaginationQuery paginationQuery)
         {
             var totalCount = await _context.Payments.CountAsync();

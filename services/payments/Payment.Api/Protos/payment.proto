@@ -87,6 +87,7 @@ message PaymentListCustomerRequest {
 service PaymentService {
     rpc CreatePayment (PaymentCreateRequest) returns (PaymentCreateResponse);
     rpc GetPaymentById (PaymentGetRequest) returns (PaymentGetResponse);
+    rpc GetPaymentByOrderId (PaymentGetRequest) returns (PaymentGetResponse);
     rpc UpdatePayment (PaymentUpdateRequest) returns (PaymentUpdateResponse);
     rpc DeletePayment (PaymentDeleteRequest) returns (PaymentDeleteResponse);
     rpc ListPayments (PaymentListRequest) returns (stream PaymentListResponse);

@@ -44,6 +44,16 @@ public class PaymentGrpcController : Protos.PaymentService.PaymentServiceBase
         };
     }
 
+    public override async Task<PaymentGetResponse> GetPaymentByOrderId(PaymentGetRequest request, ServerCallContext context)
+    {
+        var payment = await _paymentService.GetPaymentByOrderIdAsync(Guid.Parse(request.Id));
+        
+        return new PaymentGetResponse
+        {
+            Payment = MapToPaymentDto(payment)
+        };
+    }
+
     public override async Task<PaymentUpdateResponse> UpdatePayment(PaymentUpdateRequest request, ServerCallContext context)
     {
         await _paymentService.UpdatePaymentAsync(new PaymentUpdateRequestDto
